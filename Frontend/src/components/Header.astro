@@ -1,0 +1,251 @@
+---
+import NavItem1 from "../icons/NavItem1.astro";
+import NavItem2 from "../icons/NavItem2.astro";
+import NavItem3 from "../icons/NavItem3.astro";
+import NavItem4 from "../icons/NavItem4.astro";
+import NavItemMove from "../icons/NavItemMove.astro";
+---
+
+<!-- The menu is taken from the website: https://www.web-leb.com/en/code/199 -->
+<header class="header">
+  <img
+    src="/OTLogo.svg"
+    alt="Logo OT"
+    class="logo"
+    id="logoOT"
+    style="width: 130px; height: auto; position: absolute; left: 50px;"
+  />
+  <menu class="menu">
+    <button
+      class="menu__item active"
+      style="--bgColorItem: #ff8c00"
+      data-section="home"
+    >
+      <NavItem1 />
+    </button>
+
+    <button
+      class="menu__item"
+      style="--bgColorItem: #f54888"
+      data-section="participants"
+    >
+      <NavItem2 />
+    </button>
+
+    <button
+      class="menu__item"
+      style="--bgColorItem: #4343f5"
+      data-section="voting"
+    >
+      <NavItem3 />
+    </button>
+
+    <button
+      class="menu__item"
+      style="--bgColorItem: #e0b115"
+      data-section="results"
+    >
+      <NavItem4 />
+    </button>
+
+    <div class="menu__border"></div>
+  </menu>
+  <div class="svg-container">
+    <NavItemMove />
+  </div>
+</header>
+
+<style>
+  html {
+    box-sizing: border-box;
+    --bgColorMenu: #1d1d27;
+    --duration: 0.7s;
+  }
+
+  html * {
+    box-sizing: inherit;
+  }
+
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 4px 1px 4px;
+    color: white;
+    font-size: 1.25rem;
+    background-color: #4a5568;
+    z-index: 1000;
+  }
+
+  .menu {
+    margin: 0;
+    display: flex;
+    width: auto;
+    font-size: 1em;
+    padding: 0 1em;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bgColorMenu);
+    border-radius: 7px;
+    margin-top: auto;
+    margin-bottom: 2px;
+    gap: 2rem;
+  }
+
+  .menu__item {
+    all: unset;
+    flex-grow: 1;
+    z-index: 100;
+    display: flex;
+    cursor: pointer;
+    position: relative;
+    border-radius: 50%;
+    align-items: center;
+    will-change: transform;
+    justify-content: center;
+    padding: 0.5em;
+    transition: transform var(--timeOut, var(--duration));
+  }
+
+  .menu__item::before {
+    content: "";
+    z-index: -1;
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+    position: absolute;
+    transform: scale(0);
+    transition:
+      background-color var(--duration),
+      transform var(--duration);
+  }
+
+  .menu__item.active {
+    transform: translate3d(0, -0.5em, 0);
+  }
+
+  .menu__item.active::before {
+    transform: scale(1);
+    background-color: var(--bgColorItem);
+  }
+
+  .icon {
+    width: 2em;
+    height: 2em;
+    stroke: white;
+    fill: transparent;
+    stroke-width: 1pt;
+    stroke-miterlimit: 10;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 400;
+  }
+
+  .menu__item.active .icon {
+    animation: strok 1.5s reverse;
+  }
+
+  @keyframes strok {
+    100% {
+      stroke-dashoffset: 400;
+    }
+  }
+
+  .menu__border {
+    left: 0;
+    bottom: 99%;
+    width: 5.75em;
+    height: 1.5em;
+    position: absolute;
+    clip-path: url(#menu);
+    will-change: transform;
+    background-color: var(--bgColorMenu);
+    transition: transform var(--timeOut, var(--duration));
+  }
+
+  .svg-container {
+    width: 0;
+    height: 0;
+  }
+  /* Modo móvil: Apila los elementos en columna */
+  @media (max-width: 768px) {
+    #logoOT {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  "use strict";
+
+  const body = document.body;
+  const bgColorsBody = ["#ffb457", "#ff96bd", "#9999fb", "#ffe797"];
+  const menu = body.querySelector(".menu") as HTMLElement;
+  const menuItems = menu.querySelectorAll(".menu__item");
+  const menuBorder = menu.querySelector(".menu__border");
+  let activeItem = menu.querySelector(".active");
+  const sections = document.querySelectorAll("section");
+
+  function clickItem(item: HTMLElement, index: number) {
+    menu.style.removeProperty("--timeOut");
+
+    if (activeItem === item) return;
+
+    if (activeItem) {
+      activeItem.classList.remove("active");
+    }
+
+    item.classList.add("active");
+    body.style.backgroundColor = bgColorsBody[index];
+    activeItem = item;
+
+    if (activeItem) {
+      offsetMenuBorder(activeItem as HTMLElement, menuBorder as HTMLElement);
+    }
+
+    // Show the corresponding section and hide others
+    const sectionId = item.getAttribute("data-section");
+    if (sectionId) {
+      sections.forEach((section) => {
+        section.style.display = section.id === sectionId ? "block" : "none";
+      });
+    }
+  }
+
+  function offsetMenuBorder(element: HTMLElement, menuBorder: HTMLElement) {
+    const offsetActiveItem = element.getBoundingClientRect();
+    const left =
+      Math.floor(
+        offsetActiveItem.left -
+          menu.offsetLeft -
+          (menuBorder.offsetWidth - offsetActiveItem.width) / 2,
+      ) + "px";
+    menuBorder.style.transform = `translate3d(${left}, 0 , 0)`;
+  }
+
+  if (activeItem) {
+    offsetMenuBorder(activeItem as HTMLElement, menuBorder as HTMLElement);
+  }
+
+  menuItems.forEach((item, index) => {
+    item.addEventListener("click", (e) => {
+      e.preventDefault(); // Prevent default anchor jump
+      clickItem(item as HTMLElement, index);
+    });
+  });
+
+  window.addEventListener("resize", () => {
+    offsetMenuBorder(activeItem as HTMLElement, menuBorder as HTMLElement);
+    menu.style.setProperty("--timeOut", "none");
+  });
+
+  // Hide all sections initially except the first one
+  sections.forEach((section, index) => {
+    section.style.display = index === 0 ? "block" : "none";
+  });
+</script>
