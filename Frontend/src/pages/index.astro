@@ -1,5 +1,6 @@
 ---
 import Header from "../components/Header.astro";
+import Home from "../components/Home.astro";
 ---
 
 <html lang="es">
@@ -15,6 +16,11 @@ import Header from "../components/Header.astro";
   </head>
   <body>
     <Header />
+    <main>
+      <section id="home">
+        <Home />
+      </section>
+    </main>
   </body>
 
   <style>
@@ -34,6 +40,29 @@ import Header from "../components/Header.astro";
       background-color: rgb(255, 180, 87);
       color: black;
       overflow: hidden;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      margin-top: var(--header-height);
+      overflow-y: auto;
+      height: calc(100vh - var(--header-height));
+      scroll-snap-type: y mandatory;
+    }
+
+    section {
+      width: 100%;
+      max-width: 80%;
+      margin: 0 auto 15px;
+      padding: 0 16px;
+      scroll-snap-align: start;
+    }
+
+    h2 {
+      font-size: 1.875rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
     }
   </style>
 </html>
