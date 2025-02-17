@@ -1,0 +1,27 @@
+---
+const { name, image } = Astro.props;
+---
+
+<div
+  title={`Imagen del candidato ${name}`}
+  class="card-background"
+  style=`background-image: url(${image});`
+>
+</div>
+<h3 class="card-heading">{name}</h3>
+
+<style>
+  .card-background {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .card-heading {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+</style>
