@@ -25,12 +25,27 @@ theme: beam
 
 ---
 
-# Herramientas para la gestión de configuración
+# Herramientas de gestión de la configuración
+**GESTIÓN DE LA CONFIGURACIÓN**
+
+![Imagen Arquitectura](images/PlanningManagement.png)
+
+
+---
+
+# Herramientas de gestión de la configuración
+**ARQUITECTURA DEL PROYECTO**
+
+![Imagen Arquitectura](images/ProjectArquitecture.png)
 
 ---
 
 # Despliegue en entorno de test local
 
+
 ---
 
 # Arquitectura del programa
+**BASE DE DATOS**
+
+![Imagen Arquitectura](images/DataBase.png)
