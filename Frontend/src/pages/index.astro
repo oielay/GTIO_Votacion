@@ -1,0 +1,80 @@
+---
+import Header from "../components/Header.astro";
+import Home from "../components/Home.astro";
+import Participants from "../components/Participants.astro";
+import Voting from "../components/Voting.astro";
+import Results from "../components/Results.astro";
+---
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="Proyecto de votación para la nueva edición de Operación Triunfo"
+    />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/OTLogo.svg" />
+    <title>Proyecto Votación OT</title>
+  </head>
+  <body>
+    <Header />
+    <main>
+      <section id="home">
+        <Home />
+      </section>
+      <section id="participants">
+        <Participants />
+      </section>
+      <section id="voting">
+        <Voting />
+      </section>
+      <section id="results">
+        <Results />
+      </section>
+    </main>
+  </body>
+
+  <style>
+    :root {
+      --header-height: 107px;
+    }
+
+    html {
+      font-family: "Roboto", sans-serif;
+    }
+
+    body {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      background-color: rgb(255, 180, 87);
+      color: black;
+      overflow: hidden;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      margin-top: var(--header-height);
+      overflow-y: auto;
+      height: calc(100vh - var(--header-height));
+      scroll-snap-type: y mandatory;
+    }
+
+    section {
+      width: 100%;
+      max-width: 80%;
+      margin: 0 auto 15px;
+      padding: 0 16px;
+      scroll-snap-align: start;
+    }
+
+    h2 {
+      font-size: 1.875rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+  </style>
+</html>

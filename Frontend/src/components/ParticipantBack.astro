@@ -1,0 +1,19 @@
+---
+const { name, description } = Astro.props;
+---
+
+<h3 class="card-heading">{name}</h3>
+<p class="card-description">{description}</p>
+
+<style>
+  .card-heading {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .card-description {
+    font-size: 1.125rem;
+    text-align: justify;
+    padding: 0 16px;
+  }
+</style>
