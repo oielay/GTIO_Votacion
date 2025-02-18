@@ -23,7 +23,7 @@ theme: beam
 
 # Herramientas para la gestión de proyectos
 
----
+![Imagen Gestion Configuracion](images/ADR007.png)
 
 # Herramientas de gestión de la configuración
 **GESTIÓN DE LA CONFIGURACIÓN**
