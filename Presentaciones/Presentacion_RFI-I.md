@@ -25,6 +25,8 @@ theme: beam
 
 ![Imagen Gestion Configuracion](images/ADR007.png)
 
+---
+
 # Herramientas de gestión de la configuración
 **GESTIÓN DE LA CONFIGURACIÓN**
 
@@ -45,6 +47,14 @@ theme: beam
 ![Imagen Arquitectura](images/ProjectArquitecture.png)
 
 ---
+
+# Herramientas de gestión de la configuración
+**Pull Requests**
+
+![Imagen Pull Requests](images/PullRequests.png)
+
+---
+
 
 # Despliegue en entorno de test local
 
