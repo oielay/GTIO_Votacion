@@ -67,7 +67,9 @@ theme: beam
 
 
 # Despliegue en entorno de test local
+**DESPLIGUE**  
 
+![Imagen Pull Requests](images/DespliegueEnEntornoLocal.png)
 
 ---
 
