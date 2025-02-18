@@ -28,8 +28,14 @@ theme: beam
 # Herramientas de gestión de la configuración
 **GESTIÓN DE LA CONFIGURACIÓN**
 
-![Imagen Arquitectura](images/PlanningManagement.png)
+![Imagen Gestion Configuracion](images/PlanningManagement.png)
 
+---
+
+# Herramientas de gestión de la configuración
+**ESTRUCTURA DE COMMITS**
+
+![Imagen Estructura Commits](images/EstructuraCommits.png)
 
 ---
 
