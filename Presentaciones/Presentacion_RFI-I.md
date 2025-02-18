@@ -33,8 +33,11 @@ theme: beam
 
 # Herramientas para la gestión de proyectos
 
+**HERRAMIENTAS DE GESTIÓN**
 ![Imagen Gestion Configuracion](images/ADR007_1.png)
 
+**TABLERO KANBAN**
+![Imagen Gestion Configuracion](images/KanbanBoard.png)
 
 # Herramientas de gestión de la configuración
 **GESTIÓN DE LA CONFIGURACIÓN**
