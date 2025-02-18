@@ -29,13 +29,12 @@ theme: beam
 
 # Miembros y roles
 
----
+![Imagen Gestion Configuracion](images/ADR006.png)
 
 # Herramientas para la gestión de proyectos
 
 ![Imagen Gestion Configuracion](images/ADR007_1.png)
 
----
 
 # Herramientas de gestión de la configuración
 **GESTIÓN DE LA CONFIGURACIÓN**
