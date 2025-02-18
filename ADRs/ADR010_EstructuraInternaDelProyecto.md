@@ -8,7 +8,7 @@ Historia técnica: [Issue #20](https://github.com/oielay/GTIO_Votacion/issues/20
 
 
 ## Contexto y Planteamiento del Problema
-Para desarrollar el backend, es necesario definir una arquitectura que determinará cómo interactuan las diferentes partes de la aplicación para procesar las solicitudes y las respuesta.
+Para desarrollar el backend y el frontend, es necesario definir una arquitectura que determinará cómo interactuan las diferentes partes de la aplicación para procesar las solicitudes y las respuesta.
 
 ## Factores en la Decisión 
 
@@ -24,7 +24,7 @@ Para desarrollar el backend, es necesario definir una arquitectura que determina
 
 ## Decisión
 
-Se ha decidido emplear como estructura general del sistema, una arquitectura de microservicios que internamente empleará una arquitectura en capas para organizar el código.
+Se ha decidido emplear como estructura general del sistema, una arquitectura de microservicios que internamente empleará una arquitectura en capas para organizar el código en el caso del Backend y un único front que internamente emplea una arquitectura de componentes.
 
 ## Ventajas y Desventajas de las opciones
 

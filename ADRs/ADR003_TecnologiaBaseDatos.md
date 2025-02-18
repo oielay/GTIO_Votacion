@@ -25,7 +25,7 @@ Para almacenar los datos de los candidatos asi como contraseñas y nombres de us
 
 ## Decisión
 
-Se ha decidido emplear como servidor de base de datos SQLServer. Esto se debe a que SQLServer está integrado en .NET lo que facilita la creación de las bases de datos y evita la instalación de otras bibliotecas. Además es compatible con EntityFramework Core que es la tecnología que emplea .NET para trabajar con objetos sin tener que realizar sentencias SQL.
+Se ha decidido emplear como servidor de base de datos SQLServer. Esto se debe a que SQLServer está integrado en .NET lo que facilita la creación de las bases de datos y evita la instalación de otras bibliotecas. Además es compatible con EntityFramework Core que es la tecnología que emplea .NET para trabajar con objetos sin tener que realizar sentencias SQL. Por otro lado, al ser una tecnología de microsoft, permite aprovechar todo el entorno, como Microsoft Azure, Visual Studio, entre otros.
 
 ## Ventajas y Desventajas de las opciones
 
@@ -48,7 +48,7 @@ Se ha decidido emplear como servidor de base de datos SQLServer. Esto se debe a 
 
 #### Desventajas
 * Poco eficiente cuando las consultas son demasiado complejas
-* Consistenci eventual. Los datos replicados en un nodo pueden no tener valores correctos.
+* Consistencia eventual. Los datos replicados en un nodo pueden no tener valores correctos.
 * Dificultad para realizar joins de consultas
 
 ### SQL Server
@@ -57,6 +57,9 @@ Se ha decidido emplear como servidor de base de datos SQLServer. Esto se debe a 
 * Es adecuado para empresas con requisitos mas complejos
 * Ofrece sistemas de seguridad avanzadas como el cifrado de datos transparente
 * Es mas eficiente conforme aumenta la carga de trabajo (escalabilidad)
+* Tiene mayor compatibilidad con el entorno de microsoft
+* Se puede emplear Entity FrameWork Core para facilitar las consultas a la base de datos, desde .NET
+
 
 #### Desventajas
 * Está diseñado principalmente para ejecutarse en Windows
