@@ -49,7 +49,7 @@ theme: beam
 ---
 
 # Herramientas de gestión de la configuración
-**Pull Requests**
+<br> **PULL REQUESTS**  
 
 ![Imagen Pull Requests](images/PullRequests.png)
 
@@ -65,6 +65,16 @@ theme: beam
 **BACKEND**
 
 ![Imagen Backend](images/Backend.png)
+
+---
+
+# Arquitectura del programa
+<br>
+
+**FRONTEND**
+<br>
+
+![Imagen Frontend](images/Frontend.png)
 
 ---
 
