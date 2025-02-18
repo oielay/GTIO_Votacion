@@ -14,6 +14,16 @@ theme: beam
 ---
 
 # Organización de la empresa
+**ESTRUCTURA DE LA ORGANIZACIÓN DEL EQUIPO**
+
+![Imagen Estructura](images/EstructuraOrganizacion.png)
+
+---
+
+# Organización de la empresa
+**METODOLOGÍA**
+
+![Imagen Metodología](images/Metodologia.png)
 
 ---
 
