@@ -52,6 +52,13 @@ theme: beam
 ---
 
 # Arquitectura del programa
+**BACKEND**
+
+![Imagen Backend](images/Backend.png)
+
+---
+
+# Arquitectura del programa
 **BASE DE DATOS**
 
 ![Imagen Arquitectura](images/DataBase.png)
