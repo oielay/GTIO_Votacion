@@ -4,6 +4,7 @@ size: 4:3
 header: RFI I. Proyecto Votación - Metodologías de Gestión
 footer: 19/02/2025
 title: RFI I. Proyecto Votación - Metodologías de Gestión
+paginate: true
 theme: beam
 ---
 
@@ -14,16 +15,18 @@ theme: beam
 ---
 
 # Organización de la empresa
+
 **ESTRUCTURA DE LA ORGANIZACIÓN DEL EQUIPO**
 
-![Imagen Estructura](images/EstructuraOrganizacion.png)
+![Imagen Estructura](images/ADR004.png)
 
 ---
 
 # Organización de la empresa
+
 **METODOLOGÍA**
 
-![Imagen Metodología](images/Metodologia.png)
+![Imagen Metodología](images/ADR005.png)
 
 ---
 
@@ -31,68 +34,87 @@ theme: beam
 
 ![Imagen Gestion Configuracion](images/ADR006.png)
 
+---
+
 # Herramientas para la gestión de proyectos
 
 **HERRAMIENTAS DE GESTIÓN**
-![Imagen Gestion Configuracion](images/ADR007_1.png)
+![Imagen Gestion Configuracion](images/ADR007.png)
+
+---
 
 **TABLERO KANBAN**
-![Imagen Gestion Configuracion](images/KanbanBoard.png)
+![Imagen Gestion Configuracion](images/ADR007_kanban.png)
+
+---
 
 # Herramientas de gestión de la configuración
+
 **GESTIÓN DE LA CONFIGURACIÓN**
 
-![Imagen Gestion Configuracion](images/PlanningManagement.png)
+![Imagen Gestion Configuracion](images/ADR008.png)
 
 ---
 
 # Herramientas de gestión de la configuración
+
 **ESTRUCTURA DE COMMITS**
 
-![Imagen Estructura Commits](images/EstructuraCommits.png)
+![Imagen Estructura Commits](images/ADR009.png)
 
 ---
 
 # Herramientas de gestión de la configuración
+
 **ARQUITECTURA DEL PROYECTO**
 
-![Imagen Arquitectura](images/ProjectArquitecture.png)
+![Imagen Arquitectura](images/ADR010.png)
 
 ---
 
 # Herramientas de gestión de la configuración
-<br> **PULL REQUESTS**  
 
-![Imagen Pull Requests](images/PullRequests.png)
+<br> **PULL REQUESTS**
+
+![Imagen Pull Requests](images/ADR011.png)
 
 ---
-
 
 # Despliegue en entorno de test local
-**DESPLIGUE**  
 
-![Imagen Pull Requests](images/DespliegueEnEntornoLocal.png)
+**DESPLIGUE**
+
+![Imagen Pull Requests](images/ADR012.png)
 
 ---
 
 # Arquitectura del programa
+
 **BACKEND**
 
-![Imagen Backend](images/Backend.png)
+![Imagen Backend](images/ADR001.png)
 
 ---
 
 # Arquitectura del programa
+
 <br>
 
 **FRONTEND**
 <br>
 
-![Imagen Frontend](images/Frontend.png)
+![Imagen Frontend](images/ADR002.png)
 
 ---
 
 # Arquitectura del programa
+
 **BASE DE DATOS**
 
-![Imagen Arquitectura](images/DataBase.png)
+![Imagen Arquitectura](images/ADR003.png)
+
+---
+
+<!-- _class: title -->
+
+# Demo

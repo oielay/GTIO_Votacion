@@ -43,7 +43,7 @@ footer {
   top: 96.2%;
   width: 100%;
   right: 0;
-  left: 90%;
+  left: calc(75% - 3em);
   color: white;
 }
 
