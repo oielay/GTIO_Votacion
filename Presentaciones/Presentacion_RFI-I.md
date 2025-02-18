@@ -33,7 +33,7 @@ theme: beam
 
 # Herramientas para la gestión de proyectos
 
-![Imagen Gestion Configuracion](images/ADR007.png)
+![Imagen Gestion Configuracion](images/ADR007_1.png)
 
 ---
 
