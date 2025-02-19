@@ -3,6 +3,7 @@
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango, Urki Aristu, Oier Layana
 * Fecha: 12/02/2025
+
 Historia técnica: [Issue #5](https://github.com/oielay/GTIO_Votacion/issues/5) [Subissue #19](https://github.com/oielay/GTIO_Votacion/issues/19)
 
 
