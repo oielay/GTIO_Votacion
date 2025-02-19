@@ -1,10 +1,10 @@
-# [Elección de la herramienta de gestión de la configuración]
+# Elección de la herramienta de gestión de la configuración
 
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango
 * Fecha: 15/02/2025
 
-Historia técnica: [Issue #18](https://github.com/oielay/GTIO_Votacion/issues/18)
+Historia técnica: [Issue #5](https://github.com/oielay/GTIO_Votacion/issues/5) [Subissue #18](https://github.com/oielay/GTIO_Votacion/issues/18)
 
 
 ## Contexto y Planteamiento del Problema
