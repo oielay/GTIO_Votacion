@@ -4,7 +4,7 @@
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango, Urki Aristu y Oier Layana.
 * Fecha: 15/02/2025
 
-Historia técnica: [Issue #3](https://github.com/oielay/GTIO_Votacion/issues/3)
+Historia técnica: [Issue #4](https://github.com/oielay/GTIO_Votacion/issues/4)
 
 ## Contexto y Planteamiento del Problema
 El equipo de desarrollo necesita una herramienta de gestión de tareas que se integre de manera eficiente con nuestro flujo de trabajo en GitHub. Actualmente, consideramos varias opciones, incluyendo GitHub Projects (Kanban), Trello y Jira, evaluando su nivel de integración con nuestro ecosistema, facilidad de uso y funcionalidades clave. La decisión debe favorecer la automatización, visibilidad del trabajo y reducción de herramientas externas.

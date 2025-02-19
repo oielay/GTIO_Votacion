@@ -2,8 +2,9 @@
 
 * Estado: aceptada  
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango, Urki Aristu, Oier Layana  
-* Fecha: 18/02/2025  
-Historia técnica: [Issue #7](https://github.com/oielay/GTIO_Votacion/issues/7)  
+* Fecha: 18/02/2025
+
+Historia técnica: [Issue #6](https://github.com/oielay/GTIO_Votacion/issues/6)  
 
 ## Contexto  
 Se requiere definir un método para desplegar la aplicación en un entorno local de pruebas, para que el equipo de desarrollo pueda realizar pruebas consistentes antes de pasar a entornos de producción. Las opciones deben ser evaluadas según la facilidad de configuración, rendimiento y replicabilidad del entorno de producción.

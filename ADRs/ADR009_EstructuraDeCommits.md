@@ -3,6 +3,7 @@
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango, Urki Aristu, Oier Layana
 * Fecha: 12/02/2025
+
 Historia técnica: [Issue #5](https://github.com/oielay/GTIO_Votacion/issues/5) [Subissue #19](https://github.com/oielay/GTIO_Votacion/issues/19)
 
 
@@ -18,12 +19,12 @@ Para mantener un historial de cambios claro, comprensible y consistente en el pr
     - Ejemplo: 123 - FUNC - Añadida nueva tabla a la base de datos
 3. Convención basada en Conventional Commits
     - Proporciona una estructura clara y ampliamente adoptada en la industria.
-    - Ejemplo: feat(bbdd): añadida nueva tabla a la base de datos (#123)
+    - Ejemplo: feat (bbdd): añadida nueva tabla a la base de datos #123
 
 ## Decisión
 Se establece el uso de una convención de mensajes de commit basada en [Conventional Commits](https://www.conventionalcommits.org/), con la siguiente estructura:
 
-`<tipo>(<área>): <mensaje corto> (#<número_issue>)`
+`<tipo> (<área>): <mensaje corto> #<número_issue>`
 
 `<Cuerpo opcional>`
 
@@ -43,15 +44,15 @@ Los commits deben clasificarse en los siguientes tipos:
 ## Ejemplos
 1. Agregar una nueva funcionalidad:
 
-    `feat(frontend): crear seccion de participantes (#123)`
+    `feat (frontend): crear seccion de participantes #123`
 
 2. Corregir un error:
 
-    `fix(backend): corregir guardado de voto en BBDD (#456)`
+    `fix (backend): corregir guardado de voto en BBDD #456`
 
 3. Documentación:
 
-    `docs(rfi1): actualizar ADR009 Estructura de Commits (#789)`
+    `docs (rfi1): actualizar ADR009 Estructura de Commits #789`
 
 ## Justificación
 - Estandariza los mensajes de commit, facilitando la lectura y el análisis del historial.

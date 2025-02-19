@@ -1,10 +1,10 @@
-# [Elección de la arquitectura backend]
+# Elección de la arquitectura del proyecto
 
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango
 * Fecha: 15/02/2025
 
-Historia técnica: [Issue #20](https://github.com/oielay/GTIO_Votacion/issues/20)
+Historia técnica: [Issue #1](https://github.com/oielay/GTIO_Votacion/issues/1) [Subissue #20](https://github.com/oielay/GTIO_Votacion/issues/20)
 
 
 ## Contexto y Planteamiento del Problema
