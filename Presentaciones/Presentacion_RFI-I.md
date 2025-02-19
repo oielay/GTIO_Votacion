@@ -12,6 +12,8 @@ theme: beam
 
 # RFI I. Proyecto Votación - Metodologías de Gestión
 
+## Autores: Oier A., Urki A., Oier L., Javier P., Álex S.
+
 ---
 
 # Organización de la empresa
@@ -66,14 +68,6 @@ theme: beam
 
 # Herramientas de gestión de la configuración
 
-**ARQUITECTURA DEL PROYECTO**
-
-![Imagen Arquitectura](images/ADR010.png)
-
----
-
-# Herramientas de gestión de la configuración
-
 <br> **PULL REQUESTS**
 
 ![Imagen Pull Requests](images/ADR011.png)
@@ -85,6 +79,14 @@ theme: beam
 **DESPLIGUE**
 
 ![Imagen Pull Requests](images/ADR012.png)
+
+---
+
+# Arquitectura del programa
+
+**ARQUITECTURA DEL PROYECTO**
+
+![Imagen Arquitectura](images/ADR010.png)
 
 ---
 
