@@ -38,5 +38,3 @@ docker-compose.override.yml
 .github/
 .gitlab-ci.yml
 azure-pipelines.yml
-
-.dockerignore
