@@ -17,6 +17,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+//app.Urls.Add("http://*:8080");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
