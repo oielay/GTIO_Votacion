@@ -39,6 +39,46 @@
     width: 66%;
     aspect-ratio: 2 / 1;
   }
+
+  @media screen and (max-width: 1300px) {
+    #results {
+      flex-direction: column;
+    }
+
+    #results > div {
+      width: 60%;
+    }
+
+    #pieChartContainer {
+      width: 60%;
+      aspect-ratio: 1 / 1;
+    }
+
+    #barChartContainer {
+      width: 60%;
+      aspect-ratio: 2 / 1;
+    }
+  }
+
+  @media screen and (max-width: 700px) {
+    #results {
+      flex-direction: column;
+    }
+
+    #results > div {
+      width: 100%;
+    }
+
+    #pieChartContainer {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+    }
+
+    #barChartContainer {
+      width: 100%;
+      aspect-ratio: 2 / 1;
+    }
+  }
 </style>
 
 <script>
