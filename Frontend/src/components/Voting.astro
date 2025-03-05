@@ -21,7 +21,6 @@
         <li>Caracteristica 2</li>
         <li>Caracteristica 3</li>
         <li>Caracteristica 4</li>
-        <li>Caracteristica 5</li>
       </ul>
 
       <button class="voting-button">Votar</button>
@@ -45,13 +44,6 @@
     align-items: center;
   }
 
-  .features > div {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
   .image-container {
     display: flex;
     align-items: center;
@@ -65,7 +57,7 @@
   }
 
   #current-image {
-    width: 200px; /* Adjust the width as needed */
+    width: 190px;
     height: auto;
   }
 
@@ -92,6 +84,30 @@
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
+  }
+
+  h2, .features > p{
+    margin-bottom: 0;
+  }
+
+  .features > h2 {
+    margin-top: 0;
+  }
+
+  @media screen and (max-width: 768px) {
+    .candidate {
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .features {
+      align-self: center;
+    }
+
+    .image-container {
+      justify-content: center;
+    }
+    
   }
 </style>
 
