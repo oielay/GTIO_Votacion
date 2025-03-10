@@ -40,12 +40,6 @@ public class CandidatesController : ControllerBase
         return candidate;
     }
 
-    [HttpGet("ObtenerDatosPorNombreYApellido")]
-    public async Task<ActionResult<IEnumerable<Candidate>>> BuscarCandidatos([FromQuery] string nombre, [FromQuery] string apellido)
-    {
-        return Ok(await _service.SearchCandidatesAsync(nombre, apellido));
-    }
-
     [HttpPost("InsertarNuevoCandidato")]
     public async Task<ActionResult<Candidate>> CrearCandidato(CandidateRequest candidate)
     {

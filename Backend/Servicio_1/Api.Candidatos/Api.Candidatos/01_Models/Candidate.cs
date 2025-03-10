@@ -7,10 +7,10 @@ public class Candidate
     [Key]
     public int Id { get; set; }
     public string? UserName { get; set; }
-    public string? LastName { get; set; }
-    public string? Country { get; set; }
+    public string? UserImage { get; set; }
+    public string? ImageVoting { get; set; }
     public int? Votes { get; set; }
-    public string? Photo { get; set; }
+    public string? Features { get; set; }
     public string? UserDescription { get; set; }
 
 }

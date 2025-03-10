@@ -4,9 +4,9 @@ public class CandidateRequest
 {
     public required int Id { get; set; }
     public required string UserName { get; set; }
-    public required string LastName { get; set; }
-    public required string Country { get; set; }
+    public required string UserImage { get; set; }
+    public required string ImageVoting { get; set; }
     public required int Votes { get; set; }
-    public required string Photo { get; set; }
+    public required string Features { get; set; }
     public required string UserDescription { get; set; }
 }

@@ -22,11 +22,6 @@ public class CandidateService : ICandidateService
         return await _repository.GetCandidateByIdAsync(id);
     }
 
-    public async Task<IEnumerable<Candidate>> SearchCandidatesAsync(string firstName, string lastName)
-    {
-        return await _repository.SearchCandidatesAsync(firstName, lastName);
-    }
-
     public async Task AddCandidateAsync(CandidateRequest candidate)
     {
         Candidate newCandidate = mapCandidate(candidate);
@@ -59,10 +54,10 @@ public class CandidateService : ICandidateService
         {
             Id = candidate.Id,
             UserName = candidate.UserName,
-            LastName = candidate.LastName,
-            Country = candidate.Country,
+            UserImage = candidate.UserImage,
+            ImageVoting = candidate.ImageVoting,
             Votes = candidate.Votes,
-            Photo = candidate.Photo,
+            Features = candidate.Features,
             UserDescription = candidate.UserDescription
         };
     }

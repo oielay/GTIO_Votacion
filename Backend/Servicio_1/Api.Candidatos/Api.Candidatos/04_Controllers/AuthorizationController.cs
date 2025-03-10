@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Candidatos.Controllers;
 
-[Route("Api/Auth")]
+[Route("api/Auth")]
 [ApiController]
 public class AuthorizationController : ControllerBase
 {
