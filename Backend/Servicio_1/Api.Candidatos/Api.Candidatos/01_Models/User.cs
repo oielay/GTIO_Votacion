@@ -1,10 +1,13 @@
-﻿using System.Security.Cryptography;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Api.Candidatos._01_Models;
 
 public class User
 {
+    [Key]
+    public int Id { get; set; }
     public string? Username { get; set; }
     public string? PasswordHash { get; private set; }
     public string? PasswordSalt { get; private set; }

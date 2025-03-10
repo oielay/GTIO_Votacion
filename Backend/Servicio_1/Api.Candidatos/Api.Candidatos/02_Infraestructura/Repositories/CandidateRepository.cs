@@ -25,13 +25,6 @@ public class CandidateRepository : ICandidateRepository
         return await _context.Candidates.FindAsync(id);
     }
 
-    public async Task<IEnumerable<Candidate>> SearchCandidatesAsync(string firstName, string lastName)
-    {
-        return await _context.Candidates
-            .Where(c => c.UserName.Contains(firstName) && c.LastName.Contains(lastName))
-            .ToListAsync();
-    }
-
     public async Task AddCandidateAsync(Candidate candidate)
     {
         _context.Candidates.Add(candidate);

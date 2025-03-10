@@ -18,7 +18,7 @@ public class CandidatesController : ControllerBase
         _service = service;
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpGet("Test")]
     public async Task<ActionResult<string>> GetTest()
     {

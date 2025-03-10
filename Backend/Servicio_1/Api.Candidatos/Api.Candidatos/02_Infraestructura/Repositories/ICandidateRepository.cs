@@ -5,7 +5,6 @@ public interface ICandidateRepository
 {
     Task<IEnumerable<Candidate>> GetAllCandidatesAsync();
     Task<Candidate?> GetCandidateByIdAsync(int id);
-    Task<IEnumerable<Candidate>> SearchCandidatesAsync(string firstName, string lastName);
     Task AddCandidateAsync(Candidate candidate);
     Task UpdateCandidateAsync(VotosRequest votes);
     Task DeleteCandidateAsync(int id);
