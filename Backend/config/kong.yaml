@@ -1,0 +1,55 @@
+_format_version: "2.1"
+
+services:
+  - name: api_candidatos
+    url: http://api_candidatos:8080
+
+routes:
+  - name: obtener-todos-candidatos
+    paths:
+      - /Candidates/ObtenerTodosCandidatos
+    strip_path: false
+    service: api_candidatos
+    preserve_host: false
+
+  - name: obtener-candidato-por-id
+    paths:
+      - "/Candidates/ObtenerCandidatoPorId"
+    strip_path: false
+    service: api_candidatos
+    preserve_host: false
+
+  - name: obtener-datos-por-nombre-y-apellido
+    paths:
+      - /Candidates/ObtenerDatosPorNombreYApellido
+    strip_path: false
+    service: api_candidatos
+    preserve_host: false
+
+  - name: insertar-nuevo-candidato
+    paths:
+      - /Candidates/InsertarNuevoCandidato
+    strip_path: false
+    service: api_candidatos
+    preserve_host: false
+
+  - name: actualizar-datos-candidato
+    paths:
+      - /Candidates/ActualizarDatosCandidato/
+    strip_path: false
+    service: api_candidatos
+    preserve_host: false
+
+  - name: eliminar-candidato
+    paths:
+      - /Candidates/EliminarCandidato
+    strip_path: false
+    service: api_candidatos
+    preserve_host: false
+
+  - name: obtener-votos-candidato
+    paths:
+      - /Candidates/ObtenerVotosCadidato
+    strip_path: false
+    service: api_candidatos
+    preserve_host: false

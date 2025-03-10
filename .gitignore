@@ -31,7 +31,7 @@ project.lock.json
 
 # Docker
 docker-compose.override.yml
-.env
+Backend/.env
 
 # Continuous Integration
 .circleci/
