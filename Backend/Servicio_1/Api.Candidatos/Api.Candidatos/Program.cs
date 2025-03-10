@@ -1,5 +1,9 @@
-using Api.Candidatos.Models;
+using Api.Candidatos._00_DependencyInjection;
+using Api.Candidatos.Infraestructura;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +19,34 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Gestionar Autenticacion
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var key = Encoding.ASCII.GetBytes(jwtSettings["Secret"]);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidateAudience = true,
+            ValidAudience = jwtSettings["Audience"],
+            ValidateLifetime = true
+        };
+    });
+builder.Services.AddAuthorization();
+
+//Dependency inyection
+builder.Services.AddApplicationServices();
+
 var app = builder.Build();
 
-//app.Urls.Add("http://*:8080");
+
+app.UseAuthentication(); // Habilita la autenticación
+app.UseAuthorization();  // Habilita la autorización
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -27,8 +56,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
