@@ -52,7 +52,6 @@ public class CandidateService : ICandidateService
     {
         return new Candidate
         {
-            Id = candidate.Id,
             UserName = candidate.UserName,
             UserImage = candidate.UserImage,
             ImageVoting = candidate.ImageVoting,

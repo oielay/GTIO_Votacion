@@ -48,4 +48,12 @@ VALUES
  '["Secretario general de Podemos", "Licenciado en Derecho", "Defensor de políticas de izquierda", "Enfocado en justicia social", "Figura destacada en la política española"]', 0);
 GO
 
+CREATE TABLE Users (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Username NVARCHAR(100) NULL,
+    PasswordHash NVARCHAR(500) NULL,
+    PasswordSalt NVARCHAR(500) NULL
+);
+
+GO
 

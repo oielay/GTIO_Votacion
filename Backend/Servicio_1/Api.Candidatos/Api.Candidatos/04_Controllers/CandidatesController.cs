@@ -44,7 +44,7 @@ public class CandidatesController : ControllerBase
     public async Task<ActionResult<Candidate>> CrearCandidato(CandidateRequest candidate)
     {
         await _service.AddCandidateAsync(candidate);
-        return CreatedAtAction(nameof(GetCandidato), new { id = candidate.Id }, candidate);
+        return CreatedAtAction(nameof(GetCandidato), candidate);
     }
 
     [HttpPut("ActualizarVotosCandidato")]
