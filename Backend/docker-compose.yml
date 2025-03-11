@@ -20,12 +20,16 @@ services:
     container_name: sql_server
     restart: always
     environment:
-      MSSQL_SA_PASSWORD: ${SQLSERVER_PASSWORD}  # Usamos la variable de entorno desde el archivo .env
+      MSSQL_SA_PASSWORD: ${SQLSERVER_PASSWORD}
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
     volumes:
-      - sqlserver_data:/var/opt/mssql
+      - sqlserver_data:/var/opt/mssql/data
+      # - ./Servicio_2/log:/var/opt/mssql/log
+      # - ./Servicio_2/secrets:/var/opt/mssql/secrets
+      - ./Servicio_2/scripts:/var/opt/mssql/init-scripts
+    entrypoint: [ "/bin/bash", "/var/opt/mssql/init-scripts/entrypoint.sh" ]
     networks:
       - kong-net
 
