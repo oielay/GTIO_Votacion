@@ -1,5 +1,6 @@
 volumes:
   sqlserver_data:
+    driver: local
   kong_data: {}
   kong_prefix_vol:
     driver_opts:
@@ -25,7 +26,7 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - sqlserver_data:/var/opt/mssql/data
+      - sqlserver_data:/var/opt/mssql
       # - ./Servicio_2/log:/var/opt/mssql/log
       # - ./Servicio_2/secrets:/var/opt/mssql/secrets
       - ./Servicio_2/scripts:/var/opt/mssql/init-scripts
