@@ -7,7 +7,7 @@ declare global {
     var barChart: typeof Chart;
 }
 
-function getGeneralData() {
+export function getGeneralData() {
     const participants = PARTICIPANTS.map((participant) => participant.name);
 
     const votes = PARTICIPANTS.map((participant) => {
@@ -23,7 +23,7 @@ function getGeneralData() {
     return { participants, voteCounts, votePercentages };
 }
 
-function getPieChartData() {
+export function getPieChartData() {
     const { participants, voteCounts, votePercentages } = getGeneralData();
 
     const data = {
@@ -62,7 +62,7 @@ function getPieChartData() {
     return { data, options };
 }
 
-function getBarChartData() {
+export function getBarChartData() {
     const { participants, voteCounts, votePercentages } = getGeneralData();
 
     const data = {
