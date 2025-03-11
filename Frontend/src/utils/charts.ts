@@ -1,10 +1,9 @@
-import "https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"
+import Chart from 'chart.js/auto';
 import PARTICIPANTS from "./participants";
 
-declare var Chart: any;
 declare global {
-    var pieChart: typeof Chart;
-    var barChart: typeof Chart;
+    var pieChart: Chart;
+    var barChart: Chart;
 }
 
 export function getGeneralData() {
@@ -47,7 +46,7 @@ export function getPieChartData() {
         aspectRatio: 1,
         plugins: {
             legend: {
-                position: "top",
+                position: "top" as const,
             },
             tooltip: {
                 callbacks: {
@@ -121,6 +120,10 @@ export function renderCharts() {
         const ctxPie = pieChartElement.getContext("2d");
         const ctxBar = barChartElement.getContext("2d");
 
+        if (!ctxPie || !ctxBar) {
+            return;
+        }
+
         globalThis.pieChart = new Chart(ctxPie, {
             type: "pie",
             data: getPieChartData().data,
@@ -134,5 +137,3 @@ export function renderCharts() {
         });
     }
 }
-
-

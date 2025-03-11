@@ -29,6 +29,6 @@ jobs:
   #     - name: Instalar dependencias
   #       working-directory: Frontend
   #       run: npm install
-  #     - name: Ejecutar Vitest
+  #     - name: Ejecutar jest
   #       working-directory: Frontend
   #       run: npm run test
