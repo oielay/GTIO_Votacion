@@ -1,9 +1,7 @@
-USE master;
-GO
-
 -- Crear la base de datos si no existe
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'DB_API')
 BEGIN
+    PRINT 'Creando base de datos DB_API';
     CREATE DATABASE DB_API;
 END
 GO
@@ -11,9 +9,10 @@ GO
 USE DB_API;
 GO
 
--- Crear la tabla solo si no existe
+-- Crear la tabla Candidates solo si no existe
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Candidates')
 BEGIN
+    PRINT 'Creando tabla Candidates';
     CREATE TABLE Candidates (
         Id INT IDENTITY(1,1) PRIMARY KEY,
         UserName NVARCHAR(255) NOT NULL,
@@ -29,6 +28,7 @@ GO
 -- Insertar los datos de los candidatos solo si la tabla existe y no tiene datos
 IF NOT EXISTS (SELECT 1 FROM Candidates)
 BEGIN
+    PRINT 'Insertando datos en la tabla Candidates';
     INSERT INTO Candidates (UserName, UserImage, ImageVoting, UserDescription, Features, Votes)
     VALUES 
     ('Pedro Sánchez', '/participant1.jpg', '/participant1-voting.webp',
@@ -43,17 +43,21 @@ BEGIN
     'Albert Rivera Díaz es un político español, presidente de Ciudadanos desde 2006 hasta 2019. Licenciado en Derecho por la Universidad Ramon Llull, es miembro de Ciudadanos.',
     '["Expresidente de Ciudadanos", "Licenciado en Derecho", "Defensor de la unidad de España", "Moderado en políticas económicas", "Abogado de formación"]', 0),
 
-('Pablo Iglesias', '/participant4.jpg', '/participant4-voting.webp',
- 'Pablo Iglesias Turrión es un político español, secretario general de Podemos desde 2014. Licenciado en Derecho por la Universidad Complutense de Madrid, es miembro de Podemos.',
- '["Secretario general de Podemos", "Licenciado en Derecho", "Defensor de políticas de izquierda", "Enfocado en justicia social", "Figura destacada en la política española"]', 0);
+    ('Pablo Iglesias', '/participant4.jpg', '/participant4-voting.webp',
+    'Pablo Iglesias Turrión es un político español, secretario general de Podemos desde 2014. Licenciado en Derecho por la Universidad Complutense de Madrid, es miembro de Podemos.',
+    '["Secretario general de Podemos", "Licenciado en Derecho", "Defensor de políticas de izquierda", "Enfocado en justicia social", "Figura destacada en la política española"]', 0);
+END
 GO
 
-CREATE TABLE Users (
-    Id INT IDENTITY(1,1) PRIMARY KEY,
-    Username NVARCHAR(100) NULL,
-    PasswordHash NVARCHAR(500) NULL,
-    PasswordSalt NVARCHAR(500) NULL
-);
-
+-- Crear la tabla Users solo si no existe
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Users')
+BEGIN
+    PRINT 'Creando tabla Users';
+    CREATE TABLE Users (
+        Id INT IDENTITY(1,1) PRIMARY KEY,
+        Username NVARCHAR(100) NULL,
+        PasswordHash NVARCHAR(500) NULL,
+        PasswordSalt NVARCHAR(500) NULL
+    );
+END
 GO
-

@@ -2,54 +2,67 @@ _format_version: "2.1"
 
 services:
   - name: api_candidatos
-    url: http://api_candidatos:8080
+    url: http://api_candidatos:8080 #/v1
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+          policy: local
+      - name: prometheus
+        enabled: true
+        config:
+          per_consumer: true
+          status_code_metrics: true
+          latency_metrics: true
+          bandwidth_metrics: true
+          upstream_health_metrics: true
 
 routes:
   - name: obtener-todos-candidatos
     paths:
-      - /Candidates/ObtenerTodosCandidatos
+      - /api/Candidates/ObtenerTodosCandidatos
     strip_path: false
     service: api_candidatos
     preserve_host: false
 
   - name: obtener-candidato-por-id
     paths:
-      - "/Candidates/ObtenerCandidatoPorId"
+      - "/api/Candidates/ObtenerCandidatoPorId"
     strip_path: false
     service: api_candidatos
     preserve_host: false
 
   - name: obtener-datos-por-nombre-y-apellido
     paths:
-      - /Candidates/ObtenerDatosPorNombreYApellido
+      - /api/Candidates/ObtenerDatosPorNombreYApellido
     strip_path: false
     service: api_candidatos
     preserve_host: false
 
   - name: insertar-nuevo-candidato
     paths:
-      - /Candidates/InsertarNuevoCandidato
+      - /api/Candidates/InsertarNuevoCandidato
     strip_path: false
     service: api_candidatos
     preserve_host: false
 
   - name: actualizar-datos-candidato
     paths:
-      - /Candidates/ActualizarDatosCandidato/
+      - /api/Candidates/ActualizarDatosCandidato/
     strip_path: false
     service: api_candidatos
     preserve_host: false
 
   - name: eliminar-candidato
     paths:
-      - /Candidates/EliminarCandidato
+      - /api/Candidates/EliminarCandidato
     strip_path: false
     service: api_candidatos
     preserve_host: false
 
   - name: obtener-votos-candidato
     paths:
-      - /Candidates/ObtenerVotosCadidato
+      - /api/Candidates/ObtenerVotosCadidato
     strip_path: false
     service: api_candidatos
     preserve_host: false
