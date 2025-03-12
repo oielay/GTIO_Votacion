@@ -50,7 +50,7 @@ describe('Voting Functionality', () => {
 
   it('should add a vote to the participant and show a vote message', () => {
     const names = PARTICIPANTS.map((participant) => participant.name);
-    let currentIndex = 0;
+    const currentIndex = 0;
 
     function vote() {
       createVotedElement();
