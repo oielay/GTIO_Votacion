@@ -1,0 +1,40 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# IDE configurations
+.vs/
+.vscode/
+
+# Dependency directories
+packages/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Database files
+*.mdf
+*.ldf
+
+# NuGet config files
+project.lock.json
+
+# Docker
+docker-compose.override.yml
+Backend/.env
+
+# Continuous Integration
+.circleci/
+.github/
+.gitlab-ci.yml
+azure-pipelines.yml

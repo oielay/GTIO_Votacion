@@ -4,134 +4,82 @@
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango, Urki Aristu y Oier Layana.
 * Fecha: 15/02/2025
 
-Historia técnica: [Issue #3](https://github.com/oielay/GTIO_Votacion/issues/3)
+Historia técnica: [Issue #4](https://github.com/oielay/GTIO_Votacion/issues/4)
 
 ## Contexto y Planteamiento del Problema
-Para la gestión del flujo de trabajo dentro del equipo, es esencial adoptar un marco de trabajo que permita la coordinación efectiva de tareas, asegurando flexibilidad y eficiencia en la ejecución de las mismas. La dificultad principal radica en encontrar una metodología que se adapte a los distintos horarios de los miembros del equipo sin comprometer la organización ni la productividad.
-
-## Factores en la Decisión 
-Al evaluar las opciones disponibles, hemos considerado los siguientes factores:
-
-* Flexibilidad: La capacidad de adaptación a cambios y variaciones en las cargas de trabajo.
-* Comunicación: La necesidad de reuniones frecuentes y coordinación entre los miembros.
-* Estructura: Grado de formalización de procesos y planificación previa.
-* Transparencia: Visibilidad del trabajo en curso y estado de cada tarea.
-* Simplicidad: Facilidad de implementación y adopción dentro del equipo.
+El equipo de desarrollo necesita una herramienta de gestión de tareas que se integre de manera eficiente con nuestro flujo de trabajo en GitHub. Actualmente, consideramos varias opciones, incluyendo GitHub Projects (Kanban), Trello y Jira, evaluando su nivel de integración con nuestro ecosistema, facilidad de uso y funcionalidades clave. La decisión debe favorecer la automatización, visibilidad del trabajo y reducción de herramientas externas.
 
 ## Opciones Consideradas
 
-* Kanban:
-Un método visual basado en tableros que permite la gestión flexible del flujo de trabajo y la mejora continua.
+* GitHub Projects (Kanban): Una herramienta de gestión de tareas integrada en GitHub, diseñada para sincronizar issues y pull requests en un flujo de trabajo ágil.
+* Trello: Plataforma visual de gestión de proyectos basada en tableros, ideal para equipos que buscan simplicidad y flexibilidad en la organización de tareas.
+* Jira: Software avanzado para la gestión de proyectos ágiles, especialmente útil en entornos de desarrollo que requieren flujos de trabajo personalizados y detallados.
 
-* Scrum:
-Un marco de trabajo ágil basado en iteraciones llamadas sprints, con reuniones diarias (dailies) y roles definidos.
-
-* Scrumban:
-Una combinación de Scrum y Kanban que busca aprovechar la planificación estructurada de Scrum con la flexibilidad de Kanban.
-
-* Extreme Programming (XP):
-Enfocado en el desarrollo de software con ciclos de retroalimentación cortos, programación en pareja y pruebas automatizadas.
-
-* Lean Software Development:
-Inspirado en los principios de manufactura Lean, se centra en la eliminación de desperdicios y la optimización del flujo de valor.
+## Factores en la Decisión
+* Integración con GitHub → Permite conectar issues, pull requests y automatizaciones con GitHub Actions.
+* Automatización del flujo de trabajo → Reducción de tareas manuales mediante reglas automáticas.
+* Visibilidad y trazabilidad → Seguimiento directo del progreso dentro del ecosistema de GitHub.
+* Curva de aprendizaje → Uso intuitivo para equipos familiarizados con GitHub, sin necesidad de herramientas adicionales.
+* Reducción de herramientas externas → Evita la fragmentación del flujo de trabajo en múltiples plataformas.
+* Simplicidad y eficiencia → Sin configuraciones complejas, facilitando la adopción en el equipo.
+* Costo → Incluido en GitHub sin necesidad de licencias adicionales en comparación con Jira.
 
 ## Decisión
 
-Se ha optado por Kanban, ya que proporciona la flexibilidad necesaria para adaptarse a los diferentes horarios del equipo sin la obligación de realizar reuniones diarias. Además, permite gestionar visualmente el trabajo en curso sin imponer estructuras rígidas y varios miembros del equipo han trabajado siguiente esta metodología.
-
+Tras evaluar diversas opciones, se ha decidido utilizar GitHub Projects (Kanban) como la herramienta principal de gestión de tareas. Esta elección se basa en su integración nativa con GitHub, la automatización del flujo de trabajo y la capacidad de mantener la trazabilidad del desarrollo sin depender de herramientas externas. Esta solución equilibra simplicidad y eficiencia, alineándose con las necesidades del equipo sin añadir complejidad innecesaria.
 
 ## Ventajas y Desventajas de las opciones
 
-### Kanban
+### GitHub Projects (Kanban)
 
 #### Ventajas
 
-* No requiere iteraciones fijas ni reuniones diarias.
-
-* Proporciona una visión clara del estado del trabajo en todo momento.
-
-* Permite una gestión del flujo de trabajo basada en la demanda.
-
-* Facilita la adaptación a cambios y prioridades.
+* Integración nativa con GitHub (ideal para equipos de desarrollo).
+* Automatización mediante GitHub Actions.
+* Markdown y vista de tabla personalizable.
+* Permite conectar issues y pull requests directamente.
 
 #### Desventajas
 
-* Puede generar acumulación de tareas si no se gestiona correctamente.
+* Funcionalidad más limitada en comparación con otras herramientas.
+* No es tan intuitivo para quienes no usan GitHub regularmente.
+* Menos opciones de personalización visual.
 
-* No impone revisiones periódicas formales, lo que puede dificultar la mejora continua.
-
-### Scrum
+### Trello
 
 #### Ventajas
 
-* Proporciona una estructura clara con roles bien definidos.
-
-* Permite medir el progreso de forma predecible con sprints.
-
-* Fomenta la colaboración y la mejora continua a través de reuniones regulares.
+* Interfaz sencilla y fácil de usar.
+* Gran flexibilidad y personalización con etiquetas, checklists, y power-ups.
+* Gratis con funcionalidades básicas suficientes para pequeños equipos.
+* Aplicación móvil intuitiva.
 
 #### Desventajas
 
-* Requiere reuniones diarias, lo que puede ser un problema con horarios dispersos.
+* Las automatizaciones y power-ups avanzados requieren la versión de pago.
+* Puede volverse desordenado con tableros grandes.
+* No está tan enfocado en el desarrollo de software como GitHub Projects.
 
-* Puede ser demasiado rígido si las necesidades del equipo cambian con frecuencia.
-
-* La planificación detallada de cada sprint puede resultar una carga adicional.
-
-### Scrumban
+### Jira (de Atlassian)
 
 #### Ventajas
 
-* Híbrido que toma la flexibilidad de Kanban y la estructura de Scrum.
-
-* Permite iteraciones sin una planificación tan estricta como Scrum.
-
-* Adecuado para equipos en transición entre metodologías ágiles.
-
-Desventajas
-
-* Puede ser confuso si no se delimitan bien los elementos de Scrum y Kanban.
-
-* Requiere más esfuerzo para equilibrar planificación y flexibilidad.
-
-### Extreme Programming (XP)
-
-#### Ventajas
-
-* Enfocado en la calidad del código y la mejora continua.
-
-* Prácticas como la programación en pareja y las pruebas automatizadas ayudan a reducir errores.
-
-* Fomenta una comunicación constante dentro del equipo.
+* Potente en la gestión de proyectos ágiles (Scrum/Kanban).
+* Integración con Bitbucket, Confluence y otras herramientas de Atlassian.
+* Seguimiento de errores y flujos de trabajo avanzados.
+* Gran capacidad de personalización.
 
 #### Desventajas
 
-* Puede ser difícil de implementar sin una alta disciplina del equipo.
-
-* Requiere mucha interacción entre los desarrolladores, lo que puede ser un reto con horarios variables.
-
-### Lean Software Development
-
-#### Ventajas
-
-* Enfocado en la eliminación de desperdicio y la optimización del proceso.
-
-* Favorece una mentalidad de mejora continua.
-
-* Permite flexibilidad y adaptación rápida a cambios.
-
-#### Desventajas
-
-* No proporciona una estructura clara como Scrum o Kanban.
-
-* Puede requerir cambios culturales profundos dentro del equipo.
+* Interfaz compleja y menos intuitiva.
+* Puede ser excesivo para equipos pequeños.
+* Versión gratuita limitada a 10 usuarios.
 
 
 ## Conclusiones
 
-Después de evaluar las diferentes metodologías, hemos decidido implementar Kanban debido a su flexibilidad y facilidad de adopción en un equipo con horarios variados. Su enfoque visual y la gestión basada en demanda nos permitirán mantener un flujo de trabajo eficiente sin la necesidad de reuniones constantes.
+Dado que nuestro equipo utiliza GitHub como herramienta principal para el desarrollo y gestión del código, optar por GitHub Projects (Kanban) nos permite mantener un flujo de trabajo integrado sin necesidad de herramientas externas. Su conexión nativa con issues, pull requests y GitHub Actions facilita la automatización y el seguimiento del desarrollo, asegurando una mejor trazabilidad de las tareas y alineación con el ciclo de vida del software.
 
-Aunque Scrum proporciona una estructura robusta, su necesidad de reuniones diarias no se adapta bien a nuestra dinámica. Por otro lado, metodologías como XP o Lean Software Development pueden ser demasiado exigentes en términos de disciplina y cambio cultural.
+Si bien otras herramientas como Trello o Jira ofrecen una mayor personalización o funcionalidades avanzadas, GitHub Projects se alinea mejor con nuestras necesidades al proporcionar un entorno unificado, reducción de fricción entre gestión y desarrollo, y una curva de aprendizaje mínima para el equipo.
 
-En definitiva, con Kanban podremos optimizar la gestión de nuestras tareas sin imponer restricciones innecesarias, permitiéndonos enfocarnos en la entrega de valor de manera efectiva.
-
+Por estas razones, se ha decidido adoptar GitHub Projects (Kanban) como la herramienta principal de gestión de tareas dentro de nuestro flujo de trabajo.

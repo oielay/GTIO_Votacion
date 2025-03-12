@@ -3,6 +3,7 @@
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango, Urki Aristu, Oier Layana
 * Fecha: 12/02/2025
+
 Historia técnica: [Issue #5](https://github.com/oielay/GTIO_Votacion/issues/5) [Subissue #21](https://github.com/oielay/GTIO_Votacion/issues/21)
 
 ## Contexto
@@ -25,7 +26,7 @@ Se establece un proceso estándar para la creación y revisión de Pull Requests
 ## Reglas para Pull Requests
 1. Cada PR debe estar asociado a una issue.
 
-2. Uso de la estructura de los commit en el título: `<tipo>(<área>): <descripción breve> (#<número_issue_padre>)`.
+2. Uso de la estructura de los commit en el título: `<tipo> (<área>): <descripción breve> #<número_issue_padre>`.
 
 3. Opcional incluir una descripción detallada explicando los cambios, el motivo y cualquier contexto adicional.
 
@@ -37,8 +38,7 @@ Se establece un proceso estándar para la creación y revisión de Pull Requests
 
 ## Ejemplo de titulo PR
 
-`docs(rfi1): definida arquitectura del programa
- (#123)`
+`docs(rfi1): definida arquitectura del programa #123`
 
 ## Justificación
 - Garantiza que cada cambio pase por una revisión antes de fusionarse.

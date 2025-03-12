@@ -1,10 +1,10 @@
-# [Elección de la herramienta de gestión de la configuración]
+# Elección de la herramienta de gestión de la configuración
 
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango
 * Fecha: 15/02/2025
 
-Historia técnica: [Issue #18](https://github.com/oielay/GTIO_Votacion/issues/18)
+Historia técnica: [Issue #5](https://github.com/oielay/GTIO_Votacion/issues/5) [Subissue #18](https://github.com/oielay/GTIO_Votacion/issues/18)
 
 
 ## Contexto y Planteamiento del Problema
@@ -73,4 +73,5 @@ Se ha decidido emplear GitHub para realizar el control de versiones, realizar CI
 * [Ventajas y desventajas GitLab y GitHub][https://blog.desdelinux.net/github-vs-gitlab/]
 * [Ventajas y desventajas GitLab y GitHub][https://gitprotect.io/blog/github-storage-limits/#:~:text=The%20storage%20limit%20for%20GitHub,both%20private%20and%20public%20repositories.]
 * [Ventajas y desventajas Azure DevOps][https://elrincondemorta.wordpress.com/2020/10/25/azure-ventajas-y-desventajas/]
+* [Gestión de la configuración, ejemplos][https://www.itgov-docs.com/blogs/it-governance/configuration-management]
 

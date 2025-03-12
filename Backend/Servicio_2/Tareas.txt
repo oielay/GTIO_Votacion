@@ -1,0 +1,44 @@
+
+- Abrir Docker Desktop 
+- Abrir la terminar e ir al directorio donde se encuentra este documento
+- Se crea la imagen y el contenedor de SQL Server: docker-compose up -d
+- Levantar el servidor SQL Server: sqlcmd -S localhost,1433 -U sa -P Password123!
+- Directamente aparece 1> y copiar el script sql que se encuentra en este directorio
+- Escribir exit para salir
+
+
+//para poder ejecutar el script sin la necesidad de copiarlo
+$ mssql -u sa -p change_this_password
+mssql> .run my_db_setup.sql
+
+
+
+DATOS API: 
+- Crear la imagen, el contenedor y arrancar la imagen:
+docker-compose -f docker-compose-api.yml up --build
+
+(igual es necesario emplear antes que el comando anterior: docker-compose -f docker-compose-api.yml up -d)
+
+- Acceder y llamar a la api
+http://localhost:8080/Candidates/Prueba
+
+- Atención: Puede no verse en contenedor en docker-desktop, pero con el siguiente comando "Docker ps" se pueden ver los contenedores en funcionamiento.
+
+
+
+
+Tareas
+- Implementar Autenticación, autorización, registro de logs y auditoria a la API
+	- Investigar
+	- Tokens
+- ApiGateway
+	- Investigar
+	- Requisitos para poder aplicarlo a la api (autenticación, autorización, login y auditoria)
+	- Aplicarlo con la API
+- CI 
+- ADR
+- Adecuar API
+- Conexión con el front
+- Crear nuevo servicio de API
+- Realizar solución de postman
+
