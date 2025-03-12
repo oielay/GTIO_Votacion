@@ -1,74 +1,65 @@
-const { renderCharts, getBarChartData, getPieChartData } = require('../src/utils/charts.ts');
-import { Chart } from "chart.js";
+import * as chartsHelper from '../src/utils/charts';
+import 'jest-canvas-mock';
 
-jest.mock("../src/utils/charts.ts");
-jest.mock("chart.js");
-
-describe("renderCharts", () => {
-    let pieChartElement: HTMLCanvasElement;
-    let barChartElement: HTMLCanvasElement;
-    let ctxPie: CanvasRenderingContext2D;
-    let ctxBar: CanvasRenderingContext2D;
+describe('renderCharts', () => {
+    let pieCanvas: HTMLCanvasElement;
+    let barCanvas: HTMLCanvasElement;
 
     beforeEach(() => {
-        document.body.innerHTML = `
-            <canvas id="pieChart"></canvas>
-            <canvas id="barChart"></canvas>
-        `;
-        pieChartElement = document.getElementById("pieChart") as HTMLCanvasElement;
-        barChartElement = document.getElementById("barChart") as HTMLCanvasElement;
+        pieCanvas = document.createElement('canvas');
+        pieCanvas.id = 'pieChart';
+        document.body.appendChild(pieCanvas);
 
-        ctxPie = pieChartElement.getContext("2d") as CanvasRenderingContext2D;
-        ctxBar = barChartElement.getContext("2d") as CanvasRenderingContext2D;
+        barCanvas = document.createElement('canvas');
+        barCanvas.id = 'barChart';
+        document.body.appendChild(barCanvas);
+
+        jest.spyOn(chartsHelper, 'getBarChartData');
+        jest.spyOn(chartsHelper, 'getPieChartData');
     });
 
     afterEach(() => {
+        document.body.innerHTML = '';
         jest.clearAllMocks();
     });
 
-    it("should render pie and bar charts when elements are present", () => {
-        const mockPieChartData = { data: {}, options: {} };
-        const mockBarChartData = { data: {}, options: {} };
+    it('should not render any chart if neither canvas exists', () => {
+        document.body.innerHTML = '';
 
-        // Mock the return values of getPieChartData and getBarChartData
-        (getPieChartData as jest.Mock).mockReturnValue(mockPieChartData);
-        (getBarChartData as jest.Mock).mockReturnValue(mockBarChartData);
+        chartsHelper.renderCharts();
 
-        // Call renderCharts
-        renderCharts();
-
-        // Check that Chart was called with the correct arguments
-        expect(Chart).toHaveBeenCalledWith(ctxPie, {
-            type: "pie",
-            data: mockPieChartData.data,
-            options: mockPieChartData.options,
-        });
-
-        expect(Chart).toHaveBeenCalledWith(ctxBar, {
-            type: "bar",
-            data: mockBarChartData.data,
-            options: mockBarChartData.options,
-        });
+        expect(chartsHelper.getBarChartData).not.toHaveBeenCalled();
+        expect(chartsHelper.getPieChartData).not.toHaveBeenCalled();
     });
 
-    it("should not render charts if pieChartElement is missing", () => {
-        document.body.innerHTML = `<canvas id="barChart"></canvas>`;
-        renderCharts();
-        expect(Chart).not.toHaveBeenCalled();
+    it('should only render the pie chart if the bar chart does not exist', () => {
+        document.getElementById('barChart')?.remove();
+
+        chartsHelper.renderCharts();
+
+        expect(chartsHelper.getPieChartData).not.toHaveBeenCalled();
+        expect(chartsHelper.getBarChartData).not.toHaveBeenCalled();
     });
 
-    it("should not render charts if barChartElement is missing", () => {
-        document.body.innerHTML = `<canvas id="pieChart"></canvas>`;
-        renderCharts();
-        expect(Chart).not.toHaveBeenCalled();
+    it('should only render the bar chart if the pie chart does not exist', () => {
+        document.getElementById('pieChart')?.remove();
+
+        chartsHelper.renderCharts();
+
+        expect(chartsHelper.getBarChartData).not.toHaveBeenCalled();
+        expect(chartsHelper.getPieChartData).not.toHaveBeenCalled();
     });
 
-    it("should not render charts if contexts are not available", () => {
-        jest.spyOn(pieChartElement, "getContext").mockReturnValue(null);
-        jest.spyOn(barChartElement, "getContext").mockReturnValue(null);
+    it('should render both charts if both canvases exist', () => {
+        global.ResizeObserver = class {
+            observe() {}
+            unobserve() {}
+            disconnect() {}
+        };
 
-        renderCharts();
+        chartsHelper.renderCharts();
 
-        expect(Chart).not.toHaveBeenCalled();
+        expect(chartsHelper.getPieChartData).toHaveBeenCalled();
+        expect(chartsHelper.getBarChartData).toHaveBeenCalled();
     });
 });

@@ -1,16 +1,21 @@
 import Chart from 'chart.js/auto';
 import PARTICIPANTS from "./participants";
+import * as chartsHelper from './charts';
 
 declare global {
     var pieChart: Chart;
     var barChart: Chart;
 }
 
-export function getGeneralData() {
-    const participants = PARTICIPANTS.map((participant) => participant.name);
+export function getParticipantNames() {
+    return PARTICIPANTS.map((participant) => participant.name);
+}
 
-    const votes = PARTICIPANTS.map((participant) => {
-        const voteCount = localStorage.getItem(participant.name + "'s Votes") || "0";
+export function getGeneralData() {
+    const participants = chartsHelper.getParticipantNames();
+
+    const votes = participants.map((participant) => {
+        const voteCount = localStorage.getItem(participant + "'s Votes") || "0";
         return parseInt(voteCount);
     });
     const voteCounts = Object.values(votes) as number[];
@@ -23,7 +28,7 @@ export function getGeneralData() {
 }
 
 export function getPieChartData() {
-    const { participants, voteCounts, votePercentages } = getGeneralData();
+    const { participants, voteCounts, votePercentages } = chartsHelper.getGeneralData();
 
     const data = {
         labels: participants,
@@ -62,7 +67,7 @@ export function getPieChartData() {
 }
 
 export function getBarChartData() {
-    const { participants, voteCounts, votePercentages } = getGeneralData();
+    const { participants, voteCounts, votePercentages } = chartsHelper.getGeneralData();
 
     const data = {
         labels: participants,
@@ -100,9 +105,9 @@ export function getBarChartData() {
 }
 
 export function updateCharts() {
-    globalThis.pieChart.data = getPieChartData().data;
+    globalThis.pieChart.data = chartsHelper.getPieChartData().data;
 
-    globalThis.barChart.data = getBarChartData().data;
+    globalThis.barChart.data = chartsHelper.getBarChartData().data;
 
     globalThis.pieChart.update();
     globalThis.barChart.update();
@@ -116,7 +121,7 @@ export function renderCharts() {
         "barChart"
     ) as HTMLCanvasElement;
     
-    if (pieChartElement && barChartElement) {
+    if (pieChartElement && barChartElement) {    
         const ctxPie = pieChartElement.getContext("2d");
         const ctxBar = barChartElement.getContext("2d");
 
@@ -126,14 +131,14 @@ export function renderCharts() {
 
         globalThis.pieChart = new Chart(ctxPie, {
             type: "pie",
-            data: getPieChartData().data,
-            options: getPieChartData().options,
+            data: chartsHelper.getPieChartData().data,
+            options: chartsHelper.getPieChartData().options,
         });
 
         globalThis.barChart = new Chart(ctxBar, {
             type: "bar",
-            data: getBarChartData().data,
-            options: getBarChartData().options,
+            data: chartsHelper.getBarChartData().data,
+            options: chartsHelper.getBarChartData().options,
         });
     }
 }
