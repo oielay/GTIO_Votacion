@@ -1,6 +1,6 @@
 import Chart from 'chart.js/auto';
-import PARTICIPANTS from "./participants";
-import * as chartsHelper from './charts';
+import PARTICIPANTS from "./participants.ts";
+import * as chartsHelper from './charts.ts';
 
 declare global {
     var pieChart: Chart;
@@ -28,7 +28,7 @@ export function getGeneralData() {
 }
 
 export function getPieChartData() {
-    const { participants, voteCounts, votePercentages } = chartsHelper.getGeneralData();
+    const { participants, votePercentages } = chartsHelper.getGeneralData();
 
     const data = {
         labels: participants,
@@ -55,8 +55,10 @@ export function getPieChartData() {
             },
             tooltip: {
                 callbacks: {
-                    label: function (context: any) {
-                        return context.label + ": " + context.raw.toFixed(2) + "%";
+                    label: function (tooltipItem: any) {
+                        const label = tooltipItem.label || '';
+                        const value = tooltipItem.raw as number;
+                        return label + ": " + value.toFixed(2) + "%";
                     },
                 },
             },
@@ -67,7 +69,7 @@ export function getPieChartData() {
 }
 
 export function getBarChartData() {
-    const { participants, voteCounts, votePercentages } = chartsHelper.getGeneralData();
+    const { participants, voteCounts } = chartsHelper.getGeneralData();
 
     const data = {
         labels: participants,

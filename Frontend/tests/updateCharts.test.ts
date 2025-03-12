@@ -1,5 +1,4 @@
-const { updateCharts } = require('../src/utils/charts.ts');
-
+import { updateCharts } from '../src/utils/charts.ts';
 
 describe('updateCharts', () => {
     beforeEach(() => {

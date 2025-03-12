@@ -56,14 +56,9 @@ import NavItemMove from "../icons/NavItemMove.astro";
 </header>
 
 <style>
-  html {
-    box-sizing: border-box;
+  :root {
     --bgColorMenu: #1d1d27;
     --duration: 0.7s;
-  }
-
-  html * {
-    box-sizing: inherit;
   }
 
   .header {
@@ -132,22 +127,6 @@ import NavItemMove from "../icons/NavItemMove.astro";
   .menu__item.active::before {
     transform: scale(1);
     background-color: var(--bgColorItem);
-  }
-
-  .icon {
-    width: 2em;
-    height: 2em;
-    stroke: white;
-    fill: transparent;
-    stroke-width: 1pt;
-    stroke-miterlimit: 10;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 400;
-  }
-
-  .menu__item.active .icon {
-    animation: strok 1.5s reverse;
   }
 
   @keyframes strok {
@@ -229,7 +208,7 @@ import NavItemMove from "../icons/NavItemMove.astro";
       Math.floor(
         offsetActiveItem.left -
           menu.offsetLeft -
-          (menuBorder.offsetWidth - offsetActiveItem.width) / 2,
+          (menuBorder.offsetWidth - offsetActiveItem.width) / 2
       ) + "px";
     menuBorder.style.transform = `translate3d(${left}, 0 , 0)`;
   }

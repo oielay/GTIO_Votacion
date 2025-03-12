@@ -21,14 +21,14 @@ jobs:
         working-directory: Frontend
         run: npm run lint
 
-  # test:
-  #   name: Ejecutar tests unitarios y de integración
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Instalar dependencias
-  #       working-directory: Frontend
-  #       run: npm install
-  #     - name: Ejecutar jest
-  #       working-directory: Frontend
-  #       run: npm run test
+  test:
+    name: Ejecutar tests unitarios y de integración
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Instalar dependencias
+        working-directory: Frontend
+        run: npm install
+      - name: Ejecutar jest
+        working-directory: Frontend
+        run: npm run test

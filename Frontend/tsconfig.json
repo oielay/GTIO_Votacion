@@ -9,9 +9,9 @@
   ],
   "compilerOptions": {
     "jsx": "preserve",
-    "module": "ESNext",
+    "module": "Node16",
     "target": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,

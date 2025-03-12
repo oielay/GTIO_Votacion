@@ -1,4 +1,4 @@
-import * as chartsHelper from '../src/utils/charts';
+import * as chartsHelper from '../src/utils/charts.ts';
 
 describe('getBarChartData', () => {
     it('should return the correct data and options for the bar chart', () => {
