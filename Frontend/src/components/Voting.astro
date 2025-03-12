@@ -72,12 +72,6 @@
     font-weight: 600;
   }
 
-  .actions {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: center;
-  }
-
   .features {
     align-self: flex-start;
     display: flex;
@@ -86,7 +80,8 @@
     height: 100%;
   }
 
-  h2, .features > p{
+  h2,
+  .features > p {
     margin-bottom: 0;
   }
 
@@ -107,12 +102,11 @@
     .image-container {
       justify-content: center;
     }
-    
   }
 </style>
 
 <script>
-  import PARTICIPANTS from "../utils/participants";
+  import PARTICIPANTS from "../utils/participants.ts";
 
   let currentIndex = 0;
   const images = PARTICIPANTS.map((participant) => participant.image_voting);
