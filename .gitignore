@@ -38,3 +38,6 @@ Backend/.env
 .github/
 .gitlab-ci.yml
 azure-pipelines.yml
+
+# Environment
+.env
