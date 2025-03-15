@@ -1,7 +1,7 @@
-import { fireEvent } from '@testing-library/dom';
-import '@testing-library/jest-dom';
+import { fireEvent } from "@testing-library/dom";
+import "@testing-library/jest-dom";
 
-describe('Icon Circle Click', () => {
+describe("Icon Circle Click", () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <div class="flip-card">
@@ -19,16 +19,16 @@ describe('Icon Circle Click', () => {
     });
   });
 
-  it('should toggle the active class on the flip-card when icon-circle is clicked', () => {
-    const icon = document.querySelector('.icon-circle') as HTMLElement;
-    const flipCard = icon.closest('.flip-card') as HTMLElement;
+  it("should toggle the active class on the flip-card when icon-circle is clicked", () => {
+    const icon = document.querySelector(".icon-circle") as HTMLElement;
+    const flipCard = icon.closest(".flip-card") as HTMLElement;
 
     fireEvent.click(icon);
 
-    expect(flipCard).toHaveClass('active');
+    expect(flipCard).toHaveClass("active");
 
     fireEvent.click(icon);
 
-    expect(flipCard).not.toHaveClass('active');
+    expect(flipCard).not.toHaveClass("active");
   });
 });

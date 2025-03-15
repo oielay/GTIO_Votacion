@@ -1,10 +1,10 @@
-import { fireEvent } from '@testing-library/dom';
-import '@testing-library/jest-dom';
-import { updateCharts } from '../src/utils/charts.ts';
+import { fireEvent } from "@testing-library/dom";
+import "@testing-library/jest-dom";
+import { updateCharts } from "../src/utils/charts.ts";
 
-jest.mock('../src/utils/charts.ts');
+jest.mock("../src/utils/charts.ts");
 
-describe('Menu and Section Switching', () => {
+describe("Menu and Section Switching", () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <div class="menu">
@@ -91,17 +91,17 @@ describe('Menu and Section Switching', () => {
     });
   });
 
-  it('should switch sections and update background color on menu item click', () => {
-    const menuItems = document.querySelectorAll('.menu__item');
-    const sections = document.querySelectorAll('section');
+  it("should switch sections and update background color on menu item click", () => {
+    const menuItems = document.querySelectorAll(".menu__item");
+    const sections = document.querySelectorAll("section");
 
     fireEvent.click(menuItems[1]);
-    expect(menuItems[1]).toHaveClass('active');
+    expect(menuItems[1]).toHaveClass("active");
     expect(sections[1]).toBeVisible();
     expect(sections[0]).not.toBeVisible();
 
     fireEvent.click(menuItems[3]);
-    expect(menuItems[3]).toHaveClass('active');
+    expect(menuItems[3]).toHaveClass("active");
     expect(sections[3]).toBeVisible();
     expect(sections[1]).not.toBeVisible();
     expect(updateCharts).toHaveBeenCalled();

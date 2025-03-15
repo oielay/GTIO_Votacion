@@ -1,33 +1,33 @@
-import * as chartsHelper from '../src/utils/charts.ts';
+import * as chartsHelper from "../src/utils/charts.ts";
+import { obtenerTodosCandidatos } from "../src/utils/getDataFromApi.ts";
 
-describe('getGeneralData', () => {
-    beforeEach(() => {
-        localStorage.clear();
-    });
+jest.mock("../src/utils/getDataFromApi.ts");
 
-    it('should return correct data when localStorage is empty', () => {
-        const mockData = ['Alice', 'Bob', 'Charlie'];
-        jest.spyOn(chartsHelper, 'getParticipantNames').mockReturnValue(mockData);
+describe("getGeneralData", () => {
+  it("should return correct data from api", async () => {
+    (obtenerTodosCandidatos as jest.Mock).mockResolvedValue([
+      {
+        id: 1,
+        userName: "Alice",
+        imageVoting: "alice.jpg",
+        votes: 10,
+        features: ["Feature 1", "Feature 2"],
+      },
+      {
+        id: 2,
+        userName: "Bob",
+        imageVoting: "bob.jpg",
+        votes: 20,
+        features: ["Feature 3", "Feature 4"],
+      },
+    ]);
 
-        const result = chartsHelper.getGeneralData();
+    const result = await chartsHelper.getGeneralData();
 
-        expect(result.participants).toEqual(['Alice', 'Bob', 'Charlie']);
-        expect(result.voteCounts).toEqual([0, 0, 0]);
-        expect(result.votePercentages).toEqual([NaN, NaN, NaN]);
-    });
-
-    it('should return correct data when localStorage has votes', () => {
-        localStorage.setItem("Alice's Votes", '10');
-        localStorage.setItem("Bob's Votes", '20');
-        localStorage.setItem("Charlie's Votes", '30');
-
-        const mockData = ['Alice', 'Bob', 'Charlie'];
-        jest.spyOn(chartsHelper, 'getParticipantNames').mockReturnValue(mockData);
-
-        const result = chartsHelper.getGeneralData();
-
-        expect(result.participants).toEqual(['Alice', 'Bob', 'Charlie']);
-        expect(result.voteCounts).toEqual([10, 20, 30]);
-        expect(result.votePercentages).toEqual([16.666666666666664, 33.33333333333333, 50]);
-    });
+    expect(result.participantNames).toEqual(["Alice", "Bob"]);
+    expect(result.voteCounts).toEqual([10, 20]);
+    expect(result.votePercentages).toEqual([
+      33.33333333333333, 66.66666666666666,
+    ]);
+  });
 });
