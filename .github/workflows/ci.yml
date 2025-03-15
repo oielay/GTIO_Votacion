@@ -3,10 +3,12 @@ name: Integración Continua
 on:
   push:
     branches:
-      - ci-testing  # Ejecuta CI en commits a ci-testing
+      - desarrollo # Ejecuta CI en commits a ci-testing
+      - main # Ejecuta CI en commits a main
   pull_request:
     branches:
-      - ci-testing  # Ejecuta CI en PRs a ci-testing
+      - desarrollo # Ejecuta CI en PRs a ci-testing
+      - main # Ejecuta CI en PRs a main
 
 jobs:
   lint:
