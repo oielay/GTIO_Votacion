@@ -1,14 +1,14 @@
 ---
-const { name, image } = Astro.props;
+const { userName, userImage } = Astro.props;
 ---
 
 <div
-  title={`Imagen del candidato ${name}`}
+  title={`Imagen del candidato ${userName}`}
   class="card-background"
-  style=`background-image: url(${image});`
+  style=`background-image: url(${userImage});`
 >
 </div>
-<h3 class="card-heading">{name}</h3>
+<h3 class="card-heading">{userName}</h3>
 
 <style>
   .card-background {

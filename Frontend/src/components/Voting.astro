@@ -1,28 +1,35 @@
+---
+import { obtenerTodosCandidatos } from "../utils/getDataFromApi.ts";
+
+let participantes = await obtenerTodosCandidatos();
+const primerParticipante = participantes[0];
+const featuresArr: string[] = primerParticipante.features.toString().split(",");
+---
+
 <div class="vote-container">
   <h2>Votaciones</h2>
   <p>Escoja a su participante favorito para votar:</p>
   <div class="candidate">
-    <div>
+    <div class="participant">
       <div class="image-container">
         <button id="prev-button" class="arrow">←</button>
         <img
           id="current-image"
-          src="participant1-voting.webp"
-          alt="Imagen del participante Pedro Sanchez"
+          src={primerParticipante.imageVoting}
+          alt=`Imagen del participante ${primerParticipante.userName}`
         />
         <button id="next-button" class="arrow">→</button>
       </div>
+      <p class="name">{primerParticipante.userName}</p>
     </div>
     <div class="features">
       <h2>Características</h2>
-      <p>Conozca las características del participante:</p>
-      <ul>
-        <li>Caracteristica 1</li>
-        <li>Caracteristica 2</li>
-        <li>Caracteristica 3</li>
-        <li>Caracteristica 4</li>
+      <p class="features-participant-name">
+        Conozca las características del participante:
+      </p>
+      <ul class="features-list">
+        {featuresArr.map((feature) => <li>{feature}</li>)}
       </ul>
-
       <button class="voting-button">Votar</button>
     </div>
   </div>
@@ -44,6 +51,13 @@
     align-items: center;
   }
 
+  .participant {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
   .image-container {
     display: flex;
     align-items: center;
@@ -54,6 +68,12 @@
     border: none;
     font-size: 2rem;
     cursor: pointer;
+  }
+
+  .name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 1rem;
   }
 
   #current-image {
@@ -106,11 +126,14 @@
 </style>
 
 <script>
-  import PARTICIPANTS from "../utils/participants.ts";
+  import { obtenerTodosCandidatos } from "../utils/getDataFromApi.ts";
+  import { actualizarVotosCandidato } from "../utils/getDataFromApi.ts";
+
+  const PARTICIPANTS = await obtenerTodosCandidatos();
 
   let currentIndex = 0;
-  const images = PARTICIPANTS.map((participant) => participant.image_voting);
-  const names = PARTICIPANTS.map((participant) => participant.name);
+  const images = PARTICIPANTS.map((participant) => participant.imageVoting);
+  const names = PARTICIPANTS.map((participant) => participant.userName);
 
   function changeImage(direction: string) {
     if (direction === "prev") {
@@ -124,6 +147,29 @@
     if (imageElement) {
       imageElement.src = images[currentIndex];
       imageElement.alt = "Imagen del participante " + names[currentIndex];
+    }
+  }
+
+  function changeFeatures() {
+    const featuresList = document.querySelector(".features-list");
+    if (featuresList) {
+      featuresList.innerHTML = "";
+    }
+
+    const features = PARTICIPANTS[currentIndex].features.toString();
+    const featuresArr: string[] = features.split(",");
+
+    featuresArr.forEach((feature) => {
+      const featureElement = document.createElement("li");
+      featureElement.textContent = feature;
+      featuresList?.appendChild(featureElement);
+    });
+  }
+
+  function changeName() {
+    const nameElement = document.querySelector(".name");
+    if (nameElement) {
+      nameElement.textContent = names[currentIndex];
     }
   }
 
@@ -152,19 +198,24 @@
     }, 3000);
   }
 
-  function addVoteToParticipant() {
-    const participantKey = names[currentIndex] + "'s Votes";
-    const previousVotes = localStorage.getItem(participantKey);
-    const newVotes = previousVotes ? parseInt(previousVotes) + 1 : 1;
-    localStorage.setItem(participantKey, newVotes.toString());
+  async function addVoteToParticipant() {
+    const participants = await obtenerTodosCandidatos();
+    const participant = participants[currentIndex];
+
+    actualizarVotosCandidato(participant.id, participant.votes + 1);
   }
 
-  document
-    .getElementById("prev-button")
-    ?.addEventListener("click", () => changeImage("prev"));
-  document
-    .getElementById("next-button")
-    ?.addEventListener("click", () => changeImage("next"));
+  document.getElementById("prev-button")?.addEventListener("click", () => {
+    changeImage("prev");
+    changeName();
+    changeFeatures();
+  });
+
+  document.getElementById("next-button")?.addEventListener("click", () => {
+    changeImage("next");
+    changeName();
+    changeFeatures();
+  });
 
   document.querySelector(".voting-button")?.addEventListener("click", vote);
 </script>
