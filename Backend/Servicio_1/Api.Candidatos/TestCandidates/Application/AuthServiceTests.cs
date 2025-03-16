@@ -59,10 +59,10 @@ public class AuthServiceTests
     public void GenerateJwtToken_ShouldReturnToken_WhenCalled()
     {
         // Arrange
-        var username = "testuser";
+        var username = "testusername";
         var jwtSettings = new Dictionary<string, string>
         {
-            { "JwtSettings:Secret", "supersecretkey" },
+            { "JwtSettings:Secret", "EstaEsUnaLlaveSecretaMuySeguraDebeTener32Caracteres" },
             { "JwtSettings:Issuer", "testissuer" },
             { "JwtSettings:Audience", "testaudience" }
         };
