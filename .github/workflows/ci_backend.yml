@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Instalar dependencias
+        working-directory: Backend
+        run: npm install
       
       - name: Agregar StyleCop.Analyzers al proyecto Servicio_1
         working-directory: Backend
