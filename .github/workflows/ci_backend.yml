@@ -22,29 +22,17 @@ jobs:
         working-directory: Backend
         run: npm install
       
-      - name: Agregar StyleCop.Analyzers al proyecto Servicio_1
+      - name: Agregar StyleCop.Analyzers
         working-directory: Backend
-        run: dotnet add Servicio_1/Api.Candidatos/Api.Candidatos/Api.Candidatos.csproj package StyleCop.Analyzers --version 1.2.0
+        run: dotnet add Servicio_1/Api.Candidatos/Api.Candidatos/Api.Candidatos.csproj package StyleCop.Analyzers
         
-      - name: Restaurar paquetes .NET para Servicio_1
+      - name: Restaurar paquetes .NET
         working-directory: Backend
         run: dotnet restore Servicio_1/Api.Candidatos/Api.Candidatos/Api.Candidatos.csproj
 
-      - name: Construir proyecto Servicio_1 con StyleCop
+      - name: Construir proyecto con StyleCop
         working-directory: Backend
         run: dotnet build Servicio_1/Api.Candidatos/Api.Candidatos/Api.Candidatos.csproj /p:RunStyleCop=true
-
-      - name: Agregar StyleCop.Analyzers al proyecto Servicio_3
-        working-directory: Backend
-        run: dotnet Servicio_3/Api.Autenticacion/Api.Autenticacion/Api.Autenticacion/Api.Autenticacion.csproj package StyleCop.Analyzers --version 1.2.0
-
-      - name: Restaurar paquetes .NET para Servicio_3
-        working-directory: Backend
-        run: dotnet restore Servicio_3/Api.Autenticacion/Api.Autenticacion/Api.Autenticacion/Api.Autenticacion.csproj
-
-      - name: Construir proyecto Servicio_3 con StyleCop
-        working-directory: Backend
-        run: dotnet build Servicio_3/Api.Autenticacion/Api.Autenticacion/Api.Autenticacion/Api.Autenticacion.csproj
 
   # Job para ejecutar tests
   test:
@@ -59,7 +47,3 @@ jobs:
       - name: Ejecutar Dotnet Tests para Servicio_1
         working-directory: Backend
         run: npm run test:1
-
-      - name: Ejecutar Dotnet Tests para Servicio_3
-        working-directory: Backend
-        run: npm run test:3

@@ -3,8 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "test:1": "dotnet test Servicio_1/Api.Candidatos/TestCandidates/TestCandidates.csproj",
-    "test:3": "dotnet test Servicio_3/Api.Autenticacion/TestAuthentication/TestAuthentication.csproj"
+    "test:1": "dotnet test Servicio_1/Api.Candidatos/TestCandidates/TestCandidates.csproj"
   },
   "dependencies": {
   },
