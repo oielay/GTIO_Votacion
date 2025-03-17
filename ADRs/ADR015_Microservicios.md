@@ -19,15 +19,16 @@ Para desarrollar toda la arquitectura, es necesario definir cuales serán los mi
 
 * Microservicio de candidatos
 * Microservicio de usuarios
+* Microservicio de autenticación y autorización
 * Microservicio de comentarios
 
 ## Decisión
 
-Se ha decidido tener en cuenta un servicio de candidatos y un servicio de usuarios para registrar los votos que se realizan a cada uno de los candidatos y evitar que un usuario vote varias veces.
+Se ha decidido tener en cuenta un servicio de candidatos, un servicio de usuarios para registrar los votos que se realizan a cada uno de los candidatos y evitar que un usuario vote varias veces y un servicio de autenticación/autorización para gestionar los accesos al servicio de candidatos.
 
 ## Ventajas y Desventajas de las opciones
 
-### Microservicio de candidatos y usuarios
+### Microservicio de candidatos, usuarios y autenticación/autorización
 #### Ventajas
 
 * Se reduce la responsabilidad de cada servicio
@@ -37,7 +38,7 @@ Se ha decidido tener en cuenta un servicio de candidatos y un servicio de usuari
 
 * El microservicio de candidatos, gestiona la información de los candidatos asi como los votos. Dependiendo de cómo crezca la aplicación, pueden llegar a separarse.
 
-### Microservicio de candidatos, usuarios y comentarios
+### Microservicio de candidatos, usuarios, autenticacion/autorizacion y comentarios
 #### Ventajas
 
 * La página web tiene mas funcionalidades (se añade el microservicio de comentarios), lo que la hace más atractiva para los usuarios.
@@ -49,6 +50,7 @@ Se ha decidido tener en cuenta un servicio de candidatos y un servicio de usuari
 ## Enlaces 
 
 *
+
 
 
 
