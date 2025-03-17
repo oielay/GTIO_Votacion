@@ -1,12 +1,12 @@
 -- Crear la base de datos si no existe
-IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'DB_API2')
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'DB_AUTH')
 BEGIN
-    PRINT 'Creando base de datos DB_API2';
-    CREATE DATABASE DB_API2;
+    PRINT 'Creando base de datos DB_AUTH';
+    CREATE DATABASE DB_AUTH;
 END
 GO
 
-USE DB_API2;
+USE DB_AUTH;
 GO
 
 -- Crear la tabla Users solo si no existe

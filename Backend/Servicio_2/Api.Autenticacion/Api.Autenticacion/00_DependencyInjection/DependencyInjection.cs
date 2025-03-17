@@ -13,6 +13,8 @@ public static class DependencyInjection
 
         // Services
         services.AddScoped<IAuthService, AuthService>();
+        services.AddHttpClient(); 
+        services.AddScoped<IKongService, KongService>();
 
         return services;
     }

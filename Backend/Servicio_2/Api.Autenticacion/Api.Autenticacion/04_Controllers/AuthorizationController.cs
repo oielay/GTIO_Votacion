@@ -10,10 +10,12 @@ namespace Api.Autentication.Controllers;
 public class AuthorizationController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly IKongService _kongService;
 
-    public AuthorizationController(IAuthService authService)
+    public AuthorizationController(IAuthService authService, IKongService kongService)
     {
         _authService = authService;
+        _kongService = kongService;
     }
 
     [HttpPost("Login")]
@@ -21,7 +23,9 @@ public class AuthorizationController : ControllerBase
     {
         if (_authService.ValidateUserCredentials(loginDto.User, loginDto.Password))
         {
-            var token = _authService.GenerateJwtToken(loginDto.User);
+            // var token = _authService.GenerateJwtToken(loginDto.User);
+            string token = _kongService.LoginToken(loginDto.User);
+
             return Ok(new { token });
         }
 
@@ -34,7 +38,10 @@ public class AuthorizationController : ControllerBase
         var result = _authService.RegisterUser(registerDto.User, registerDto.Password);
         if (result)
         {
-            return Ok(new { message = "User registered successfully" });
+            _kongService.CreateConsumer(registerDto.User);
+            string token = _kongService.AssingToken(registerDto.User);
+
+            return Ok(new { message = "User registered successfully, token: " + token });
         }
 
         return BadRequest(new { message = "User registration failed" });

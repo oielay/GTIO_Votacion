@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Api.Autenticacion\Api.Autenticacion\Api.Autenticacion.csproj" />
+    <ProjectReference Include="..\Api.Autenticacion\Api.Autenticacion.csproj" />
   </ItemGroup>
 
   <ItemGroup>

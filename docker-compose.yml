@@ -1,7 +1,10 @@
 volumes:
-  sqlserver_data:
+  sqlserver_api_data:
     driver: local
-  kong_data: {}
+  sqlserver_auth_data:
+    driver: local
+  kong_data:
+    driver: local
   kong_prefix_vol:
     driver_opts:
       type: tmpfs
@@ -16,18 +19,34 @@ networks:
     driver: bridge
 
 services:
-  sqlserver:
+  sqlserver_api:
     image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: sql_server
+    container_name: sqlserver_api
     restart: always
     environment:
-      MSSQL_SA_PASSWORD: ${SQLSERVER_PASSWORD}
+      MSSQL_SA_PASSWORD: ${SQLSERVER_API_PASSWORD}
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
     volumes:
-      - sqlserver_data:/var/opt/mssql
-      - ./Backend/Servicio_2/scripts:/var/opt/mssql/init-scripts
+      - sqlserver_api_data:/var/opt/mssql
+      - ./Backend/Servicio_1/DB/scripts:/var/opt/mssql/init-scripts
+    entrypoint: [ "/bin/bash", "/var/opt/mssql/init-scripts/entrypoint.sh" ]
+    networks:
+      - kong-net
+
+  sqlserver_auth:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver_auth
+    restart: always
+    environment:
+      MSSQL_SA_PASSWORD: ${SQLSERVER_AUTH_PASSWORD}
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1434:1434"
+    volumes:
+      - sqlserver_auth_data:/var/opt/mssql
+      - ./Backend/Servicio_2/DB/scripts:/var/opt/mssql/init-scripts
     entrypoint: [ "/bin/bash", "/var/opt/mssql/init-scripts/entrypoint.sh" ]
     networks:
       - kong-net
@@ -40,18 +59,69 @@ services:
     ports:
       - "5000:8080"
     environment:
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=${DB_NAME};User Id=sa;Password=${SQLSERVER_PASSWORD};TrustServerCertificate=True
+      - ConnectionStrings__DefaultConnection=Server=sqlserver_api;Database=${DB_NAME_API};User Id=sa;Password=${SQLSERVER_API_PASSWORD};TrustServerCertificate=True
     depends_on:
-      - sqlserver
+      - sqlserver_api
     networks:
       - kong-net
 
+  autenticacion:
+    build:
+      context: ./Backend/Servicio_2/Api.Autenticacion
+      dockerfile: ./Dockerfile
+    container_name: api_autenticacion
+    ports:
+      - "5001:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver_auth;Database=${DB_NAME_AUTH};User Id=sa;Password=${SQLSERVER_AUTH_PASSWORD};TrustServerCertificate=True
+    depends_on:
+      - sqlserver_auth
+    networks:
+      - kong-net
+
+  kong-database:
+    image: postgres:13
+    container_name: "kong_postgres"
+    restart: on-failure:5
+    environment:
+      POSTGRES_USER: "kong"
+      POSTGRES_DB: "kong"
+      POSTGRES_PASSWORD: "kong"
+    ports:
+      - "5432:5432"
+    networks:
+      - kong-net
+    volumes:
+      - kong_data:/var/lib/postgresql/data
+
+  kong-migration:
+    image: kong:latest
+    container_name: kong-migration
+    command: "kong migrations bootstrap"
+    networks:
+      - kong-net
+    restart: on-failure
+    environment:
+      - KONG_PG_HOST=kong-database
+      - KONG_PG_USER=kong
+      - KONG_PG_PASSWORD=kong
+    links:
+      - kong-database
+    depends_on:
+      - kong-database
+    profiles:
+      - donotstart
+
   kong:
+    container_name: kong
     image: "${KONG_DOCKER_TAG:-kong:latest}"
     user: "${KONG_USER:-kong}"
     environment:
-      KONG_DATABASE: "off"
-      KONG_DECLARATIVE_CONFIG: "/opt/kong/kong.yaml"
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_DATABASE: kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
       KONG_ADMIN_ERROR_LOG: /dev/stderr
       KONG_PROXY_LISTEN: "0.0.0.0:8000"
@@ -62,23 +132,26 @@ services:
       KONG_PREFIX: "/var/run/kong"
     networks:
       - kong-net
+    depends_on:
+      - kong-database
     ports:
       - "8000:8000"
       - "8443:8443"
       - "8001:8001"
       - "8444:8444"
       - "8002:8002"
+      - "8445:8445"
     healthcheck:
       test: [ "CMD", "kong", "health" ]
       interval: 10s
       timeout: 10s
       retries: 10
     restart: on-failure:5
-    read_only: true
     volumes:
       - kong_prefix_vol:/var/run/kong
       - kong_tmp_vol:/tmp
-      - ./Backend/config/kong.yaml:/opt/kong/kong.yaml
+      # - ./Backend/kong/kong-log.sh:/var/opt/kong/kong-log.sh
+    # entrypoint: [ "/bin/bash", "/var/opt/kong/kong-log.sh" ]
     security_opt:
       - no-new-privileges
 
@@ -88,7 +161,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./Backend/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./Backend/kong/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     networks:

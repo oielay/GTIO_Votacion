@@ -5,7 +5,7 @@ VisualStudioVersion = 17.13.35806.99 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Autenticacion", "Api.Autenticacion\Api.Autenticacion.csproj", "{7268DBD8-9014-4F74-9A57-92047EB80E29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAuthentication", "..\TestAuthentication\TestAuthentication.csproj", "{0602D88F-1F9F-400C-83F6-89C1EE623282}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAuthentication", "TestAuthentication\TestAuthentication.csproj", "{0602D88F-1F9F-400C-83F6-89C1EE623282}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
