@@ -37,12 +37,12 @@
 
 **Ejemplo de archivo .env**
 
-DB_NAME_API=[Base_de_datos_candidatos]
-DB_NAME_AUTH=[Base_de_datos_autenticacion]
-ASPNETCORE_ENVIRONMENT=Development
-SQLSERVER_API_PASSWORD=[Contraseña_base_de_datos_candidatos]
-SQLSERVER_AUTH_PASSWORD=[Contraseña_base_de_datos_autenticacion]
-KONG_DATABASE_PASSWORD=[Contraseña_base_de_datos_kong]
-KONG_PG_DATABASE=[Base_de_datos_kong]
-KONG_PG_USER=[Usuario_base_de_datos_kong]
-KONG_ADMIN_JWT_SECRET=[Secret_token_admin]
+DB_NAME_API=[Base_de_datos_candidatos]<br>
+DB_NAME_AUTH=[Base_de_datos_autenticacion]<br>
+ASPNETCORE_ENVIRONMENT=Development<br>
+SQLSERVER_API_PASSWORD=[Contraseña_base_de_datos_candidatos]<br>
+SQLSERVER_AUTH_PASSWORD=[Contraseña_base_de_datos_autenticacion]<br>
+KONG_DATABASE_PASSWORD=[Contraseña_base_de_datos_kong]<br>
+KONG_PG_DATABASE=[Base_de_datos_kong]<br>
+KONG_PG_USER=[Usuario_base_de_datos_kong]<br>
+KONG_ADMIN_JWT_SECRET=[Secret_token_admin]<br>
