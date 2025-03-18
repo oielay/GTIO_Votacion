@@ -1,4 +1,4 @@
-# [Buenas prácticas frontend]
+# Buenas prácticas frontend
 
 * Estado: aceptada
 * Responsables: Oier Layana, Urki Aristu

@@ -1,4 +1,4 @@
-# [Metodologia y buenas prácticas Backendtend]
+# Buenas prácticas Backendtend
 
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alducin y Alex Sarango.
