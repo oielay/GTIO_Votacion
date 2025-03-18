@@ -1,4 +1,4 @@
-# [Funcionalidad de los microservicios]
+# Funcionalidad de los microservicios
 
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango

@@ -1,4 +1,4 @@
-# [Definición de Microservicios]
+# Definición de Microservicios
 
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango
