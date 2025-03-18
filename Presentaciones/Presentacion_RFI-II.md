@@ -36,6 +36,8 @@ theme: beam
 
 # Metodología y buenas prácticas
 
+<br>
+
 **BUENAS PRÁCTICAS EN EL FRONTEND**
 
 ![Imagen Buenas Prácticas Frontend](images/ADR014.png)
