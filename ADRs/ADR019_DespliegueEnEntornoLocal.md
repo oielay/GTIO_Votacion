@@ -88,21 +88,34 @@ Actualmente, el proyecto ya está dockerizado, lo que nos permite utilizar **Doc
 
 - No es adecuado para crear un entorno completo de test, más bien para pruebas puntuales.
 - Dependencia de servicios externos, lo que podría afectar la disponibilidad de las pruebas.
+
 ## Pasos para el despliegue local (con Docker y docker-compose)
 
 1. **Configurar variables de entorno:**  
     Situar el archivo `.env` en la raíz del proyecto y configurar las variables de entorno requeridas.
 
-2. **Construir y levantar los servicios:**  
-    Ejecutar el comando `docker-compose up --build` para construir las imágenes y levantar los servicios definidos en el archivo `docker-compose.yml`.
+2. **Ejecutar migraciones de Kong (una vez):**  
+    Ejecutar el comando `docker-compose up -d kong-migration` una única vez para realizar las migraciones necesarias de Kong.
 
-3. **Acceder al servicio deseado:**  
+3. **Construir y levantar los servicios:**  
+    Ejecutar el comando `docker-compose up -d --build` para construir las imágenes y levantar los servicios definidos en el archivo `docker-compose.yml`.
+
+4. **Configurar Kong (una vez):**  
+    Ejecutar el comando `docker-compose up -d kong-config` una única vez para aplicar la configuración inicial de Kong.
+
+5. **Acceder al servicio deseado:**  
     Una vez que los contenedores estén en ejecución, abrir el navegador en los siguientes puertos en base al servicio que se quiera acceder:
     - `http://localhost:1234` para la aplicación web.
-    - `http://localhost:5000/swagger/` para la API de candidatos.
-    - `http://localhost:1433` para la base de datos SQL Server.
-    - `http://localhost:8000` (o también en los puertos 8001, 8002, 8443 y 8444) para Kong.
-    - `http://localhost:9090` para prometheus.
+    - `http://localhost:8002` para Kong (se pueden ver servicios, rutas, consumers, plugins...).
+    - `http://localhost:9090` para Prometheus (permite ver información sobre métricas).
+
+    Estos servicios se encuentran en la red externa. El resto de servicios no son accesibles desde el navegador dado que se encuentran en la red interna.
+
+6. **Detener los servicios:**
+    Para detener los servicios, ejecutar el comando `docker-compose down`.
+
+7. **Volver a levantar los servicios:**
+    Una vez creados los volúmenes y hecho las migraciones y configuraciones de kong necesarias, para volver a levantar los servicios, solo es necesario ejecutar el comando `docker-compose up -d`.
 
 ## Consecuencias
 
