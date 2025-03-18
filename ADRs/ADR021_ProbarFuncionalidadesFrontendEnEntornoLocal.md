@@ -1,4 +1,4 @@
-# [Probar funcionalidad frontend en entorno local]
+# Probar funcionalidad frontend en entorno local
 
 * Estado: aceptada
 * Responsables: Urki Aristu, Oier Layana
