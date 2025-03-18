@@ -1,4 +1,4 @@
-# TÍTULO DEL ADR
+# Tests de funcionalidades backend en entorno local
 
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alducin, Alex Sarango.

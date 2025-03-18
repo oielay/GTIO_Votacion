@@ -1,10 +1,10 @@
-# Buenas prácticas Backendtend
+# Buenas prácticas Backend
 
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alducin y Alex Sarango.
 * Fecha: 16/03/2025
 
-Historia técnica: [Issue #51](https://github.com/oielay/GTIO_Votacion/issues/51) [Subissue #53](https://github.com/oielay/GTIO_Votacion/issues/53)
+Historia técnica: [Issue #51](https://github.com/oielay/GTIO_Votacion/issues/51) [Subissue #52](https://github.com/oielay/GTIO_Votacion/issues/52)
 
 ## Contexto y Planteamiento del Problema
 

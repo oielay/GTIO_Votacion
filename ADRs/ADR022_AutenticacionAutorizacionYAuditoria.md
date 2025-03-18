@@ -1,4 +1,4 @@
-# [Autenticación, autorización y auditoria]
+# Autenticación, autorización y auditoria
 
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango
