@@ -21,7 +21,8 @@ builder.Services.AddSwaggerGen();
 
 //Gestionar Autenticacion
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var key = Encoding.ASCII.GetBytes(jwtSettings["Secret"]);
+var secret = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret is not configured.");
+var key = Encoding.ASCII.GetBytes(secret);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -45,8 +46,8 @@ builder.Services.AddApplicationServices();
 var app = builder.Build();
 
 
-app.UseAuthentication(); // Habilita la autenticación
-app.UseAuthorization();  // Habilita la autorización
+app.UseAuthentication(); // Habilita la autenticaciï¿½n
+app.UseAuthorization();  // Habilita la autorizaciï¿½n
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -10,11 +10,9 @@ public static class DependencyInjection
     {
         // Repositories
         services.AddScoped<ICandidateRepository, CandidateRepository>();
-        services.AddScoped<IUserRepository, UserRepository>();
 
         // Services
         services.AddScoped<ICandidateService, CandidateService>();
-        services.AddScoped<IAuthService, AuthService>();
 
         return services;
     }

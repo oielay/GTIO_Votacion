@@ -15,8 +15,12 @@ volumes:
       device: tmpfs
 
 networks:
-  kong-net:
+  external-net:
     driver: bridge
+
+  internal-net:
+    driver: bridge
+    internal: true
 
 services:
   sqlserver_api:
@@ -33,7 +37,7 @@ services:
       - ./Backend/Servicio_1/DB/scripts:/var/opt/mssql/init-scripts
     entrypoint: [ "/bin/bash", "/var/opt/mssql/init-scripts/entrypoint.sh" ]
     networks:
-      - kong-net
+      - internal-net
 
   sqlserver_auth:
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -49,7 +53,7 @@ services:
       - ./Backend/Servicio_2/DB/scripts:/var/opt/mssql/init-scripts
     entrypoint: [ "/bin/bash", "/var/opt/mssql/init-scripts/entrypoint.sh" ]
     networks:
-      - kong-net
+      - internal-net
 
   api:
     build:
@@ -63,7 +67,7 @@ services:
     depends_on:
       - sqlserver_api
     networks:
-      - kong-net
+      - internal-net
 
   autenticacion:
     build:
@@ -77,7 +81,7 @@ services:
     depends_on:
       - sqlserver_auth
     networks:
-      - kong-net
+      - internal-net
 
   kong-database:
     image: postgres:13
@@ -85,12 +89,12 @@ services:
     restart: on-failure:5
     environment:
       POSTGRES_USER: "kong"
-      POSTGRES_DB: "kong"
-      POSTGRES_PASSWORD: "kong"
+      POSTGRES_DB: ${KONG_PG_USER}
+      POSTGRES_PASSWORD: ${KONG_DATABASE_PASSWORD}
     ports:
       - "5432:5432"
     networks:
-      - kong-net
+      - internal-net
     volumes:
       - kong_data:/var/lib/postgresql/data
 
@@ -99,12 +103,12 @@ services:
     container_name: kong-migration
     command: "kong migrations bootstrap"
     networks:
-      - kong-net
+      - internal-net
     restart: on-failure
     environment:
       - KONG_PG_HOST=kong-database
-      - KONG_PG_USER=kong
-      - KONG_PG_PASSWORD=kong
+      - KONG_PG_USER=${KONG_PG_USER}
+      - KONG_PG_PASSWORD=${KONG_DATABASE_PASSWORD}
     links:
       - kong-database
     depends_on:
@@ -119,9 +123,9 @@ services:
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-database
-      KONG_PG_DATABASE: kong
-      KONG_PG_USER: kong
-      KONG_PG_PASSWORD: kong
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE}
+      KONG_PG_USER: ${KONG_PG_USER}
+      KONG_PG_PASSWORD: ${KONG_DATABASE_PASSWORD}
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
       KONG_ADMIN_ERROR_LOG: /dev/stderr
       KONG_PROXY_LISTEN: "0.0.0.0:8000"
@@ -131,7 +135,8 @@ services:
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_PREFIX: "/var/run/kong"
     networks:
-      - kong-net
+      - external-net
+      - internal-net
     depends_on:
       - kong-database
     ports:
@@ -150,8 +155,6 @@ services:
     volumes:
       - kong_prefix_vol:/var/run/kong
       - kong_tmp_vol:/tmp
-      # - ./Backend/kong/kong-log.sh:/var/opt/kong/kong-log.sh
-    # entrypoint: [ "/bin/bash", "/var/opt/kong/kong-log.sh" ]
     security_opt:
       - no-new-privileges
 
@@ -165,7 +168,7 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     networks:
-      - kong-net
+      - external-net
     restart: always
 
   frontend:
@@ -182,4 +185,17 @@ services:
     depends_on:
       - api
     networks:
-      - kong-net
+      - external-net
+      - internal-net
+
+  kong-config:
+    build:
+      context: ./Backend/kong
+      dockerfile: Dockerfile
+    container_name: kong-config
+    networks:
+      - internal-net
+    environment:
+      - KONG_ADMIN_JWT_SECRET=${KONG_ADMIN_JWT_SECRET}
+    profiles:
+      - donotstart

@@ -20,7 +20,7 @@ public class CandidatesController : ControllerBase
 
     //[Authorize]
     [HttpGet("Test")]
-    public async Task<ActionResult<string>> GetTest()
+    public ActionResult<string> GetTest()
     {
         return "hola";
     }

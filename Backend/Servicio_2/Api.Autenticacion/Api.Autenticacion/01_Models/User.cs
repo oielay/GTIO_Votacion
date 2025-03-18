@@ -11,6 +11,8 @@ public class User
     public string? Username { get; set; }
     public string? PasswordHash { get; private set; }
     public string? PasswordSalt { get; private set; }
+    public int UserTypeId { get; private set; } = 1;
+    public UserType UserType { get; set; }
 
     public void SetPassword(string password)
     {
