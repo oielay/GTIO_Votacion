@@ -100,7 +100,7 @@ theme: beam
 
 # SOLUCIÓN ESCALABLE Y ESLÁSTICA
 
-![Imagen Solución Escalable y Elástica](images/ADR0023.png)
+![Imagen Solución Escalable y Elástica](images/ADR023.png)
 
 ---
 
