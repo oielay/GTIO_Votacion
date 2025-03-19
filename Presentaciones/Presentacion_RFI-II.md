@@ -44,15 +44,9 @@ theme: beam
 
 ---
 
-# MICROSERVICIOS
+# MICROSERVICIOS y FUNCIONALIDAD
 
 ![Imagen Microservicios](images/ADR015.png)
-
----
-
-# FUNCIONALIDAD DE CADA MICROSERVICIO
-
-![Imagen Funcionalidad de Microservicios](images/ADR016.png)
 
 ---
 
