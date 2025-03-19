@@ -1,12 +1,19 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import vue from "@astrojs/vue";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [vue()],
-
-  devToolbar: {
-    enabled: false
-  },
+    devToolbar: {
+        enabled: false
+    },
+    vite: {
+        server: {
+            proxy: {
+                '/api': {
+                    target: 'http://api_candidatos:8080',
+                    changeOrigin: true,
+                }
+            }
+        }
+    }
 });

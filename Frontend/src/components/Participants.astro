@@ -5,7 +5,9 @@ import ParticipanteBack from "../components/ParticipantBack.astro";
 import Info from "../icons/Info.astro";
 import Close from "../icons/Close.astro";
 
-import PARTICIPANTS from "../utils/participants";
+import { obtenerTodosCandidatos } from "../utils/getDataFromApi.ts";
+
+const PARTICIPANTS = await obtenerTodosCandidatos();
 ---
 
 <h2>Participantes</h2>

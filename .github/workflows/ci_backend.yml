@@ -1,0 +1,49 @@
+name: Integración Continua Backend
+
+on:
+  push:
+    branches:
+      - desarrollo # Ejecuta CI en commits a ci-testing
+      - main # Ejecuta CI en commits a main
+  pull_request:
+    branches:
+      - desarrollo # Ejecuta CI en PRs a ci-testing
+      - main # Ejecuta CI en PRs a main
+
+jobs:
+
+  # Job para ejecutar linter (StyleCop)
+  linter:
+    name: Ejecutar StyleCop Linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Instalar dependencias
+        working-directory: Backend
+        run: npm install
+      
+      - name: Agregar StyleCop.Analyzers
+        working-directory: Backend
+        run: dotnet add Servicio_1/Api.Candidatos/Api.Candidatos/Api.Candidatos.csproj package StyleCop.Analyzers
+        
+      - name: Restaurar paquetes .NET
+        working-directory: Backend
+        run: dotnet restore Servicio_1/Api.Candidatos/Api.Candidatos/Api.Candidatos.csproj
+
+      - name: Construir proyecto con StyleCop
+        working-directory: Backend
+        run: dotnet build Servicio_1/Api.Candidatos/Api.Candidatos/Api.Candidatos.csproj /p:RunStyleCop=true
+
+  # Job para ejecutar tests
+  test:
+    name: Ejecutar tests unitarios y de integración
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Instalar dependencias
+        working-directory: Backend
+        run: npm install
+
+      - name: Ejecutar Dotnet Tests para Servicio_1
+        working-directory: Backend
+        run: npm run test:1
