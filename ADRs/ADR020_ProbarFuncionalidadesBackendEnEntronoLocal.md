@@ -1,7 +1,7 @@
 # Tests de funcionalidades backend en entorno local
 
 * Estado: aceptada
-* Responsables: Javier Pernaut, Oier Alducin, Alex Sarango.
+* Responsables: Javier Pernaut, Oier Alduncin, Alex Sarango.
 * Fecha: 26/02/2025
 
 Historia técnica: [Issue #57](https://github.com/oielay/GTIO_Votacion/issues/57) [Subissue #58](https://github.com/oielay/GTIO_Votacion/issues/58)
@@ -10,12 +10,12 @@ Historia técnica: [Issue #57](https://github.com/oielay/GTIO_Votacion/issues/57
 
 Para asegurar el correcto funcionamiento de las APIs de Candidatos y de Autenticación y Autorización, es necesario implementar pruebas unitarias y funcionales. Estas pruebas deben verificar que los servicios operan correctamente tanto en un entorno controlado como en un entorno real.
 
-
 ## Factores en la Decisión 
 
 - Necesidad de asegurar la calidad y fiabilidad de los servicios.
 - Importancia de validar el registro y autenticación de usuarios.
 - Requerimiento de pruebas funcionales para simular escenarios reales de uso.
+
 ## Opciones Consideradas
 
 - Implementar solo pruebas unitarias.
@@ -29,7 +29,6 @@ Se decidió implementar tanto pruebas unitarias como funcionales para las APIs d
 ## Ventajas y Desventajas de las opciones
 
 ### Implementar solo pruebas unitarias.
-
 
 #### Ventajas
 
@@ -74,14 +73,14 @@ Se implementaron para verificar el correcto funcionamiento del servicio encargad
 
 ![alt text](../Presentaciones/images/image.png)
 #### Pruebas funcionales
-Se realizaron pruebas desde Swagger para registrar e iniciar sesión de usuarios, comprobando que estos procesos funcionan correctamente en un entorno real.
+Se realizaron pruebas desde Postman para registrar e iniciar sesión de usuarios, comprobando que estos procesos funcionan correctamente en un entorno real.
 
 ### Pruebas en la API de Candidatos
 #### Tests unitarios
 Se implementaron para asegurar que todas las consultas a la base de datos operan correctamente. Se utilizaron Mocks para simular las respuestas esperadas de la base de datos sin necesidad de interactuar con un entorno real.
 
 #### Pruebas funcionales
-Se realizaron a través de Swagger, verificando que el CRUD (Create, Read, Update, Delete) se ejecute correctamente y que los endpoints respondan como se espera.
+Se realizaron a través de Postman, verificando que el CRUD (Create, Read, Update, Delete) se ejecute correctamente y que los endpoints respondan como se espera.
 
 ### Configuración y uso de Kong
 - Se configuraron los servicios, rutas, consumidores y plugins en Kong.
