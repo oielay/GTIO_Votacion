@@ -1,5 +1,9 @@
 # GTIO_Votacion
 
+## Documentación
+
+La documentación del proyeto se puede encontrar en el apartado [Wiki](https://github.com/oielay/GTIO_Votacion/wiki) del repositorio.
+
 ## Pasos para desplegar en local
 
 **Pasos previos:**
