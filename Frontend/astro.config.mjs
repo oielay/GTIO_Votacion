@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+const apiUrl = import.meta.env.PUBLIC_API_URL
 
 // https://astro.build/config
 export default defineConfig({
@@ -8,9 +9,12 @@ export default defineConfig({
     },
     vite: {
         server: {
+            host: true,
+            port: 1234,
+            allowedHosts: ['*'],
             proxy: {
                 '/api': {
-                    target: 'http://api_candidatos:8080',
+                    target: apiUrl,
                     changeOrigin: true,
                 }
             }

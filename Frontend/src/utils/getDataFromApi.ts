@@ -1,3 +1,5 @@
+const apiUrl = import.meta.env.PUBLIC_API_URL
+import.meta.env.BASE_URL
 interface Participant {
   id: number;
   userName: string;
@@ -12,7 +14,7 @@ let PARTICIPANTS: Participant[] = [];
 
 export async function obtenerTodosCandidatos() {
   const response = await fetch(
-    "http://localhost:1234/api/Candidates/ObtenerTodosCandidatos",
+    `${apiUrl}/api/Candidates/ObtenerTodosCandidatos`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -33,7 +35,7 @@ export async function actualizarVotosCandidato(
   votos: number
 ) {
   const response = await fetch(
-    "http://localhost:1234/api/Candidates/ActualizarVotosCandidato",
+    `${apiUrl}/api/Candidates/ActualizarVotosCandidato`,
     {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -51,7 +53,7 @@ export async function actualizarVotosCandidato(
 
 export async function obtenerVotosCandidato(id: number) {
   const response = await fetch(
-    `http://localhost:1234/api/Candidates/ObtenerVotosCandidato/${id}`,
+    `${apiUrl}/api/Candidates/ObtenerVotosCandidato/${id}`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },

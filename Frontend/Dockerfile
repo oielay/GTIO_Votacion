@@ -16,8 +16,14 @@ RUN npm install
 # Copiar el resto del código fuente
 COPY . .
 
+# Ejecuta el build del sitio Astro
+RUN npm run build
+
+# Instala servidor estático para servir 'dist'
+RUN npm install -g serve
+
 # Exponer el puerto en el que corre el frontend
 EXPOSE 1234
 
 # Comando por defecto para ejecutar la aplicación en modo desarrollo
-CMD ["npm", "run", "dev", "--", "--host", "--port", "1234"]
+CMD ["serve", "dist", "-l", "1234"]
