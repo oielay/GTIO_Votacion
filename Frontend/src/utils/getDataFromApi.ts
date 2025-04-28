@@ -1,5 +1,5 @@
 const apiUrl = import.meta.env.PUBLIC_API_URL
-import.meta.env.BASE_URL
+
 interface Participant {
   id: number;
   userName: string;
