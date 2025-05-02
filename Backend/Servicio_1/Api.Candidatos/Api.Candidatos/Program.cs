@@ -7,19 +7,23 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Leer configuración del entorno
+builder.Configuration.AddEnvironmentVariables();
 
-// Registra el DbContext con SQL Server
+// Obtener la cadena de conexión y origen permitido desde la configuración
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var allowedOrigin = builder.Configuration["CORS_ORIGIN"] ?? "*";
+
+// Configurar DbContext
 builder.Services.AddDbContext<EntityDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+// Configurar controladores
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//Gestionar Autenticacion
+// Configurar autenticación JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secret = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret is not configured.");
 var key = Encoding.ASCII.GetBytes(secret);
@@ -38,18 +42,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true
         };
     });
+
 builder.Services.AddAuthorization();
 
-//Dependency inyection
+// Configurar CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PermitirFrontend", policy =>
+    {
+        policy.WithOrigins(allowedOrigin)
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+// Inyección de dependencias personalizada
 builder.Services.AddApplicationServices();
 
 var app = builder.Build();
 
-
-app.UseAuthentication(); // Habilita la autenticaci�n
-app.UseAuthorization();  // Habilita la autorizaci�n
-
-// Configure the HTTP request pipeline.
+// Usar middlewares
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -57,6 +69,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Aplicar CORS
+app.UseCors("PermitirFrontend");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
