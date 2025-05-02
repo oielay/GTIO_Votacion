@@ -720,17 +720,17 @@ data "aws_iam_instance_profile" "lab_profile" {
 # Tfvars variables
 #################################
 
-variable "kms_key_id" {
+variable "kms_key_id" { # igual se puede dinamizar
   description = "ARN de la clave KMS"
   type        = string
 }
 
-variable "task_api_secret" {
+variable "task_api_secret" { # igual se puede poner en el tfvars en vez de ser un secret de AWS
   description = "ARN del secreto de la API"
   type        = string
 }
 
-variable "api_image" {
+variable "api_image" { # igual se puede dinamizar
   description = "Imagen del contenedor de la API"
   type        = string
 }
@@ -741,18 +741,12 @@ variable "sql_password" {
   sensitive   = true
 }
 
-variable "db_init_image" {
-  description = "Imagen para inicializar la base de datos"
-  type        = string
-}
-
-variable "db_password" {
-  description = "Contraseña de la base de datos"
-  type        = string
-  sensitive   = true
-}
-
-variable "frontend_image" {
+variable "frontend_image" { # igual se puede dinamizar
   description = "Imagen del frontend"
   type        = string
 }
+
+# variable "db_init_image" {
+#   description = "Imagen para inicializar la base de datos"
+#   type        = string
+# }
