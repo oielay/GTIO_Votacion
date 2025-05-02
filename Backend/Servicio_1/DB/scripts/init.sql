@@ -1,5 +1,5 @@
 -- Crear la base de datos si no existe
-IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'DB_API')
+IF DB_ID('DB_API') IS NULL
 BEGIN
     PRINT 'Creando base de datos DB_API';
     CREATE DATABASE DB_API;
@@ -10,7 +10,7 @@ USE DB_API;
 GO
 
 -- Crear la tabla Candidates solo si no existe
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Candidates')
+IF OBJECT_ID('dbo.Candidates', 'U') IS NULL
 BEGIN
     PRINT 'Creando tabla Candidates';
     CREATE TABLE Candidates (
@@ -26,7 +26,7 @@ END
 GO
 
 -- Insertar los datos de los candidatos solo si la tabla existe y no tiene datos
-IF NOT EXISTS (SELECT 1 FROM Candidates)
+IF NOT EXISTS (SELECT 1 FROM dbo.Candidates)
 BEGIN
     PRINT 'Insertando datos en la tabla Candidates';
     INSERT INTO Candidates (UserName, UserImage, ImageVoting, UserDescription, Features, Votes)
