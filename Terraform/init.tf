@@ -720,35 +720,10 @@ data "aws_iam_instance_profile" "lab_profile" {
 # Tfvars variables
 #################################
 
-# variable "autoscaling_service_role_arn" {
-#   description = "ARN del rol de servicio para autoscaling"
-#   type        = string
-# }
-
 variable "kms_key_id" {
   description = "ARN de la clave KMS"
   type        = string
 }
-
-# variable "default_security_group" {
-#   description = "ID del Security Group por defecto"
-#   type        = string
-# }
-
-# variable "default_vpc_id" {
-#   description = "ID del VPC por defecto"
-#   type        = string
-# }
-
-# variable "lab_role_arn" {
-#   description = "ARN del rol de laboratorio"
-#   type        = string
-# }
-
-# variable "subnets" {
-#   description = "Lista de subnets disponibles"
-#   type        = list(string)
-# }
 
 variable "task_api_secret" {
   description = "ARN del secreto de la API"
@@ -765,11 +740,6 @@ variable "sql_password" {
   type        = string
   sensitive   = true
 }
-
-# variable "iam_instance_profile_arn" {
-#   description = "ARN del instance profile IAM"
-#   type        = string
-# }
 
 variable "db_init_image" {
   description = "Imagen para inicializar la base de datos"
