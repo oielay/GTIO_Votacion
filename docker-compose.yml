@@ -39,14 +39,14 @@ services:
     networks:
       - internal-net
 
-  db_initializer:
-    build:
-      context: ./Backend/scripts
-      dockerfile: ./Dockerfile
-    environment:
-      DB_USER: sa
-      DB_PASSWORD: ${SQLSERVER_API_PASSWORD}
-      DB_SERVER: ${SQLSERVER_HOST}
+  # db_initializer:
+  #   build:
+  #     context: ./Backend/scripts
+  #     dockerfile: ./Dockerfile
+  #   environment:
+  #     DB_USER: sa
+  #     DB_PASSWORD: ${SQLSERVER_API_PASSWORD}
+  #     DB_SERVER: ${SQLSERVER_HOST}
 
   sqlserver_auth:
     image: mcr.microsoft.com/mssql/server:2019-latest
