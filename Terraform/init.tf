@@ -1,5 +1,6 @@
 # Execute:
 # terraform plan -out=tfplan -var-file="env.tfvars"
+# terraform apply tfplan
 
 terraform {
     required_providers {
@@ -39,8 +40,8 @@ resource "aws_ecs_task_definition" "task_api_candidatos" {
     network_mode             = "awsvpc"
     cpu                      = "850"
     memory                   = "850"
-    execution_role_arn       = var.lab_role_arn
-    task_role_arn            = var.lab_role_arn
+    execution_role_arn       = data.aws_iam_role.lab_role.arn
+    task_role_arn            = data.aws_iam_role.lab_role.arn
 
     container_definitions = jsonencode([
         {
@@ -56,7 +57,7 @@ resource "aws_ecs_task_definition" "task_api_candidatos" {
             environment = [
                 {
                     name  = "CORS_ORIGIN"
-                    value = "http://balanceador-candidatos-1559215472.us-east-1.elb.amazonaws.com:1234"
+                    value = "http://${aws_lb.ElasticLoadBalancingV2LoadBalancer.dns_name}:1234"
                 }
             ]
             secrets = [
@@ -85,8 +86,8 @@ resource "aws_ecs_service" "service_api_candidatos" {
     }
 
     network_configuration {
-        subnets          = var.subnets
-        security_groups  = [var.default_security_group, aws_security_group.rds_sg.id]
+        subnets          = data.aws_subnets.default.ids
+        security_groups  = [data.aws_security_group.default.id, aws_security_group.rds_sg.id]
     }
 
     deployment_controller {
@@ -109,8 +110,8 @@ resource "aws_instance" "ecs_instance" {
     instance_type          = "t2.micro"
     key_name               = var.key_name
     availability_zone      = var.availability_zones[0]
-    subnet_id              = var.subnets[0]
-    vpc_security_group_ids     = [var.default_security_group, aws_security_group.rds_sg.id]
+    subnet_id              = data.aws_subnets.default.ids[0]
+    vpc_security_group_ids     = [data.aws_security_group.default.id, aws_security_group.rds_sg.id]
     user_data = var.user_data
     iam_instance_profile   = var.iam_instance_profile
 
@@ -124,9 +125,9 @@ resource "aws_lb" "ElasticLoadBalancingV2LoadBalancer" {
     name = "balanceador-candidatos"
     internal = false
     load_balancer_type = "application"
-    subnets = var.subnets
+    subnets = data.aws_subnets.default.ids
     security_groups = [
-        var.default_security_group,
+        data.aws_security_group.default.id,
         aws_security_group.rds_sg.id
     ]
     ip_address_type = "ipv4"
@@ -165,11 +166,11 @@ resource "aws_autoscaling_group" "AutoScalingAutoScalingGroup" {
     default_cooldown = 300
     health_check_type = "EC2"
     health_check_grace_period = 0
-    vpc_zone_identifier = var.subnets
+    vpc_zone_identifier = data.aws_subnets.default.ids
     termination_policies = [
         "Default"
     ]
-    service_linked_role_arn = var.autoscaling_service_role_arn
+    service_linked_role_arn = data.aws_iam_role.autoscaling_role.arn
     tag {
         key = "AmazonECSManaged"
         value = ""
@@ -187,7 +188,7 @@ resource "aws_launch_template" "EC2LaunchTemplate" {
     name = var.launch_template_name
     user_data = var.user_data
     iam_instance_profile {
-        arn = var.iam_instance_profile_arn
+        arn = data.aws_iam_instance_profile.lab_profile.arn
     }
     key_name = var.key_name
     network_interfaces {
@@ -195,7 +196,7 @@ resource "aws_launch_template" "EC2LaunchTemplate" {
         delete_on_termination = true
         device_index = 0
         security_groups = [
-            var.default_security_group,
+            data.aws_security_group.default.id,
             aws_security_group.rds_sg.id
         ]
     }
@@ -218,7 +219,7 @@ resource "aws_lb_target_group" "ElasticLoadBalancingV2TargetGroup" {
     port = 8080
     protocol = "HTTP"
     target_type = "ip"
-    vpc_id = var.default_vpc_id
+    vpc_id = data.aws_vpc.default.id
     name = "grupo-apiCandidatos"
 }
 
@@ -233,8 +234,8 @@ resource "aws_ecs_task_definition" "task_frontend" {
     network_mode             = "awsvpc"
     cpu                      = "850"
     memory                   = "850"
-    execution_role_arn       = var.lab_role_arn
-    task_role_arn            = var.lab_role_arn
+    execution_role_arn       = data.aws_iam_role.lab_role.arn
+    task_role_arn            = data.aws_iam_role.lab_role.arn
 
     container_definitions = jsonencode([
         {
@@ -250,7 +251,7 @@ resource "aws_ecs_task_definition" "task_frontend" {
             environment = [
                 {
                     name  = "PUBLIC_API_URL"
-                    value = var.public_api_url
+                    value = "http://${aws_lb.ElasticLoadBalancingV2LoadBalancer.dns_name}:8080"
                 }
             ]
             logConfiguration = {
@@ -287,8 +288,8 @@ resource "aws_ecs_service" "service_frontend" {
     }
 
     network_configuration {
-        subnets          = var.subnets
-        security_groups  = [var.default_security_group, aws_security_group.rds_sg.id]
+        subnets          = data.aws_subnets.default.ids
+        security_groups  = [data.aws_security_group.default.id, aws_security_group.rds_sg.id]
     }
 
     deployment_controller {
@@ -311,8 +312,8 @@ resource "aws_instance" "ecs_instance_frontend" {
     instance_type          = "t2.micro"
     key_name               = var.key_name
     availability_zone      = var.availability_zones[0]
-    subnet_id              = var.subnets[0]
-    vpc_security_group_ids     = [var.default_security_group, aws_security_group.rds_sg.id]
+    subnet_id              = data.aws_subnets.default.ids[0]
+    vpc_security_group_ids     = [data.aws_security_group.default.id, aws_security_group.rds_sg.id]
     user_data = var.user_data
     iam_instance_profile   = var.iam_instance_profile
 
@@ -348,7 +349,7 @@ resource "aws_lb_target_group" "load_balancer_target_group_frontend" {
     port = 1234
     protocol = "HTTP"
     target_type = "ip"
-    vpc_id = var.default_vpc_id
+    vpc_id = data.aws_vpc.default.id
     name = "grupo-front"
 }
 
@@ -384,7 +385,7 @@ resource "aws_db_instance" "RDSDBInstance" {
     deletion_protection = false
     db_subnet_group_name = aws_db_subnet_group.db_subnet_gtio_votacion.name
     vpc_security_group_ids = [
-        var.default_security_group,
+        data.aws_security_group.default.id,
         aws_security_group.rds_sg.id
     ]
     skip_final_snapshot = true
@@ -393,7 +394,7 @@ resource "aws_db_instance" "RDSDBInstance" {
 resource "aws_db_subnet_group" "db_subnet_gtio_votacion" {
     name        = "db-subnet-gtio-votacion"
     description = "DB subnet group"
-    subnet_ids  = var.subnets
+    subnet_ids  = data.aws_subnets.default.ids
 
     tags = {
         Name = "db-subnet-gtio-votacion"
@@ -406,8 +407,8 @@ resource "aws_db_subnet_group" "db_subnet_gtio_votacion" {
 #     cpu                      = "256"
 #     memory                   = "512"
 #     network_mode             = "awsvpc"
-#     execution_role_arn       = var.lab_role_arn
-#     task_role_arn            = var.lab_role_arn
+#     execution_role_arn       = data.aws_iam_role.lab_role.arn
+#     task_role_arn            = data.aws_iam_role.lab_role.arn
 
 #     container_definitions = jsonencode([
 #         {
@@ -453,7 +454,7 @@ resource "aws_db_subnet_group" "db_subnet_gtio_votacion" {
 #     depends_on = [aws_db_instance.RDSDBInstance]
 
 #     provisioner "local-exec" {
-#         command = "aws ecs run-task --cluster ${aws_ecs_cluster.ecs_cluster.name} --launch-type FARGATE --network-configuration awsvpcConfiguration={subnets=[${join(",", formatlist("\"%s\"", var.subnets))}],securityGroups=[\"${var.default_security_group}\"],assignPublicIp=\"ENABLED\"} --task-definition ${aws_ecs_task_definition.db_init_task.arn}"
+#         command = "aws ecs run-task --cluster ${aws_ecs_cluster.ecs_cluster.name} --launch-type FARGATE --network-configuration awsvpcConfiguration={subnets=[${join(",", formatlist("\"%s\"", data.aws_subnets.default.ids))}],securityGroups=[\"${data.aws_security_group.default.id}\"],assignPublicIp=\"ENABLED\"} --task-definition ${aws_ecs_task_definition.db_init_task.arn}"
 #     }
 
 #     triggers = {
@@ -468,8 +469,8 @@ resource "aws_db_subnet_group" "db_subnet_gtio_votacion" {
 #     launch_type     = "FARGATE"
 
 #     network_configuration {
-#         subnets          = var.subnets
-#         security_groups  = [var.default_security_group, aws_security_group.rds_sg.id]
+#         subnets          = data.aws_subnets.default.ids
+#         security_groups  = [data.aws_security_group.default.id, aws_security_group.rds_sg.id]
 #         assign_public_ip = true
 #     }
 
@@ -480,7 +481,7 @@ resource "aws_db_subnet_group" "db_subnet_gtio_votacion" {
 resource "aws_security_group" "rds_sg" {
     name        = "rds-sql-access"
     description = "Allow SQL Server access"
-    vpc_id      = var.default_vpc_id
+    vpc_id      = data.aws_vpc.default.id
 
     ingress {
         description      = "RDS SQL Server"
@@ -532,7 +533,7 @@ resource "aws_security_group" "rds_sg" {
 # Lambda Function ---- NO FUNCIONA ADECUADAMENTE ----
 # resource "aws_lambda_function" "db_creation_lambda" {
 #     function_name = "db_creation_lambda"
-#     role          = var.lab_role_arn
+#     role          = data.aws_iam_role.lab_role.arn
 #     handler       = "lambda_function.lambda_handler"
 #     runtime       = "python3.8"
     
@@ -547,8 +548,8 @@ resource "aws_security_group" "rds_sg" {
 #     }
 
 #     vpc_config {
-#         subnet_ids         = var.subnets
-#         security_group_ids = [var.default_security_group]
+#         subnet_ids         = data.aws_subnets.default.ids
+#         security_group_ids = [data.aws_security_group.default.id]
 #     }
     
 #     source_code_hash = filebase64sha256("lambda_function.zip")
@@ -594,10 +595,10 @@ resource "aws_security_group" "rds_sg" {
 
 # resource "aws_network_interface" "EC2NetworkInterface" {
 #     description = ""
-#     subnet_id = var.subnets[0]
+#     subnet_id = data.aws_subnets.default.ids[0]
 #     source_dest_check = true
 #     security_groups = [
-#         var.default_security_group
+#         data.aws_security_group.default.id
 #     ]
 # }
 
@@ -610,7 +611,7 @@ variable "region" {
 }
 
 variable "availability_zones" {
-  default = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1e", "us-east-1f"]
+  default = ["us-east-1d", "us-east-1b", "us-east-1c", "us-east-1a", "us-east-1e", "us-east-1f"]
 }
 
 variable "ami_id" {
@@ -684,38 +685,70 @@ variable "frontend_container_name" {
 }
 
 #################################
+# Data from AWS
+#################################
+
+data "aws_iam_role" "autoscaling_role" {
+  name = "AWSServiceRoleForAutoScaling"
+}
+
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_security_group" "default" {
+  name   = "default"
+  vpc_id = data.aws_vpc.default.id
+}
+
+data "aws_iam_role" "lab_role" {
+  name = "LabRole"
+}
+
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
+data "aws_iam_instance_profile" "lab_profile" {
+  name = "LabInstanceProfile"
+}
+
+#################################
 # Tfvars variables
 #################################
 
-variable "autoscaling_service_role_arn" {
-  description = "ARN del rol de servicio para autoscaling"
-  type        = string
-}
+# variable "autoscaling_service_role_arn" {
+#   description = "ARN del rol de servicio para autoscaling"
+#   type        = string
+# }
 
 variable "kms_key_id" {
   description = "ARN de la clave KMS"
   type        = string
 }
 
-variable "default_security_group" {
-  description = "ID del Security Group por defecto"
-  type        = string
-}
+# variable "default_security_group" {
+#   description = "ID del Security Group por defecto"
+#   type        = string
+# }
 
-variable "default_vpc_id" {
-  description = "ID del VPC por defecto"
-  type        = string
-}
+# variable "default_vpc_id" {
+#   description = "ID del VPC por defecto"
+#   type        = string
+# }
 
-variable "lab_role_arn" {
-  description = "ARN del rol de laboratorio"
-  type        = string
-}
+# variable "lab_role_arn" {
+#   description = "ARN del rol de laboratorio"
+#   type        = string
+# }
 
-variable "subnets" {
-  description = "Lista de subnets disponibles"
-  type        = list(string)
-}
+# variable "subnets" {
+#   description = "Lista de subnets disponibles"
+#   type        = list(string)
+# }
 
 variable "task_api_secret" {
   description = "ARN del secreto de la API"
@@ -733,10 +766,10 @@ variable "sql_password" {
   sensitive   = true
 }
 
-variable "iam_instance_profile_arn" {
-  description = "ARN del instance profile IAM"
-  type        = string
-}
+# variable "iam_instance_profile_arn" {
+#   description = "ARN del instance profile IAM"
+#   type        = string
+# }
 
 variable "db_init_image" {
   description = "Imagen para inicializar la base de datos"
@@ -751,10 +784,5 @@ variable "db_password" {
 
 variable "frontend_image" {
   description = "Imagen del frontend"
-  type        = string
-}
-
-variable "public_api_url" {
-  description = "URL pública de la API"
   type        = string
 }

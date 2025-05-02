@@ -189,8 +189,8 @@ services:
     container_name: web_frontend
     ports:
       - "1234:1234"
-    environment:
-      - PUBLIC_API_URL="${PUBLIC_API_URL}"
+    # environment:
+    #   - PUBLIC_API_URL="${PUBLIC_API_URL}"
     volumes:
       - ./Frontend:/app
       - /app/node_modules
