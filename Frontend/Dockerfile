@@ -17,6 +17,8 @@ RUN npm install
 COPY . .
 
 # Ejecuta el build del sitio Astro
+ARG PUBLIC_API_URL
+ENV PUBLIC_API_URL=$PUBLIC_API_URL
 RUN npm run build
 
 # Instala servidor estático para servir 'dist'
