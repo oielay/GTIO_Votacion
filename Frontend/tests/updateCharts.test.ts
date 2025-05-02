@@ -2,8 +2,8 @@ import * as chartsHelper from "../src/utils/charts.ts";
 
 describe("updateCharts", () => {
   beforeEach(() => {
-    (globalThis as any).pieChart = { update: jest.fn(), data: {} };
-    (globalThis as any).barChart = { update: jest.fn(), data: {} };
+    (globalThis as any).pieChart = { update: vi.fn(), data: {} };
+    (globalThis as any).barChart = { update: vi.fn(), data: {} };
   });
 
   it("should update both charts", async () => {
@@ -13,7 +13,7 @@ describe("updateCharts", () => {
       votePercentages: [16.666666666666664, 33.33333333333333, 50],
     };
 
-    jest.spyOn(chartsHelper, "getGeneralData").mockResolvedValue(mockData);
+    vi.spyOn(chartsHelper, "getGeneralData").mockResolvedValue(mockData);
 
     await chartsHelper.updateCharts();
 

@@ -1,8 +1,7 @@
 import { fireEvent } from "@testing-library/dom";
-import "@testing-library/jest-dom";
 import { updateCharts } from "../src/utils/charts.ts";
 
-jest.mock("../src/utils/charts.ts");
+vi.mock("../src/utils/charts.ts");
 
 describe("Menu and Section Switching", () => {
   beforeEach(() => {

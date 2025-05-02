@@ -1,5 +1,4 @@
 import { fireEvent } from "@testing-library/dom";
-import "@testing-library/jest-dom";
 
 describe("Icon Circle Click", () => {
   beforeEach(() => {

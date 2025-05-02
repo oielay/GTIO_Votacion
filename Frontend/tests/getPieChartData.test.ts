@@ -8,7 +8,7 @@ describe("getPieChartData", () => {
       votePercentages: [16.666666666666664, 33.33333333333333, 50],
     };
 
-    jest.spyOn(chartsHelper, "getGeneralData").mockResolvedValue(mockData);
+    vi.spyOn(chartsHelper, "getGeneralData").mockResolvedValue(mockData);
 
     const result = await chartsHelper.getPieChartData();
 

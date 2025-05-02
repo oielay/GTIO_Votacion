@@ -1,11 +1,11 @@
 import * as chartsHelper from "../src/utils/charts.ts";
 import { obtenerTodosCandidatos } from "../src/utils/getDataFromApi.ts";
 
-jest.mock("../src/utils/getDataFromApi.ts");
+vi.mock("../src/utils/getDataFromApi.ts");
 
 describe("getGeneralData", () => {
   it("should return correct data from api", async () => {
-    (obtenerTodosCandidatos as jest.Mock).mockResolvedValue([
+    (obtenerTodosCandidatos as vi.Mock).mockResolvedValue([
       {
         id: 1,
         userName: "Alice",

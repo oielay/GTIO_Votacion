@@ -1,5 +1,4 @@
 import * as chartsHelper from "../src/utils/charts.ts";
-import "jest-canvas-mock";
 
 describe("renderCharts", () => {
   let pieCanvas: HTMLCanvasElement;
@@ -14,13 +13,13 @@ describe("renderCharts", () => {
     barCanvas.id = "barChart";
     document.body.appendChild(barCanvas);
 
-    jest.spyOn(chartsHelper, "getBarChartData");
-    jest.spyOn(chartsHelper, "getPieChartData");
+    vi.spyOn(chartsHelper, "getBarChartData");
+    vi.spyOn(chartsHelper, "getPieChartData");
   });
 
   afterEach(() => {
     document.body.innerHTML = "";
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("should not render any chart if neither canvas exists", async () => {
@@ -32,7 +31,7 @@ describe("renderCharts", () => {
       votePercentages: [16.666666666666664, 33.33333333333333, 50],
     };
 
-    jest.spyOn(chartsHelper, "getGeneralData").mockResolvedValue(mockData);
+    vi.spyOn(chartsHelper, "getGeneralData").mockResolvedValue(mockData);
 
     await chartsHelper.renderCharts();
 
@@ -49,7 +48,7 @@ describe("renderCharts", () => {
       votePercentages: [16.666666666666664, 33.33333333333333, 50],
     };
 
-    jest.spyOn(chartsHelper, "getGeneralData").mockResolvedValue(mockData);
+    vi.spyOn(chartsHelper, "getGeneralData").mockResolvedValue(mockData);
 
     await chartsHelper.renderCharts();
 
@@ -66,7 +65,7 @@ describe("renderCharts", () => {
       votePercentages: [16.666666666666664, 33.33333333333333, 50],
     };
 
-    jest.spyOn(chartsHelper, "getGeneralData").mockResolvedValue(mockData);
+    vi.spyOn(chartsHelper, "getGeneralData").mockResolvedValue(mockData);
 
     await chartsHelper.renderCharts();
 
@@ -87,7 +86,7 @@ describe("renderCharts", () => {
       votePercentages: [16.666666666666664, 33.33333333333333, 50],
     };
 
-    jest.spyOn(chartsHelper, "getGeneralData").mockResolvedValue(mockData);
+    vi.spyOn(chartsHelper, "getGeneralData").mockResolvedValue(mockData);
 
     await chartsHelper.renderCharts();
 

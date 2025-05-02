@@ -1,13 +1,12 @@
 import { fireEvent } from "@testing-library/dom";
-import "@testing-library/jest-dom";
 import {
   obtenerTodosCandidatos,
   actualizarVotosCandidato,
 } from "../src/utils/getDataFromApi.ts";
 
-jest.mock("../src/utils/getDataFromApi.ts", () => ({
-  obtenerTodosCandidatos: jest.fn(),
-  actualizarVotosCandidato: jest.fn(),
+vi.mock("../src/utils/getDataFromApi.ts", () => ({
+  obtenerTodosCandidatos: vi.fn(),
+  actualizarVotosCandidato: vi.fn(),
 }));
 
 describe("Voting Functionality", () => {
@@ -25,7 +24,7 @@ describe("Voting Functionality", () => {
   });
 
   it("should change the image, alt text, features, and name when next and previous buttons are clicked", async () => {
-    (obtenerTodosCandidatos as jest.Mock).mockResolvedValue([
+    (obtenerTodosCandidatos as vi.Mock).mockResolvedValue([
       {
         userName: "Alice",
         imageVoting: "alice.jpg",
@@ -119,7 +118,7 @@ describe("Voting Functionality", () => {
   });
 
   it("should add a vote to the participant and show a vote message", async () => {
-    (obtenerTodosCandidatos as jest.Mock).mockResolvedValue([
+    (obtenerTodosCandidatos as vi.Mock).mockResolvedValue([
       {
         id: 1,
         userName: "Alice",
@@ -136,7 +135,7 @@ describe("Voting Functionality", () => {
       },
     ]);
 
-    (actualizarVotosCandidato as jest.Mock).mockResolvedValue({
+    (actualizarVotosCandidato as vi.Mock).mockResolvedValue({
       success: true,
     });
 
