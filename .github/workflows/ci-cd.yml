@@ -1,0 +1,163 @@
+name: CI/CD Full Pipeline
+
+on:
+  push:
+    branches:
+      - desarrollo
+      - main
+  pull_request:
+    branches:
+      - desarrollo
+      - main
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: 024742722345.dkr.ecr.$AWS_REGION.amazonaws.com
+  IMAGE_TAG: latest
+
+jobs:
+  # ---------------------------
+  # Backend: Linter StyleCop
+  # ---------------------------
+  backend-linter:
+    name: Backend - Ejecutar StyleCop Linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Instalar dependencias npm
+        working-directory: Backend
+        run: npm install
+      - name: Agregar StyleCop.Analyzers
+        working-directory: Backend
+        run: dotnet add Servicio_1/Api.Candidatos/Api.Candidatos/Api.Candidatos.csproj package StyleCop.Analyzers
+      - name: Restaurar paquetes .NET
+        working-directory: Backend
+        run: dotnet restore Servicio_1/Api.Candidatos/Api.Candidatos/Api.Candidatos.csproj
+      - name: Construir proyecto con StyleCop
+        working-directory: Backend
+        run: dotnet build Servicio_1/Api.Candidatos/Api.Candidatos/Api.Candidatos.csproj /p:RunStyleCop=true
+
+  # ---------------------------
+  # Backend: Tests
+  # ---------------------------
+  backend-test:
+    name: Backend - Ejecutar Tests
+    runs-on: ubuntu-latest
+    needs: backend-linter
+    steps:
+      - uses: actions/checkout@v3
+      - name: Instalar dependencias npm
+        working-directory: Backend
+        run: npm install
+      - name: Ejecutar Dotnet Tests para Servicio_1
+        working-directory: Backend
+        run: npm run test:1
+
+  # ---------------------------
+  # Frontend: Linter
+  # ---------------------------
+  frontend-linter:
+    name: Frontend - Ejecutar ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Instalar dependencias npm
+        working-directory: Frontend
+        run: npm install
+      - name: Ejecutar ESLint
+        working-directory: Frontend
+        run: npm run lint
+
+  # ---------------------------
+  # Frontend: Tests
+  # ---------------------------
+  frontend-test:
+    name: Frontend - Ejecutar Tests
+    runs-on: ubuntu-latest
+    needs: frontend-linter
+    steps:
+      - uses: actions/checkout@v3
+      - name: Instalar dependencias npm
+        working-directory: Frontend
+        run: npm install
+      - name: Ejecutar Vitest
+        working-directory: Frontend
+        run: npm run test
+
+  # ---------------------------
+  # Deploy Infraestructura (Terraform)
+  # ---------------------------
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-test]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Configurar AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: $AWS_REGION
+
+      - name: Terraform Init
+        working-directory: Terraform
+        run: terraform init
+
+      - name: Terraform Format
+        working-directory: Terraform
+        run: terraform fmt
+
+      - name: Terraform Validate
+        working-directory: Terraform
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: Terraform
+        run: terraform plan
+
+      # - name: Terraform Apply
+      #   working-directory: Terraform
+      #   run: terraform apply -auto-approve
+
+  # ---------------------------
+  # Build y Push
+  # ---------------------------
+  build-push:
+    name: Build, Tag y Push imágenes a ECR
+    runs-on: ubuntu-latest
+    needs: terraform
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Login a AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build imágenes con docker-compose
+        run: docker-compose build
+
+      - name: Tag y push imágenes
+        run: |
+          # Definimos las imágenes locales
+          FRONTEND_IMAGE=web_frontend
+          API_CANDIDATOS_IMAGE=api_candidatos
+          API_AUTENTICACION_IMAGE=api_autenticacion
+
+          # WEB FRONTEND
+          docker tag $FRONTEND_IMAGE $ECR_REGISTRY/$FRONTEND_IMAGE:IMAGE_TAG
+          docker push $ECR_REGISTRY/$FRONTEND_IMAGE:IMAGE_TAG
+
+          # API CANDIDATOS
+          docker tag $API_CANDIDATOS_IMAGE $ECR_REGISTRY/$API_CANDIDATOS_IMAGE:IMAGE_TAG
+          docker push $ECR_REGISTRY/$API_CANDIDATOS_IMAGE:IMAGE_TAG
+
+          # API AUTENTICACION
+          docker tag $API_AUTENTICACION_IMAGE $ECR_REGISTRY/$API_AUTENTICACION_IMAGE:IMAGE_TAG
+          docker push $ECR_REGISTRY/$API_AUTENTICACION_IMAGE:IMAGE_TAG
