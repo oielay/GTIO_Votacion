@@ -14,6 +14,8 @@ public static class DependencyInjection
         // Services
         services.AddScoped<ICandidateService, CandidateService>();
 
+        services.AddScoped<IDatabaseScriptService, DatabaseScriptService>();
+
         return services;
     }
 }

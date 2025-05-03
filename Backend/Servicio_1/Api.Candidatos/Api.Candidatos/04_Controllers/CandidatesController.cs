@@ -12,10 +12,12 @@ namespace Api.Candidatos.Controllers;
 public class CandidatesController : ControllerBase
 {
     private readonly ICandidateService _service;
+    private readonly IDatabaseScriptService _scriptService;
 
-    public CandidatesController(ICandidateService service)
+    public CandidatesController(ICandidateService service, IDatabaseScriptService scriptService)
     {
         _service = service;
+        _scriptService = scriptService;
     }
 
     //[Authorize]
@@ -73,5 +75,19 @@ public class CandidatesController : ControllerBase
     {
         var votes = await _service.GetCandidateVotesAsync(id);
         return Ok(new { id, votos = votes });
+    }
+
+    [HttpPost("CrearBaseDeDatos")]
+    public async Task<IActionResult> InicializarBD()
+    {
+        try
+        {
+            await _scriptService.EjecutarScriptAsync("init.sql");
+            return Ok("Base de datos y tablas creadas correctamente.");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error al ejecutar el script: {ex.Message}");
+        }
     }
 }
