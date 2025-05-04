@@ -1,20 +1,3 @@
-# Execute:
-# terraform plan -out=tfplan -var-file="env.tfvars"
-# terraform apply tfplan
-
-terraform {
-    required_providers {
-        aws = {
-            source = "hashicorp/aws"
-            version = "~> 3.0"
-        }
-    }
-}
-
-provider "aws" {
-    region = var.region
-}
-
 # Cluster de ECS
 resource "aws_ecs_cluster" "ecs_cluster" {
     name = var.cluster_name
@@ -57,7 +40,7 @@ resource "aws_ecs_task_definition" "task_api_candidatos" {
             environment = [
                 {
                     name  = "CORS_ORIGIN"
-                    value = "http://${aws_lb.ElasticLoadBalancingV2LoadBalancer.dns_name}:1234"
+                    value = "http://${aws_lb.ElasticLoadBalancingV2LoadBalancer.dns_name}:3000"
                 }
             ]
             secrets = [
@@ -72,7 +55,7 @@ resource "aws_ecs_task_definition" "task_api_candidatos" {
 
 # Service
 resource "aws_ecs_service" "service_api_candidatos" {
-    name            = "api-candidatos-service2"
+    name            = "api-candidatos-service"
     cluster         = aws_ecs_cluster.ecs_cluster.arn
     task_definition = aws_ecs_task_definition.task_api_candidatos.arn
     desired_count   = 1
@@ -97,6 +80,7 @@ resource "aws_ecs_service" "service_api_candidatos" {
     scheduling_strategy = "REPLICA"
 
     health_check_grace_period_seconds = 30
+    force_new_deployment = true
 
     depends_on = [
         aws_ecs_task_definition.task_api_candidatos,
@@ -107,7 +91,7 @@ resource "aws_ecs_service" "service_api_candidatos" {
 # Instance
 resource "aws_instance" "ecs_instance" {
     ami                    = var.ami_id
-    instance_type          = "t2.micro"
+    instance_type          = var.instance_type
     key_name               = var.key_name
     availability_zone      = var.availability_zones[0]
     subnet_id              = data.aws_subnets.default.ids[0]
@@ -201,7 +185,7 @@ resource "aws_launch_template" "EC2LaunchTemplate" {
         ]
     }
     image_id = var.ami_id
-    instance_type = "t2.micro" # "t3.small"
+    instance_type = var.instance_type
 }
 
 # Target Group
@@ -243,8 +227,8 @@ resource "aws_ecs_task_definition" "task_frontend" {
             image     = var.frontend_image
             portMappings = [
                 {
-                    containerPort = 1234
-                    hostPort      = 1234
+                    containerPort = 3000
+                    hostPort      = 3000
                     protocol      = "tcp"
                 }
             ]
@@ -284,7 +268,7 @@ resource "aws_ecs_service" "service_frontend" {
     load_balancer {
         target_group_arn = aws_lb_target_group.load_balancer_target_group_frontend.arn
         container_name   = var.frontend_container_name
-        container_port   = 1234
+        container_port   = 3000
     }
 
     network_configuration {
@@ -299,6 +283,7 @@ resource "aws_ecs_service" "service_frontend" {
     scheduling_strategy = "REPLICA"
 
     health_check_grace_period_seconds = 30
+    force_new_deployment = true
 
     depends_on = [
         aws_ecs_task_definition.task_frontend,
@@ -309,7 +294,7 @@ resource "aws_ecs_service" "service_frontend" {
 # Instance
 resource "aws_instance" "ecs_instance_frontend" {
     ami                    = var.ami_id
-    instance_type          = "t2.micro"
+    instance_type          = var.instance_type
     key_name               = var.key_name
     availability_zone      = var.availability_zones[0]
     subnet_id              = data.aws_subnets.default.ids[0]
@@ -325,7 +310,7 @@ resource "aws_instance" "ecs_instance_frontend" {
 # Listener Frontend
 resource "aws_lb_listener" "load_balancer_listener_frontend" {
     load_balancer_arn = aws_lb.ElasticLoadBalancingV2LoadBalancer.arn
-    port = 1234
+    port = 3000
     protocol = "HTTP"
     default_action {
         target_group_arn = aws_lb_target_group.load_balancer_target_group_frontend.arn
@@ -346,7 +331,7 @@ resource "aws_lb_target_group" "load_balancer_target_group_frontend" {
         healthy_threshold = 5
         matcher = "200-299"
     }
-    port = 1234
+    port = 3000
     protocol = "HTTP"
     target_type = "ip"
     vpc_id = data.aws_vpc.default.id
@@ -493,8 +478,8 @@ resource "aws_security_group" "rds_sg" {
 
     ingress {
         description      = "Frontend"
-        from_port        = 1234
-        to_port          = 1234
+        from_port        = 3000
+        to_port          = 3000
         protocol         = "tcp"
         cidr_blocks      = ["0.0.0.0/0"]
     }
@@ -518,6 +503,70 @@ resource "aws_security_group" "rds_sg" {
         Name = "RDS SQL Security Group"
     }
 }
+
+#################################
+# Cloudwatch: eventos para despliegue automatico
+#################################
+
+# resource "aws_cloudwatch_event_rule" "api_image_push_rule" {
+#     name        = "api-image-push-rule"
+#     description = "Regla para activar eventos solo cuando se suba una nueva imagen al repositorio de api"
+#     event_pattern = jsonencode({
+#         "source" = [
+#             "aws.ecr"
+#         ],
+#         "detail-type" = [
+#             "ECR Image Action"
+#         ],
+#         "detail" = {
+#             "action-type" = ["PUSH"]
+#             "repository-name" = [aws_ecr_repository.api_repo.name]
+#         }
+#     })
+# }
+
+# resource "aws_cloudwatch_event_rule" "frontend_image_push_rule" {
+#     name        = "frontend-image-push-rule"
+#     description = "Regla para activar eventos solo cuando se suba una nueva imagen al repositorio de frontend"
+#     event_pattern = jsonencode({
+#         "source" = [
+#             "aws.ecr"
+#         ],
+#         "detail-type" = [
+#             "ECR Image Action"
+#         ],
+#         "detail" = {
+#             "action-type" = ["PUSH"]
+#             "repository-name" = [aws_ecr_repository.frontend_repo.name]
+#         }
+#     })
+# }
+
+# resource "aws_cloudwatch_event_target" "api_ecs_service_target" {
+#     rule = aws_cloudwatch_event_rule.api_image_push_rule.name
+#     arn  = aws_ecs_service.service_api_candidatos.id
+#     role_arn = data.aws_iam_role.lab_role.arn
+
+#     input = jsonencode({
+#         "cluster"         = aws_ecs_cluster.ecs_cluster.name,
+#         "service"         = aws_ecs_service.service_api_candidatos.name,
+#         "desiredCount"    = 1,
+#         "forceNewDeployment" = true
+#     })
+# }
+
+# resource "aws_cloudwatch_event_target" "frontend_ecs_service_target" {
+#     rule = aws_cloudwatch_event_rule.frontend_image_push_rule.name
+#     arn  = aws_ecs_service.service_frontend.id
+#     role_arn = data.aws_iam_role.lab_role.arn
+
+#     input = jsonencode({
+#         "cluster"         = aws_ecs_cluster.ecs_cluster.name,
+#         "service"         = aws_ecs_service.service_frontend.name,
+#         "desiredCount"    = 1,
+#         "forceNewDeployment" = true
+#     })
+# }
 
 # Ejecutar en local
 # resource "null_resource" "run_sql_script" {
@@ -605,10 +654,6 @@ resource "aws_security_group" "rds_sg" {
 #################################
 # Local variables
 #################################
-
-variable "region" {
-  default = "us-east-1"
-}
 
 variable "availability_zones" {
   default = ["us-east-1d", "us-east-1b", "us-east-1c", "us-east-1a", "us-east-1e", "us-east-1f"]
