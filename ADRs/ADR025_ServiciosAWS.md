@@ -4,7 +4,7 @@
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango
 * Fecha: 30/04/2025
 
-Historia técnica: [Issue #79](https://github.com/oielay/GTIO_Votacion/issues/79)
+Historia técnica: [Issue #77](https://github.com/oielay/GTIO_Votacion/issues/77) [Subissue #79](https://github.com/oielay/GTIO_Votacion/issues/79)
 
 ## Contexto y Planteamiento del Problema
 
