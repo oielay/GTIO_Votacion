@@ -1,6 +1,7 @@
 # Execute:
-# terraform plan -out=tfplan -var-file="env.tfvars"
+# terraform plan -out=tfplan -var-file=env.tfvars
 # terraform apply tfplan
+# terraform destroy -target=module.aws -var-file=env.tfvars
 
 terraform {
     required_providers {
