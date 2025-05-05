@@ -51,7 +51,7 @@ resource "aws_ecs_task_definition" "task_frontend" {
 
 # Service
 resource "aws_ecs_service" "service_frontend" {
-  name            = "frontend-service2"
+  name            = "frontend-service"
   cluster         = var.ecs_cluster_arn
   task_definition = aws_ecs_task_definition.task_frontend.arn
   desired_count   = 1
