@@ -4,29 +4,53 @@
 # terraform destroy -target=module.aws -var-file=env.tfvars
 
 terraform {
-    required_providers {
-        aws = {
-            source = "hashicorp/aws"
-            version = "~> 3.0"
-        }
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.0"
     }
+  }
+
+  # S3 bucket
+  backend "s3" {
+    bucket       = "gtio-votacion-state"
+    key          = "terraform/terraform.tfstate"
+    region       = "us-east-1"
+    use_lockfile = true
+    encrypt      = true
+  }
 }
 
 provider "aws" {
-    region = var.region
+  region = var.region
 }
 
 module "ecr" {
-    source = "./modules/ecr"
+  source = "./modules/ecr"
 }
 
-module "aws" {
-    source = "./modules/aws"
-    kms_key_id = var.kms_key_id
-    task_api_secret = var.task_api_secret
-    api_image = var.api_image
-    sql_password = var.sql_password
-    frontend_image = var.frontend_image
+module "aws_permanent" {
+  source          = "./modules/aws_permanent"
+  kms_key_id      = var.kms_key_id
+  task_api_secret = var.task_api_secret
+  api_image       = var.api_image
+  sql_password    = var.sql_password
+  frontend_image  = var.frontend_image
+}
+
+module "aws_dynamic" {
+  source          = "./modules/aws_dynamic"
+  task_api_secret = var.task_api_secret
+  api_image       = var.api_image
+  frontend_image  = var.frontend_image
+
+  lb_dns_name               = module.aws_permanent.lb_dns_name
+  rds_sg_id                 = module.aws_permanent.rds_sg_id
+  ecs_cluster_arn           = module.aws_permanent.ecs_cluster_arn
+  target_group_api_arn      = module.aws_permanent.target_group_api_arn
+  target_group_frontend_arn = module.aws_permanent.target_group_frontend_arn
+  listener_api_arn          = module.aws_permanent.listener_api_arn
+  listener_frontend_arn     = module.aws_permanent.listener_frontend_arn
 }
 
 variable "region" {

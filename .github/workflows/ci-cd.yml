@@ -85,20 +85,18 @@ jobs:
         run: npm run test
 
   # ---------------------------
-  # Deploy Infraestructura (Terraform)
+  # Deploy ECR (Terraform)
   # ---------------------------
-  terraform:
-    name: Terraform
+  terraform-ecr:
+    name: Terraform - Crear ECR
     runs-on: ubuntu-latest
     needs: [backend-test, frontend-test]
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Configurar AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
-
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -116,13 +114,25 @@ jobs:
         working-directory: Terraform
         run: terraform validate
 
-      - name: Terraform Plan
+      - name: Terraform Apply
         working-directory: Terraform
-        run: terraform plan
+        run: terraform apply -auto-approve -target=module.ecr
 
-      # - name: Terraform Apply
-      #   working-directory: Terraform
-      #   run: terraform apply -auto-approve
+  # ---------------------------
+  # Obtención de variables de entorno y terraform
+  # ---------------------------
+  preparar-variables:
+    name: Preparar archivos sensibles
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Crear archivo .env
+        run: echo "${{ secrets.DOTENV_CONTENT }}" > .env
+
+      - name: Crear archivo env.tfvars
+        run: echo "${{ secrets.TFVARS_CONTENT }}" > env.tfvars
 
   # ---------------------------
   # Build y Push
@@ -130,14 +140,12 @@ jobs:
   build-push:
     name: Build, Tag y Push imágenes a ECR
     runs-on: ubuntu-latest
-    needs: terraform
-
+    needs: [preparar-variables, terraform-ecr]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Login a AWS ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build imágenes con docker-compose
@@ -146,18 +154,54 @@ jobs:
       - name: Tag y push imágenes
         run: |
           # Definimos las imágenes locales
-          FRONTEND_IMAGE=web_frontend
-          API_CANDIDATOS_IMAGE=api_candidatos
-          API_AUTENTICACION_IMAGE=api_autenticacion
+          FRONTEND_IMAGE=gtio_votacion-frontend
+          API_CANDIDATOS_IMAGE=gtio_votacion-api
+          API_AUTENTICACION_IMAGE=gtio_votacion-autenticacion
+
+          # Definimos las imágenes en ECR
+          ECR_FRONTEND_IMAGE=gtio_votacion/frontend
+          ECR_API_CANDIDATOS_IMAGE=gtio_votacion/api
+          ECR_API_AUTENTICACION_IMAGE=gtio_votacion/autenticacion
 
           # WEB FRONTEND
-          docker tag $FRONTEND_IMAGE $ECR_REGISTRY/$FRONTEND_IMAGE:IMAGE_TAG
-          docker push $ECR_REGISTRY/$FRONTEND_IMAGE:IMAGE_TAG
+          docker tag $FRONTEND_IMAGE $ECR_REGISTRY/$ECR_FRONTEND_IMAGE:IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_FRONTEND_IMAGE:IMAGE_TAG
 
           # API CANDIDATOS
-          docker tag $API_CANDIDATOS_IMAGE $ECR_REGISTRY/$API_CANDIDATOS_IMAGE:IMAGE_TAG
-          docker push $ECR_REGISTRY/$API_CANDIDATOS_IMAGE:IMAGE_TAG
+          docker tag $API_CANDIDATOS_IMAGE $ECR_REGISTRY/$ECR_API_CANDIDATOS_IMAGE:IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_API_CANDIDATOS_IMAGE:IMAGE_TAG
 
           # API AUTENTICACION
-          docker tag $API_AUTENTICACION_IMAGE $ECR_REGISTRY/$API_AUTENTICACION_IMAGE:IMAGE_TAG
-          docker push $ECR_REGISTRY/$API_AUTENTICACION_IMAGE:IMAGE_TAG
+        #   docker tag $API_AUTENTICACION_IMAGE $ECR_REGISTRY/$ECR_API_AUTENTICACION_IMAGE:IMAGE_TAG
+        #   docker push $ECR_REGISTRY/$ECR_API_AUTENTICACION_IMAGE:IMAGE_TAG
+
+  terraform:
+    name: Terraform - Crear infraestructura
+    runs-on: ubuntu-latest
+    needs: [preparar-variables, build-push]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Configurar AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: $AWS_REGION
+
+      - name: Terraform Init
+        working-directory: Terraform
+        run: echo yes | terraform init -input=false
+
+      - name: Terraform Format
+        working-directory: Terraform
+        run: terraform fmt
+
+      - name: Terraform Validate
+        working-directory: Terraform
+        run: terraform validate
+
+      - name: Terraform Apply
+        working-directory: Terraform
+        run: terraform apply -auto-approve -var-file=env.tfvars
