@@ -161,7 +161,7 @@ jobs:
         run: aws s3 cp s3://gtio-votacion-config/.env .env
 
       - name: Build imágenes con docker-compose
-        run: docker-compose build
+        run: docker-compose build api
 
       - name: Tag y push imágenes
         run: |
@@ -267,7 +267,7 @@ jobs:
         run: aws s3 cp s3://gtio-votacion-config/.env .env
 
       - name: Build imágenes con docker-compose
-        run: docker-compose build
+        run: docker-compose build frontend
 
       - name: Tag y push imágenes
         run: |
