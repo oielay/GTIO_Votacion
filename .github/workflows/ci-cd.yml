@@ -106,7 +106,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Crear archivo env.tfvars
-        run: echo "${{ secrets.TFVARS_CONTENT }}" > env.tfvars
+        run: echo "${{ secrets.TFVARS_CONTENT }}" > Terraform/env.tfvars
 
       - name: Configurar Terraform
         uses: hashicorp/setup-terraform@v2
@@ -190,7 +190,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Crear archivo env.tfvars
-        run: echo "${{ secrets.TFVARS_CONTENT }}" > env.tfvars
+        run: echo "${{ secrets.TFVARS_CONTENT }}" > Terraform/env.tfvars
 
       - name: Configurar Terraform
         uses: hashicorp/setup-terraform@v2
