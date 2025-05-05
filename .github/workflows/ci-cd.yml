@@ -242,7 +242,6 @@ jobs:
             echo "La API aún no está disponible o falló el poblamiento. Reintentando en 10 segundos..."
             sleep 10
           done
-          echo "Poblamiento completado correctamente."
 
   # ---------------------------
   # Build y Push del frontend
