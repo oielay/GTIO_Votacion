@@ -15,7 +15,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REGISTRY: 024742722345.dkr.ecr.us-east-1.amazonaws.com
-  ${{ env.IMAGE_TAG }}: latest
+  IMAGE_TAG: latest
 
 jobs:
   # ---------------------------
