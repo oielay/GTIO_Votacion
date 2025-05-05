@@ -130,10 +130,10 @@ jobs:
         run: terraform apply -auto-approve -target=module.ecr -var-file=env.tfvars
 
   # ---------------------------
-  # Build y Push
+  # Build y Push de la api
   # ---------------------------
-  build-push:
-    name: Build, Tag y Push imágenes a ECR
+  build-push-api:
+    name: Build, Tag y Push imágenes a ECR de la API
     runs-on: ubuntu-latest
     needs: terraform-ecr
     steps:
@@ -166,18 +166,12 @@ jobs:
       - name: Tag y push imágenes
         run: |
           # Definimos las imágenes locales
-          FRONTEND_IMAGE=gtio_votacion-frontend
           API_CANDIDATOS_IMAGE=gtio_votacion-api
-          API_AUTENTICACION_IMAGE=gtio_votacion-autenticacion
+          # API_AUTENTICACION_IMAGE=gtio_votacion-autenticacion
 
           # Definimos las imágenes en ECR
-          ECR_FRONTEND_IMAGE=gtio_votacion/frontend
           ECR_API_CANDIDATOS_IMAGE=gtio_votacion/api
-          ECR_API_AUTENTICACION_IMAGE=gtio_votacion/autenticacion
-
-          # WEB FRONTEND
-          docker tag $FRONTEND_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_FRONTEND_IMAGE:${{ env.IMAGE_TAG }}
-          docker push ${{ env.ECR_REGISTRY }}/$ECR_FRONTEND_IMAGE:${{ env.IMAGE_TAG }}
+          # ECR_API_AUTENTICACION_IMAGE=gtio_votacion/autenticacion
 
           # API CANDIDATOS
           docker tag $API_CANDIDATOS_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_API_CANDIDATOS_IMAGE:${{ env.IMAGE_TAG }}
@@ -187,10 +181,10 @@ jobs:
         #   docker tag $API_AUTENTICACION_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_API_AUTENTICACION_IMAGE:${{ env.IMAGE_TAG }}
         #   docker push ${{ env.ECR_REGISTRY }}/$ECR_API_AUTENTICACION_IMAGE:${{ env.IMAGE_TAG }}
 
-  terraform:
+  terraform-infrastructure-api:
     name: Terraform - Crear infraestructura
     runs-on: ubuntu-latest
-    needs: build-push
+    needs: build-push-api
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -225,4 +219,64 @@ jobs:
 
       - name: Terraform Apply
         working-directory: Terraform
-        run: terraform apply -auto-approve -var-file=env.tfvars
+        run: terraform apply -auto-approve -var-file=env.tfvars -target=module.infraestructure -target=module.api -var-file=env.tfvars
+
+  # ---------------------------
+  # Poblar la base de datos
+  # ---------------------------
+  populate-db:
+    name: Poblar base de datos
+    runs-on: ubuntu-latest
+    needs: terraform-infrastructure-api
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Ejecutar script de poblamiento
+        run: curl -X POST http://balanceador-candidatos-666249924.us-east-1.elb.amazonaws.com:8080/api/Candidates/CrearBaseDeDatos
+
+  # ---------------------------
+  # Build y Push del frontend
+  # ---------------------------
+  build-push-api:
+    name: Build, Tag y Push imágenes a ECR del frontend
+    runs-on: ubuntu-latest
+    needs: populate-db
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Configurar AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: Login a ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Instalar Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.6/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose version
+
+      - name: Crear archivo .env
+        run: aws s3 cp s3://gtio-votacion-config/.env .env
+
+      - name: Build imágenes con docker-compose
+        run: docker-compose build
+
+      - name: Tag y push imágenes
+        run: |
+          # Definimos las imágenes locales
+          FRONTEND_IMAGE=gtio_votacion-frontend
+
+          # Definimos las imágenes en ECR
+          ECR_FRONTEND_IMAGE=gtio_votacion/frontend
+
+          # WEB FRONTEND
+          docker tag $FRONTEND_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_FRONTEND_IMAGE:${{ env.IMAGE_TAG }}
+          docker push ${{ env.ECR_REGISTRY }}/$ECR_FRONTEND_IMAGE:${{ env.IMAGE_TAG }}

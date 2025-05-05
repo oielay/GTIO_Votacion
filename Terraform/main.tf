@@ -29,8 +29,8 @@ module "ecr" {
   source = "./modules/ecr"
 }
 
-module "aws_permanent" {
-  source          = "./modules/aws_permanent"
+module "infrastructure" {
+  source          = "./modules/infrastructure"
   kms_key_id      = var.kms_key_id
   task_api_secret = var.task_api_secret
   api_image       = var.api_image
@@ -38,19 +38,27 @@ module "aws_permanent" {
   frontend_image  = var.frontend_image
 }
 
-module "aws_dynamic" {
-  source          = "./modules/aws_dynamic"
-  task_api_secret = var.task_api_secret
-  api_image       = var.api_image
+module "frontend" {
+  source          = "./modules/frontend"
   frontend_image  = var.frontend_image
 
   lb_dns_name               = module.aws_permanent.lb_dns_name
   rds_sg_id                 = module.aws_permanent.rds_sg_id
   ecs_cluster_arn           = module.aws_permanent.ecs_cluster_arn
-  target_group_api_arn      = module.aws_permanent.target_group_api_arn
   target_group_frontend_arn = module.aws_permanent.target_group_frontend_arn
-  listener_api_arn          = module.aws_permanent.listener_api_arn
   listener_frontend_arn     = module.aws_permanent.listener_frontend_arn
+}
+
+module "api" {
+  source          = "./modules/api"
+  task_api_secret = var.task_api_secret
+  api_image       = var.api_image
+
+  lb_dns_name               = module.aws_permanent.lb_dns_name
+  rds_sg_id                 = module.aws_permanent.rds_sg_id
+  ecs_cluster_arn           = module.aws_permanent.ecs_cluster_arn
+  target_group_api_arn      = module.aws_permanent.target_group_api_arn
+  listener_api_arn          = module.aws_permanent.listener_api_arn
 }
 
 variable "region" {
