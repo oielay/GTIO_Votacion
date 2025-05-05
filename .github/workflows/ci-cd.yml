@@ -5,10 +5,12 @@ on:
     branches:
       - desarrollo
       - main
+      - pruebas-ci-cd
   pull_request:
     branches:
       - desarrollo
       - main
+      - pruebas-ci-cd
 
 env:
   AWS_REGION: us-east-1
