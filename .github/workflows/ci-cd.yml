@@ -14,8 +14,8 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REGISTRY: 024742722345.dkr.ecr.$AWS_REGION.amazonaws.com
-  IMAGE_TAG: latest
+  ECR_REGISTRY: 024742722345.dkr.ecr.us-east-1.amazonaws.com
+  ${{ env.IMAGE_TAG }}: latest
 
 jobs:
   # ---------------------------
@@ -102,7 +102,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: $AWS_REGION
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Terraform Init
         working-directory: Terraform
@@ -166,16 +166,16 @@ jobs:
           ECR_API_AUTENTICACION_IMAGE=gtio_votacion/autenticacion
 
           # WEB FRONTEND
-          docker tag $FRONTEND_IMAGE $ECR_REGISTRY/$ECR_FRONTEND_IMAGE:IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_FRONTEND_IMAGE:IMAGE_TAG
+          docker tag $FRONTEND_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_FRONTEND_IMAGE:${{ env.IMAGE_TAG }}
+          docker push ${{ env.ECR_REGISTRY }}/$ECR_FRONTEND_IMAGE:${{ env.IMAGE_TAG }}
 
           # API CANDIDATOS
-          docker tag $API_CANDIDATOS_IMAGE $ECR_REGISTRY/$ECR_API_CANDIDATOS_IMAGE:IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_API_CANDIDATOS_IMAGE:IMAGE_TAG
+          docker tag $API_CANDIDATOS_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_API_CANDIDATOS_IMAGE:${{ env.IMAGE_TAG }}
+          docker push ${{ env.ECR_REGISTRY }}/$ECR_API_CANDIDATOS_IMAGE:${{ env.IMAGE_TAG }}
 
           # API AUTENTICACION
-        #   docker tag $API_AUTENTICACION_IMAGE $ECR_REGISTRY/$ECR_API_AUTENTICACION_IMAGE:IMAGE_TAG
-        #   docker push $ECR_REGISTRY/$ECR_API_AUTENTICACION_IMAGE:IMAGE_TAG
+        #   docker tag $API_AUTENTICACION_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_API_AUTENTICACION_IMAGE:${{ env.IMAGE_TAG }}
+        #   docker push ${{ env.ECR_REGISTRY }}/$ECR_API_AUTENTICACION_IMAGE:${{ env.IMAGE_TAG }}
 
   terraform:
     name: Terraform - Crear infraestructura
@@ -190,7 +190,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: $AWS_REGION
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Terraform Init
         working-directory: Terraform
