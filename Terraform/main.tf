@@ -42,11 +42,11 @@ module "frontend" {
   source          = "./modules/frontend"
   frontend_image  = var.frontend_image
 
-  lb_dns_name               = module.aws_permanent.lb_dns_name
-  rds_sg_id                 = module.aws_permanent.rds_sg_id
-  ecs_cluster_arn           = module.aws_permanent.ecs_cluster_arn
-  target_group_frontend_arn = module.aws_permanent.target_group_frontend_arn
-  listener_frontend_arn     = module.aws_permanent.listener_frontend_arn
+  lb_dns_name               = module.infrastructure.lb_dns_name
+  rds_sg_id                 = module.infrastructure.rds_sg_id
+  ecs_cluster_arn           = module.infrastructure.ecs_cluster_arn
+  target_group_frontend_arn = module.infrastructure.target_group_frontend_arn
+  listener_frontend_arn     = module.infrastructure.listener_frontend_arn
 }
 
 module "api" {
@@ -54,11 +54,11 @@ module "api" {
   task_api_secret = var.task_api_secret
   api_image       = var.api_image
 
-  lb_dns_name               = module.aws_permanent.lb_dns_name
-  rds_sg_id                 = module.aws_permanent.rds_sg_id
-  ecs_cluster_arn           = module.aws_permanent.ecs_cluster_arn
-  target_group_api_arn      = module.aws_permanent.target_group_api_arn
-  listener_api_arn          = module.aws_permanent.listener_api_arn
+  lb_dns_name               = module.infrastructure.lb_dns_name
+  rds_sg_id                 = module.infrastructure.rds_sg_id
+  ecs_cluster_arn           = module.infrastructure.ecs_cluster_arn
+  target_group_api_arn      = module.infrastructure.target_group_api_arn
+  listener_api_arn          = module.infrastructure.listener_api_arn
 }
 
 variable "region" {
