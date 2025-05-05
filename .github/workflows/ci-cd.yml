@@ -238,7 +238,7 @@ jobs:
   # ---------------------------
   # Build y Push del frontend
   # ---------------------------
-  build-push-api:
+  build-push-frontend:
     name: Build, Tag y Push imágenes a ECR del frontend
     runs-on: ubuntu-latest
     needs: populate-db
