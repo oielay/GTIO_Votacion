@@ -296,7 +296,7 @@ jobs:
   terraform-frontend:
     name: Terraform - Crear servicio frontend
     runs-on: ubuntu-latest
-    needs: build-push-api
+    needs: build-push-frontend
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3

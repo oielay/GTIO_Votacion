@@ -36,7 +36,7 @@ resource "aws_ecs_task_definition" "task_api_candidatos" {
         },
         {
           name      = "ConnectionStrings__MasterConnection"
-          valueFrom = var.task_api_secret
+          valueFrom = var.task_api_secret_master
         }
       ]
     }
@@ -169,6 +169,11 @@ data "aws_subnets" "default" {
 #################################
 
 variable "task_api_secret" { # igual se puede poner en el tfvars en vez de ser un secret de AWS
+  description = "ARN del secreto de la API"
+  type        = string
+}
+
+variable "task_api_secret_master" { # igual se puede poner en el tfvars en vez de ser un secret de AWS
   description = "ARN del secreto de la API"
   type        = string
 }
