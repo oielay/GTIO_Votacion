@@ -39,8 +39,8 @@ module "infrastructure" {
 }
 
 module "frontend" {
-  source          = "./modules/frontend"
-  frontend_image  = var.frontend_image
+  source         = "./modules/frontend"
+  frontend_image = var.frontend_image
 
   lb_dns_name               = module.infrastructure.lb_dns_name
   rds_sg_id                 = module.infrastructure.rds_sg_id
@@ -50,15 +50,16 @@ module "frontend" {
 }
 
 module "api" {
-  source          = "./modules/api"
-  task_api_secret = var.task_api_secret
-  api_image       = var.api_image
+  source                 = "./modules/api"
+  task_api_secret        = var.task_api_secret
+  task_api_secret_master = var.task_api_secret_master
+  api_image              = var.api_image
 
-  lb_dns_name               = module.infrastructure.lb_dns_name
-  rds_sg_id                 = module.infrastructure.rds_sg_id
-  ecs_cluster_arn           = module.infrastructure.ecs_cluster_arn
-  target_group_api_arn      = module.infrastructure.target_group_api_arn
-  listener_api_arn          = module.infrastructure.listener_api_arn
+  lb_dns_name          = module.infrastructure.lb_dns_name
+  rds_sg_id            = module.infrastructure.rds_sg_id
+  ecs_cluster_arn      = module.infrastructure.ecs_cluster_arn
+  target_group_api_arn = module.infrastructure.target_group_api_arn
+  listener_api_arn     = module.infrastructure.listener_api_arn
 }
 
 variable "region" {
@@ -74,8 +75,13 @@ variable "kms_key_id" { # igual se puede dinamizar
   type        = string
 }
 
-variable "task_api_secret" { # igual se puede poner en el tfvars en vez de ser un secret de AWS
+variable "task_api_secret" {
   description = "ARN del secreto de la API"
+  type        = string
+}
+
+variable "task_api_secret_master" {
+  description = "ARN del secreto de la API master"
   type        = string
 }
 
