@@ -105,8 +105,8 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Crear archivo env.tfvars
-        run: echo -e "${{ secrets.TFVARS_CONTENT }}\n" > Terraform/env.tfvars
+      - name: Obtener archivo env.tfvars
+        run: aws s3 cp s3://gtio-votacion-config/env.tfvars env.tfvars
 
       - name: Configurar Terraform
         uses: hashicorp/setup-terraform@v2
@@ -144,7 +144,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Crear archivo .env
-        run: echo "${{ secrets.DOTENV_CONTENT }}" > .env
+        run: aws s3 cp s3://gtio-votacion-config/.env .env
 
       - name: Build imágenes con docker-compose
         run: docker-compose build
@@ -190,7 +190,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Crear archivo env.tfvars
-        run: echo -e "${{ secrets.TFVARS_CONTENT }}\n" > Terraform/env.tfvars
+        run: aws s3 cp s3://gtio-votacion-config/env.tfvars env.tfvars
 
       - name: Configurar Terraform
         uses: hashicorp/setup-terraform@v2
