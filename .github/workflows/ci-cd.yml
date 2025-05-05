@@ -219,7 +219,7 @@ jobs:
 
       - name: Terraform Apply
         working-directory: Terraform
-        run: terraform apply -auto-approve -var-file=env.tfvars -target=module.infraestructure -target=module.api -var-file=env.tfvars
+        run: terraform apply -auto-approve -var-file=env.tfvars -target=module.infrastructure -target=module.api -var-file=env.tfvars
 
   # ---------------------------
   # Poblar la base de datos
