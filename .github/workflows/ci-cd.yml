@@ -233,7 +233,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Ejecutar script de poblamiento
-        run: curl -X POST http://balanceador-candidatos-666249924.us-east-1.elb.amazonaws.com:8080/api/Candidates/CrearBaseDeDatos
+        run: curl -X POST http://balanceador-candidatos-1237790035.us-east-1.elb.amazonaws.com:8080/api/Candidates/CrearBaseDeDatos
 
   # ---------------------------
   # Build y Push del frontend
