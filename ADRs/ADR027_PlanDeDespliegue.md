@@ -24,20 +24,53 @@ El plan de despliegue propuesto se basa en una pipeline de CI/CD configurada en 
 
 &emsp;&emsp;El pipeline se activa automáticamente al realizar un commit o pull request sobre las ramas desarrollo o main. Esto asegura que todas las versiones significativas del proyecto sean sometidas al proceso de integración y despliegue.
 
-1. **Integración continua (CI)**
+1.  **Integración continua (CI)**
 
-   - Incluye los pasos necesarios para validar el código fuente, ejecutar pruebas y verificar el formato y estilo.
-   - Se garantiza la calidad y estabilidad antes del despliegue.
+    - Incluye los pasos necesarios para validar el código fuente, ejecutar pruebas y verificar el formato y estilo.
+    - Se garantiza la calidad y estabilidad antes del despliegue.
 
-2. **Despliegue de infraestructura con Terraform (CD)**
+2.  **Despliegue continuo (CD)**
 
-   - Se configuran las credenciales necesarias para operar sobre AWS.
-   - Se ejecutan los comandos de Terraform (init, fmt, validate, plan, apply) para desplegar toda la arquitectura.
-   - De este modo, se mantiene la infraestructura como código, facilitando la reproducibilidad y auditoría de cambios.
+    - Despliegue de repositorios ECR con Terraform (CD)
 
-3. **Construcción y publicación de imágenes Docker:**
+      - Se configuran las credenciales necesarias para operar sobre AWS.
+      - Se ejecuta terraform apply con `-target=module.ecr` para desplegar exclusivamente los repositorios de contenedores (ECR).
+      - Esto asegura que las imágenes Docker puedan ser construidas y subidas a un destino válido antes de provisionar más infraestructura.
 
-   - Se construyen las imágenes de Docker correspondientes al frontend y a las APIs.
-   - Las imágenes se etiquetan correctamente (docker tag) y se suben a un ECR mediante docker push, dejándolas listas para ser ejecutadas en el entorno de AWS.
+    - Construcción y publicación de la imagen de la API
 
-En resumen, este plan de despliegue proporciona una solución automatizada y mantenible para el proyecto, alineando el código, la infraestructura y los contenedores en un único flujo controlado.
+      - Se construye la imagen Docker de la API mediante `docker-compose`.
+      - Se etiqueta apropiadamente con `docker tag` y se sube al repositorio ECR correspondiente mediante `docker push`.
+
+    - Despliegue del resto de la infraestructura (sin incluir el frontend)
+
+      - Se aplica Terraform sobre los módulos necesarios para crear la infraestructura general del backend y los servicios relacionados con la API (balanceadores, tareas, bases de datos, etc.), excluyendo el servicio del frontend.
+      - Esto permite que la API esté disponible para posteriores tareas automatizadas, como el poblamiento de la base de datos.
+
+    - Poblamiento de la base de datos
+
+      - Se realiza una petición HTTP POST hacia un endpoint de la API que crea y rellena la base de datos.
+      - El sistema espera automáticamente a que la API esté accesible antes de realizar esta operación, reintentando hasta que sea exitoso.
+
+    - Construcción y publicación de la imagen del frontend
+
+      - Se construye la imagen del frontend usando `docker-compose`.
+      - Luego se etiqueta y se publica en el ECR correspondiente.
+
+    - Despliegue del servicio de frontend
+
+      - Finalmente, se aplica Terraform exclusivamente al módulo que crea el servicio del frontend (`-target=module.frontend`).
+      - Esto completa el despliegue de la aplicación, garantizando que la base de datos ya está poblada y el frontend puede acceder a toda la infraestructura funcional.
+
+### Obtención de variables desde S3
+
+Además de obtener el código fuente y los archivos de configuración desde el repositorio, el flujo CI/CD también recupera desde un bucket de Amazon S3 tanto:
+
+- Las variables de entorno necesarias para la ejecución del sistema (por ejemplo, claves API, configuraciones de entorno para staging o producción, etc.).
+- Los archivos de variables de Terraform (\*.tfvars) que definen parámetros clave como regiones, nombres de recursos, tamaños de instancias, entre otros.
+
+Esto permite desacoplar la configuración sensible o específica del entorno del código fuente y facilita su gestión centralizada y segura. El acceso al bucket está restringido mediante políticas IAM para garantizar que solo los workflows autorizados puedan obtener dicha información.
+
+### Resumen del Plan de Despliegue
+
+Se ha diseñado un proceso de despliegue automatizado para el proyecto GTIO_Votacion utilizando GitHub Actions, Docker y Terraform. El pipeline realiza integración y despliegue continuo (CI/CD), asegurando que cada cambio en las ramas principales active automáticamente validaciones, construcción de imágenes y provisión de infraestructura en AWS. Se divide en fases para desplegar primero la API, poblar la base de datos y, finalmente, desplegar el frontend. Además, el flujo obtiene de un bucket de Amazon S3 tanto variables de entorno como archivos de configuración de Terraform, centralizando la gestión de secretos y parámetros críticos de despliegue. Esto garantiza un proceso reproducible, seguro y sin intervención manual.
