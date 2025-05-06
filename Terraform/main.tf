@@ -4,29 +4,62 @@
 # terraform destroy -target=module.aws -var-file=env.tfvars
 
 terraform {
-    required_providers {
-        aws = {
-            source = "hashicorp/aws"
-            version = "~> 3.0"
-        }
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.0"
     }
+  }
+
+  # S3 bucket
+  backend "s3" {
+    bucket       = "gtio-votacion-state"
+    key          = "terraform/terraform.tfstate"
+    region       = "us-east-1"
+    use_lockfile = false
+    encrypt      = true
+  }
 }
 
 provider "aws" {
-    region = var.region
+  region = var.region
 }
 
 module "ecr" {
-    source = "./modules/ecr"
+  source = "./modules/ecr"
 }
 
-module "aws" {
-    source = "./modules/aws"
-    kms_key_id = var.kms_key_id
-    task_api_secret = var.task_api_secret
-    api_image = var.api_image
-    sql_password = var.sql_password
-    frontend_image = var.frontend_image
+module "infrastructure" {
+  source          = "./modules/infrastructure"
+  kms_key_id      = var.kms_key_id
+  task_api_secret = var.task_api_secret
+  api_image       = var.api_image
+  sql_password    = var.sql_password
+  frontend_image  = var.frontend_image
+}
+
+module "frontend" {
+  source         = "./modules/frontend"
+  frontend_image = var.frontend_image
+
+  lb_dns_name               = module.infrastructure.lb_dns_name
+  rds_sg_id                 = module.infrastructure.rds_sg_id
+  ecs_cluster_arn           = module.infrastructure.ecs_cluster_arn
+  target_group_frontend_arn = module.infrastructure.target_group_frontend_arn
+  listener_frontend_arn     = module.infrastructure.listener_frontend_arn
+}
+
+module "api" {
+  source                 = "./modules/api"
+  task_api_secret        = var.task_api_secret
+  task_api_secret_master = var.task_api_secret_master
+  api_image              = var.api_image
+
+  lb_dns_name          = module.infrastructure.lb_dns_name
+  rds_sg_id            = module.infrastructure.rds_sg_id
+  ecs_cluster_arn      = module.infrastructure.ecs_cluster_arn
+  target_group_api_arn = module.infrastructure.target_group_api_arn
+  listener_api_arn     = module.infrastructure.listener_api_arn
 }
 
 variable "region" {
@@ -42,8 +75,13 @@ variable "kms_key_id" { # igual se puede dinamizar
   type        = string
 }
 
-variable "task_api_secret" { # igual se puede poner en el tfvars en vez de ser un secret de AWS
+variable "task_api_secret" {
   description = "ARN del secreto de la API"
+  type        = string
+}
+
+variable "task_api_secret_master" {
+  description = "ARN del secreto de la API master"
   type        = string
 }
 
