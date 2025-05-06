@@ -1,4 +1,4 @@
-# [Arquitectura en aws de la solución]
+# Arquitectura en aws de la solución
 
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango
