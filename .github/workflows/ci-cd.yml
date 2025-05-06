@@ -206,7 +206,7 @@ jobs:
       - name: Configurar Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: "latest"
+          terraform_version: "1.11.4"
 
       - name: Terraform Init
         working-directory: Terraform
@@ -222,7 +222,7 @@ jobs:
 
       - name: Terraform Apply
         working-directory: Terraform
-        run: terraform apply -auto-approve -var-file=env.tfvars -target=module.infrastructure -target=module.api -var-file=env.tfvars
+        run: terraform apply -auto-approve -var-file=env.tfvars -target=module.infrastructure -target=module.api
 
   # ---------------------------
   # Poblar la base de datos
@@ -238,7 +238,7 @@ jobs:
       - name: Ejecutar script de poblamiento cuando esté disponible
         run: |
           echo "Esperando a que la API esté disponible para poblar la base de datos..."
-          until curl --silent --fail -X POST http://balanceador-candidatos-1237790035.us-east-1.elb.amazonaws.com:8080/api/Candidates/CrearBaseDeDatos; do
+          until curl --silent --fail -X POST http://balanceador-candidatos-1237790035.${{ env.AWS_REGION }}.elb.amazonaws.com:8080/api/Candidates/CrearBaseDeDatos; do
             echo "La API aún no está disponible o falló el poblamiento. Reintentando en 10 segundos..."
             sleep 10
           done
@@ -260,7 +260,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login a ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -330,4 +330,4 @@ jobs:
 
       - name: Terraform Apply
         working-directory: Terraform
-        run: terraform apply -auto-approve -var-file=env.tfvars -target=module.frontend -var-file=env.tfvars
+        run: terraform apply -auto-approve -var-file=env.tfvars -target=module.frontend
