@@ -1,0 +1,50 @@
+# Costes de la solución
+
+* Estado: aceptada
+* Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango, Urki Aristu, Oier Layana
+* Fecha: 01/05/2025
+
+Historia técnica: [Issue #77](https://github.com/oielay/GTIO_Votacion/issues/77) [Subissue #82](https://github.com/oielay/GTIO_Votacion/issues/82)
+
+## Contexto y Planteamiento del Problema
+
+El despliegue de nuestra arquitectura basada en microservicios en AWS requiere el uso de múltiples servicios gestionados (ECS, EC2, RDS, ELB, etc.). Para asegurar la sostenibilidad del proyecto, especialmente en un entorno académico o con recursos limitados, es necesario analizar y optimizar el coste de cada componente utilizado en la solución.
+
+## Decisión
+
+Se han seleccionado servicios que, si bien tienen coste, permiten una buena relación entre control, escalabilidad y precio. Las principales decisiones de coste han sido:
+
+- **Uso de instancias EC2 pequeñas (t3.micro)** para ejecutar contenedores ECS, en lugar de Fargate, ya que permiten más control y menor coste para cargas de trabajo constantes y predecibles.
+- **Separación de bases de datos en RDS** para APIs, con instancias mínimas (db.t3.micro) y uso de almacenamiento gp2 de bajo coste.
+- **Uso de ECR para imágenes Docker**, con eliminación automática de imágenes antiguas para evitar costes por almacenamiento innecesario.
+- **CloudWatch Logs y métricas** configurados con retención mínima para evitar costes altos de almacenamiento.
+
+## Consecuencias
+
+- Se logra un **coste inicial bajo**, apto para entorno de pruebas o demostraciones.
+- Es una arquitectura **escalable**, que podría adaptarse fácilmente a producción cambiando el tipo de instancias o usando autoscaling.
+- Es necesario **monitorear regularmente** el uso de recursos para evitar gastos innecesarios (p. ej., logs de CloudWatch o imágenes en ECR).
+
+
+## Estimación de Costes Mensuales
+
+| Servicio       | Cantidad | Tipo                   | Coste estimado         |
+|----------------|----------|------------------------|------------------------|
+| EC2            | 1        | t3.micro               | ~8 €/mes   |
+| RDS            | 1        | db.t3.micro + 20GB     | ~20 €/mes  |
+| ECR            | 1        | 1 GB cada uno          | ~0.30 €/mes            |
+| ELB            | 1        | ALB                    | ~16 €                  |                  |
+| CloudWatch     | —        | Logs + métricas básicas| ~2 €                   |
+| **Total estimado** | —    | —                      | **~40-45 € al mes**    |
+
+> Nota: Precios estimados con tarifas estándar en la región US East (N. Virginia). Para uso intensivo o producción, los costes podrían incrementarse.
+
+
+## Enlaces
+
+* Precios consultados en [AWS Pricing Calculator](https://calculator.aws/)
+
+## Observaciones
+
+- Si la carga aumenta, se debe considerar el uso de Auto Scaling para ECS o migrar a Fargate.
+- Es recomendable habilitar AWS Budgets para controlar los gastos automáticamente. (Sin permiso de acceso)
