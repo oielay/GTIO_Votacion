@@ -42,3 +42,13 @@ azure-pipelines.yml
 
 *-lock.json
 *node_modules
+
+# Terraform
+Terraform/*.tfstate
+Terraform/*.tfstate.*
+Terraform/*.tfvars
+Terraform/*.tfvars.json
+Terraform/*tfplan
+Terraform/*tfplan.*
+Terraform/.terraform
+Terraform/.terraform.*

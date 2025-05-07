@@ -1,6 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-const apiUrl = import.meta.env.PUBLIC_API_URL
+const apiUrl = typeof process !== 'undefined' && process.env.PUBLIC_API_URL
+               ? process.env.PUBLIC_API_URL
+               : import.meta.env.PUBLIC_API_URL;
 
 // https://astro.build/config
 export default defineConfig({
@@ -10,7 +12,7 @@ export default defineConfig({
     vite: {
         server: {
             host: true,
-            port: 1234,
+            port: 3000,
             allowedHosts: ['*'],
             proxy: {
                 '/api': {
@@ -21,3 +23,30 @@ export default defineConfig({
         }
     }
 });
+
+// // @ts-check
+// import { defineConfig } from 'astro/config';
+// import node from '@astrojs/node';
+
+// const apiUrl = typeof process !== 'undefined' && process.env.PUBLIC_API_URL
+//                ? process.env.PUBLIC_API_URL
+//                : import.meta.env.PUBLIC_API_URL;
+
+// // https://astro.build/config
+// export default defineConfig({
+//     output: 'server',
+//     adapter: node({ mode: 'standalone' }),
+//     vite: {
+//         server: {
+//             host: true,
+//             port: 3000,
+//             allowedHosts: ['*'],
+//             proxy: {
+//                 '/api': {
+//                     target: apiUrl,
+//                     changeOrigin: true
+//                 }
+//             }
+//         }
+//     }
+// });

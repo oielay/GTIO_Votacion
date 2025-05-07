@@ -12,7 +12,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REGISTRY: 024742722345.dkr.ecr.$AWS_REGION.amazonaws.com
+  ECR_REGISTRY: 024742722345.dkr.ecr.us-east-1.amazonaws.com
   IMAGE_TAG: latest
 
 jobs:
@@ -85,24 +85,31 @@ jobs:
         run: npm run test
 
   # ---------------------------
-  # Deploy Infraestructura (Terraform)
+  # Deploy ECR (Terraform)
   # ---------------------------
-  terraform:
-    name: Terraform
+  terraform-ecr:
+    name: Terraform - Crear ECR
     runs-on: ubuntu-latest
     needs: [backend-test, frontend-test]
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Configurar AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
-
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: $AWS_REGION
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Obtener archivo env.tfvars
+        run: aws s3 cp s3://gtio-votacion-config/env.tfvars Terraform/env.tfvars
+
+      - name: Configurar Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "latest"
 
       - name: Terraform Init
         working-directory: Terraform
@@ -116,48 +123,209 @@ jobs:
         working-directory: Terraform
         run: terraform validate
 
-      - name: Terraform Plan
+      - name: Terraform Apply
         working-directory: Terraform
-        run: terraform plan
-
-      # - name: Terraform Apply
-      #   working-directory: Terraform
-      #   run: terraform apply -auto-approve
+        run: terraform apply -auto-approve -target=module.ecr -var-file=env.tfvars
 
   # ---------------------------
-  # Build y Push
+  # Build y Push de la api
   # ---------------------------
-  build-push:
-    name: Build, Tag y Push imágenes a ECR
+  build-push-api:
+    name: Build, Tag y Push imágenes a ECR de la API
     runs-on: ubuntu-latest
-    needs: terraform
-
+    needs: terraform-ecr
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Login a AWS ECR
-        id: login-ecr
+      - name: Configurar AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: Login a ECR
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Instalar Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.6/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose version
+
+      - name: Crear archivo .env
+        run: aws s3 cp s3://gtio-votacion-config/.env .env
+
       - name: Build imágenes con docker-compose
-        run: docker-compose build
+        run: docker-compose build api
 
       - name: Tag y push imágenes
         run: |
           # Definimos las imágenes locales
-          FRONTEND_IMAGE=web_frontend
-          API_CANDIDATOS_IMAGE=api_candidatos
-          API_AUTENTICACION_IMAGE=api_autenticacion
+          API_CANDIDATOS_IMAGE=gtio_votacion-api
+          # API_AUTENTICACION_IMAGE=gtio_votacion-autenticacion
 
-          # WEB FRONTEND
-          docker tag $FRONTEND_IMAGE $ECR_REGISTRY/$FRONTEND_IMAGE:IMAGE_TAG
-          docker push $ECR_REGISTRY/$FRONTEND_IMAGE:IMAGE_TAG
+          # Definimos las imágenes en ECR
+          ECR_API_CANDIDATOS_IMAGE=gtio_votacion/api
+          # ECR_API_AUTENTICACION_IMAGE=gtio_votacion/autenticacion
 
           # API CANDIDATOS
-          docker tag $API_CANDIDATOS_IMAGE $ECR_REGISTRY/$API_CANDIDATOS_IMAGE:IMAGE_TAG
-          docker push $ECR_REGISTRY/$API_CANDIDATOS_IMAGE:IMAGE_TAG
+          docker tag $API_CANDIDATOS_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_API_CANDIDATOS_IMAGE:${{ env.IMAGE_TAG }}
+          docker push ${{ env.ECR_REGISTRY }}/$ECR_API_CANDIDATOS_IMAGE:${{ env.IMAGE_TAG }}
 
           # API AUTENTICACION
-          docker tag $API_AUTENTICACION_IMAGE $ECR_REGISTRY/$API_AUTENTICACION_IMAGE:IMAGE_TAG
-          docker push $ECR_REGISTRY/$API_AUTENTICACION_IMAGE:IMAGE_TAG
+        #   docker tag $API_AUTENTICACION_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_API_AUTENTICACION_IMAGE:${{ env.IMAGE_TAG }}
+        #   docker push ${{ env.ECR_REGISTRY }}/$ECR_API_AUTENTICACION_IMAGE:${{ env.IMAGE_TAG }}
+
+  # ---------------------------
+  # Terraform - Crear infraestructura y API
+  # ---------------------------
+  terraform-infrastructure-api:
+    name: Terraform - Crear infraestructura y API
+    runs-on: ubuntu-latest
+    needs: build-push-api
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Configurar AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Crear archivo env.tfvars
+        run: aws s3 cp s3://gtio-votacion-config/env.tfvars Terraform/env.tfvars
+
+      - name: Configurar Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.11.4"
+
+      - name: Terraform Init
+        working-directory: Terraform
+        run: echo yes | terraform init -input=false
+
+      - name: Terraform Format
+        working-directory: Terraform
+        run: terraform fmt
+
+      - name: Terraform Validate
+        working-directory: Terraform
+        run: terraform validate
+
+      - name: Terraform Apply
+        working-directory: Terraform
+        run: terraform apply -auto-approve -var-file=env.tfvars -target=module.infrastructure -target=module.api
+
+  # ---------------------------
+  # Poblar la base de datos
+  # ---------------------------
+  populate-db:
+    name: Poblar base de datos
+    runs-on: ubuntu-latest
+    needs: terraform-infrastructure-api
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Ejecutar script de poblamiento cuando esté disponible
+        run: |
+          echo "Esperando a que la API esté disponible para poblar la base de datos..."
+          until curl --silent --fail -X POST http://balanceador-candidatos-1237790035.${{ env.AWS_REGION }}.elb.amazonaws.com:8080/api/Candidates/CrearBaseDeDatos; do
+            echo "La API aún no está disponible o falló el poblamiento. Reintentando en 10 segundos..."
+            sleep 10
+          done
+
+  # ---------------------------
+  # Build y Push del frontend
+  # ---------------------------
+  build-push-frontend:
+    name: Build, Tag y Push imágenes a ECR del frontend
+    runs-on: ubuntu-latest
+    needs: populate-db
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Configurar AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login a ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Instalar Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.6/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose version
+
+      - name: Crear archivo .env
+        run: aws s3 cp s3://gtio-votacion-config/.env .env
+
+      - name: Build imágenes con docker-compose
+        run: docker-compose build frontend
+
+      - name: Tag y push imágenes
+        run: |
+          # Definimos las imágenes locales
+          FRONTEND_IMAGE=gtio_votacion-frontend
+
+          # Definimos las imágenes en ECR
+          ECR_FRONTEND_IMAGE=gtio_votacion/frontend
+
+          # WEB FRONTEND
+          docker tag $FRONTEND_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_FRONTEND_IMAGE:${{ env.IMAGE_TAG }}
+          docker push ${{ env.ECR_REGISTRY }}/$ECR_FRONTEND_IMAGE:${{ env.IMAGE_TAG }}
+
+  # ---------------------------
+  # Terraform - Crear servicio frontend
+  # ---------------------------
+  terraform-frontend:
+    name: Terraform - Crear servicio frontend
+    runs-on: ubuntu-latest
+    needs: build-push-frontend
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Configurar AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Crear archivo env.tfvars
+        run: aws s3 cp s3://gtio-votacion-config/env.tfvars Terraform/env.tfvars
+
+      - name: Configurar Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "latest"
+
+      - name: Terraform Init
+        working-directory: Terraform
+        run: echo yes | terraform init -input=false
+
+      - name: Terraform Format
+        working-directory: Terraform
+        run: terraform fmt
+
+      - name: Terraform Validate
+        working-directory: Terraform
+        run: terraform validate
+
+      - name: Terraform Apply
+        working-directory: Terraform
+        run: terraform apply -auto-approve -var-file=env.tfvars -target=module.frontend
