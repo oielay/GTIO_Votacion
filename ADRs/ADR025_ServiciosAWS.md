@@ -74,15 +74,15 @@ Para desplegar esta arquitectura de forma coherente, se propone la siguiente est
 
 | Recurso                | Cantidad | Propósito                                                                |
 |------------------------|----------|--------------------------------------------------------------------------|
-| ECR                    | 3        | Repositorios para imágenes de frontend, API candidatos y autenticación   |
+| ECR                    | 2        | Repositorios para imágenes de frontend, API candidatos y autenticación   |
 | ECS Cluster            | 1        | Agrupar los servicios ECS y tareas                                       |
-| Servicios ECS          | 3        | Gestionar la ejecución y escalado de cada microservicio                  |
-| Definiciones de tarea  | 3        | Especificar las características del contendor                            |
-| Instancias EC2         | 3        | Ejecutar tareas (una por servicio debido a limitaciones de recursos)     |
+| Servicios ECS          | 2        | Gestionar la ejecución y escalado de cada microservicio                  |
+| Definiciones de tarea  | 2        | Especificar las características del contendor                            |
+| Instancias EC2         | 4        | Ejecutar tareas (una por servicio debido a limitaciones de recursos)     |
 | ELB (ALB recomendado)  | 1        | Balancear tráfico entrante hacia las tareas                              |
 | RDS                    | 1        | Bases de datos separadas para cada API                                   |
 | API Gateway            | 1        | Punto único de entrada y gestión de rutas para las APIs                  |
-| Grupos de seguridad    | 1        | Controlar el tráfico entre los componentes                               |
+| Grupos de seguridad    | 2        | Controlar el tráfico entre los componentes                               |
 
 ## Enlaces
 

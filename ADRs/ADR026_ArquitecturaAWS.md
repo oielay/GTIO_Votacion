@@ -1,4 +1,4 @@
-# Arquitectura en aws de la solución
+# Arquitectura en AWS de la solución
 
 * Estado: aceptada
 * Responsables: Javier Pernaut, Oier Alduncin, Alexander Sarango
@@ -6,23 +6,22 @@
 
 Historia técnica: [Issue #77](https://github.com/oielay/GTIO_Votacion/issues/77) [Subissue #78](https://github.com/oielay/GTIO_Votacion/issues/79)
 
-
 ## Contexto y Planteamiento del Problema
 
 Al diseñar la arquitectura en AWS, es necesario definir qué componentes de los servicios actuales se mantendrán y cuáles serán reemplazados o eliminados. Esta evaluación puede influir en la forma final que adoptará la arquitectura.
 
 ## Factores de decisión
 
-- Facilidad de uso  
-- Integración con el ecosistema de AWS
+* Facilidad de uso
+* Integración con el ecosistema de AWS
 
 ## Opciones consideradas
 
 Se ha decidido mantener la arquitectura basada en microservicios en AWS, con ciertas actualizaciones:
 
-- Uso de Docker con **Kong** o reemplazo por **API Gateway de AWS**  
-- Elección entre **Grafana** o **CloudWatch** como plataforma de observabilidad  
-- Persistencia de datos mediante **contenedor de SQL Server** o **Amazon RDS**
+* Uso de Docker con **Kong** o reemplazo por **API Gateway de AWS**
+* Elección entre **Grafana** o **CloudWatch** como plataforma de observabilidad
+* Persistencia de datos mediante **contenedor de SQL Server** o **Amazon RDS**
 
 ## Decisión
 
@@ -46,49 +45,46 @@ El contenedor de SQL Server será eliminado y sustituido por **una instancias de
 
 #### Ventajas
 
-- Integración nativa con el ecosistema AWS  
-- Configuración sencilla  
-- Copias de seguridad automatizadas  
-- Alta disponibilidad mediante replicación
+* Integración nativa con el ecosistema AWS
+* Configuración sencilla
+* Copias de seguridad automatizadas
+* Alta disponibilidad mediante replicación
 
 #### Desventajas
 
-- Limitaciones en configuraciones avanzadas  
-- Costos superiores en comparación con contenedores autogestionados  
-- Menor portabilidad entre entornos  
-- No está optimizado para escalabilidad horizontal
+* Limitaciones en configuraciones avanzadas
+* Costos superiores en comparación con contenedores autogestionados
+* Menor portabilidad entre entornos
+* No está optimizado para escalabilidad horizontal
 
 ### Emplear API Gateway de AWS en lugar de Kong
 
 #### Ventajas
 
-- Integración total con AWS  
-- Escalabilidad automática según la carga de solicitudes  
-- Soporte nativo para JWT sin necesidad de plugins adicionales
+* Integración total con AWS
+* Escalabilidad automática según la carga de solicitudes
+* Soporte nativo para JWT sin necesidad de plugins adicionales
 
 #### Desventajas
 
-- Costos más altos que una solución autogestionada con Kong  
-- Menor capacidad de personalización avanzada  
-- Limitaciones como número máximo de rutas por API
+* Costos más altos que una solución autogestionada con Kong
+* Menor capacidad de personalización avanzada
+* Limitaciones como número máximo de rutas por API
 
 ### Emplear Grafana en lugar de CloudWatch
 
 #### Ventajas
 
-- Compatibilidad con múltiples fuentes de datos  
-- Portabilidad: se puede desplegar fuera de AWS  
-- Dashboards altamente personalizables
+* Compatibilidad con múltiples fuentes de datos
+* Portabilidad: se puede desplegar fuera de AWS
+* Dashboards altamente personalizables
 
 #### Desventajas
 
-- Grafana solo visualiza datos; necesita herramientas como CloudWatch o Prometheus para recolectarlos  
-- Dependencia de terceros para logs y trazas (como **Loki**)  
-- Integración menos directa con servicios nativos de AWS, como Lambda o CloudTrail
+* Grafana solo visualiza datos; necesita herramientas como CloudWatch o Prometheus para recolectarlos
+* Dependencia de terceros para logs y trazas (como **Loki**)
+* Integración menos directa con servicios nativos de AWS, como Lambda o CloudTrail
 
-## Enlaces 
+## Enlaces
 
 * [Arquitecturas 1][https://docs.aws.amazon.com/es_es/whitepapers/latest/microservices-on-aws/simple-microservices-architecture-on-aws.html]
-
-
-
