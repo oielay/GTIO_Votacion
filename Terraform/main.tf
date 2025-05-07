@@ -11,14 +11,14 @@ terraform {
     }
   }
 
-#   # S3 bucket
-#   backend "s3" {
-#     bucket       = "gtio-votacion-state"
-#     key          = "terraform/terraform.tfstate"
-#     region       = "us-east-1"
-#     use_lockfile = false
-#     encrypt      = true
-#   }
+  # S3 bucket
+  backend "s3" {
+    bucket       = "gtio-votacion-state"
+    key          = "terraform/terraform.tfstate"
+    region       = "us-east-1"
+    use_lockfile = false
+    encrypt      = true
+  }
 }
 
 provider "aws" {
