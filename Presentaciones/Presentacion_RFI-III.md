@@ -38,13 +38,19 @@ theme: beam
 
 <!-- # Api Gateway
 
-![Imagen Api Gateway](images/api-gateway.png) -->
+![Imagen Api Gateway](images/api-gateway.png)
 
 --- -->
 
 # Arquitectura AWS
 
 ![Imagen Arquitectura AWS](images/ADR026.png)
+
+---
+
+# Escalabilidad y elasticidad
+
+![Imagen Escalabilidad y Elasticidad](images/ADR028.png)
 
 ---
 
