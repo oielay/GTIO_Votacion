@@ -74,3 +74,10 @@ Esto permite desacoplar la configuración sensible o específica del entorno del
 ### Resumen del Plan de Despliegue
 
 Se ha diseñado un proceso de despliegue automatizado para el proyecto GTIO_Votacion utilizando GitHub Actions, Docker y Terraform. El pipeline realiza integración y despliegue continuo (CI/CD), asegurando que cada cambio en las ramas principales active automáticamente validaciones, construcción de imágenes y provisión de infraestructura en AWS. Se divide en fases para desplegar primero la API, poblar la base de datos y, finalmente, desplegar el frontend. Además, el flujo obtiene de un bucket de Amazon S3 tanto variables de entorno como archivos de configuración de Terraform, centralizando la gestión de secretos y parámetros críticos de despliegue. Esto garantiza un proceso reproducible, seguro y sin intervención manual.
+
+### Enlaces
+
+Para poder seguir el flujo que sigue la integración continua y el despliegue continuo, con todos los comandos necesarios para ejecutarse de forma adecuada, se puede consultar cualquiera de los dos siguientes enlaces:
+
+- [README](https://github.com/oielay/GTIO_Votacion?tab=readme-ov-file#gtio_votacion)
+- [GitHub Actions](https://github.com/oielay/GTIO_Votacion/blob/main/.github/workflows/ci-cd.yml)
