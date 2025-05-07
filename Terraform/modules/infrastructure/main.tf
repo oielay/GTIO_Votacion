@@ -505,6 +505,161 @@ resource "aws_security_group" "rds_sg" {
 }
 
 #################################
+# Api Gateway AWS
+#################################
+
+# Api Gateway REST API
+resource "aws_api_gateway_rest_api" "rest_api" {
+  name        = "gtio-votacion-api-gateway"
+  description = "API para el servicio de votación"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid = "AllowAllInvoke",
+        Effect = "Allow",
+        Principal = "*",
+        Action = "execute-api:Invoke",
+        Resource = "arn:aws:execute-api:*:*:*/*"
+      }
+    ]
+  })
+}
+
+# Resource: /test
+resource "aws_api_gateway_resource" "test_resource" {
+  rest_api_id = aws_api_gateway_rest_api.rest_api.id
+  parent_id   = aws_api_gateway_rest_api.rest_api.root_resource_id
+  path_part   = "test"
+}
+
+# Method: ANY on /test
+resource "aws_api_gateway_method" "test_method" {
+  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
+  resource_id   = aws_api_gateway_resource.test_resource.id
+  http_method   = "ANY"
+  authorization = "NONE"
+}
+
+# Integration: Forward to ALB
+resource "aws_api_gateway_integration" "test_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.rest_api.id
+  resource_id             = aws_api_gateway_resource.test_resource.id
+  http_method             = aws_api_gateway_method.test_method.http_method
+  integration_http_method = "ANY"
+  type                    = "HTTP_PROXY"
+  uri                     = "http://${aws_lb.ElasticLoadBalancingV2LoadBalancer.dns_name}:8080/api/Candidates/Test"
+}
+
+# Resource: /obtenerTodosCandidatos
+resource "aws_api_gateway_resource" "obtener_todos_resource" {
+  rest_api_id = aws_api_gateway_rest_api.rest_api.id
+  parent_id   = aws_api_gateway_rest_api.rest_api.root_resource_id
+  path_part   = "obtenerTodosCandidatos"
+}
+
+# Method: ANY on /obtenerTodosCandidatos
+resource "aws_api_gateway_method" "obtener_todos_method" {
+  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
+  resource_id   = aws_api_gateway_resource.obtener_todos_resource.id
+  http_method   = "ANY"
+  authorization = "NONE"
+}
+
+# Integration: Forward to ALB
+resource "aws_api_gateway_integration" "obtener_todos_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.rest_api.id
+  resource_id             = aws_api_gateway_resource.obtener_todos_resource.id
+  http_method             = aws_api_gateway_method.obtener_todos_method.http_method
+  integration_http_method = "ANY"
+  type                    = "HTTP_PROXY"
+  uri                     = "http://${aws_lb.ElasticLoadBalancingV2LoadBalancer.dns_name}:8080/api/Candidates/ObtenerTodosCandidatos"
+}
+
+# Configuración del stage "prod" con CloudWatch Logs
+resource "aws_api_gateway_deployment" "prod_deployment" {
+  rest_api_id = aws_api_gateway_rest_api.rest_api.id
+  stage_name  = "prod"
+  depends_on  = [
+    aws_api_gateway_method.test_method,
+    aws_api_gateway_method.obtener_todos_method, # Asegurando que el método se haya creado antes del deployment
+    aws_api_gateway_integration.test_integration,
+    aws_api_gateway_integration.obtener_todos_integration
+  ]
+}
+
+# Configuración de CloudWatch Logs para la API Gateway
+resource "aws_cloudwatch_log_group" "api_gw_logs" {
+  name = "/aws/api-gateway/gtio-votacion-api-gateway"
+}
+
+resource "aws_api_gateway_stage" "prod_stage" {
+  rest_api_id = aws_api_gateway_rest_api.rest_api.id
+  stage_name  = "prod"
+  deployment_id = aws_api_gateway_deployment.prod_deployment.id
+}
+
+# Listener en ALB que redirige tráfico a la API Gateway
+resource "aws_lb_listener" "http_listener_for_gateway" {
+  load_balancer_arn = aws_lb.ElasticLoadBalancingV2LoadBalancer.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ElasticLoadBalancingV2TargetGroup.arn
+  }
+}
+
+# DynamoDB
+# resource "aws_dynamodb_table" "api_keys" {
+#   name         = "api-keys"
+#   billing_mode = "PAY_PER_REQUEST"
+#   hash_key     = "api_key"
+
+#   attribute {
+#     name = "api_key"
+#     type = "S"
+#   }
+# }
+
+# # Lambda Authorizer
+# resource "aws_iam_role" "lambda_auth_role" {
+#   name = "lambda-authorizer-role"
+#   assume_role_policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [{
+#       Action = "sts:AssumeRole"
+#       Principal = {
+#         Service = "lambda.amazonaws.com"
+#       }
+#       Effect = "Allow"
+#     }]
+#   })
+# }
+
+# resource "aws_iam_policy_attachment" "lambda_logs" {
+#   name       = "lambda-logs"
+#   roles      = [aws_iam_role.lambda_auth_role.name]
+#   policy_arn = data.aws_iam_role.lab_role.arn
+# }
+
+# resource "aws_lambda_function" "auth_lambda" {
+#   function_name = "api-key-authorizer"
+#   role          = data.aws_iam_role.lab_role.arn
+#   handler       = "index.handler"
+#   runtime       = "nodejs18.x"
+#   timeout       = 5
+#   filename      = "lambda.zip"
+
+#   environment {
+#     variables = {
+#       TABLE_NAME = aws_dynamodb_table.api_keys.name
+#     }
+#   }
+# }
+
+#################################
 # Cloudwatch: eventos para despliegue automatico
 #################################
 
