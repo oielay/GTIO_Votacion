@@ -162,8 +162,6 @@ import NavItemMove from "../icons/NavItemMove.astro";
 <script>
   "use strict";
 
-  import { updateCharts } from "../utils/charts.ts";
-
   const body = document.body;
   const bgColorsBody = ["#ffb457", "#ff96bd", "#9999fb", "#ffe797"];
   const menu = body.querySelector(".menu") as HTMLElement;
@@ -195,10 +193,6 @@ import NavItemMove from "../icons/NavItemMove.astro";
       sections.forEach((section) => {
         section.style.display = section.id === sectionId ? "block" : "none";
       });
-
-      if (sectionId === "results") {
-        updateCharts();
-      }
     }
   }
 

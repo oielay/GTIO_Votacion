@@ -1,0 +1,9 @@
+<svg 
+    class="icon" xmlns="http://www.w3.org/2000/svg"
+    width="48" height="48" fill="none" viewBox="0 0 430 430"
+>
+    <g stroke="#fff" stroke-linejoin="round" stroke-width="18">
+        <path d="M150 375.5v-145H80v145m170 0v-320h-70v320m170 0v-210h-70v210"/>
+        <path stroke-linecap="round" stroke-miterlimit="14.8" d="M55 375.5h320"/>
+    </g>
+</svg>

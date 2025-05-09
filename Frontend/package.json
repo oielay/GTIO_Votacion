@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@astrojs/node": "^9.2.1",
+    "@astrojs/react": "^4.2.7",
     "@testing-library/dom": "^10.4.0",
     "astro": "^5.2.5",
     "chart.js": "^4.4.8"

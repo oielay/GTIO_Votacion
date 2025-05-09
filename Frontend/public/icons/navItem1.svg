@@ -1,0 +1,10 @@
+<svg 
+    class="icon" xmlns="http://www.w3.org/2000/svg" 
+    width="48" height="48" fill="none" viewBox="0 0 430 430"
+>
+    <g stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="21.1024" stroke-width="18">
+        <path d="m346.9 376.6.9-.1V176.3m-77.4-71.8V69.8h47.1v77.4M173.8 376.6V238.4h83.6v138.2"/>
+        <path d="M50.7 204.4 215.6 53.7l162.6 150.8"/>
+        <path d="M81.6 176.1v200.5h266.3"/>
+    </g>
+</svg>

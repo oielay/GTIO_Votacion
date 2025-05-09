@@ -1,6 +1,4 @@
-const apiUrl = typeof process !== 'undefined' && process.env.PUBLIC_API_URL
-               ? process.env.PUBLIC_API_URL
-               : import.meta.env.PUBLIC_API_URL;
+const apiUrl = import.meta.env.PUBLIC_API_URL;
 
 interface Participant {
   id: number;
