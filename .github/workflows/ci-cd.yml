@@ -228,9 +228,9 @@ jobs:
         working-directory: Terraform
         shell: bash
         run: |
-          CLUSTER_NAME=$(terraform output ecs_cluster_name)
-          SERVICE_NAME_API=$(terraform output ecs_service_name_api)
-          SERVICE_NAME_FRONTEND=$(terraform output ecs_service_name_frontend)
+          CLUSTER_NAME=Cluster_Api_1
+          SERVICE_NAME_API=api-candidatos-service
+          SERVICE_NAME_FRONTEND=frontend-service
 
           # Actualizar el servicio de la API
           aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME_API --force-new-deployment
