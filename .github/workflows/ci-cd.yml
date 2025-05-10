@@ -226,6 +226,7 @@ jobs:
 
       - name: Actualizar servicios de ECS
         working-directory: Terraform
+        shell: bash
         run: |
           CLUSTER_NAME=$(terraform output -raw ecs_cluster_name)
           SERVICE_NAME_API=$(terraform output -raw ecs_service_name_api)
