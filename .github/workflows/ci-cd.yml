@@ -227,9 +227,9 @@ jobs:
       - name: Actualizar servicios de ECS
         working-directory: Terraform
         run: |
-          CLUSTER_NAME=$(terraform output -raw ecs_cluster_name 2>/dev/null || echo "")
-          SERVICE_NAME_API=$(terraform output -raw ecs_service_name_api 2>/dev/null || echo "")
-          SERVICE_NAME_FRONTEND=$(terraform output -raw ecs_service_name_frontend 2>/dev/null || echo "")
+          CLUSTER_NAME=$(terraform output -raw ecs_cluster_name)
+          SERVICE_NAME_API=$(terraform output -raw ecs_service_name_api)
+          SERVICE_NAME_FRONTEND=$(terraform output -raw ecs_service_name_frontend)
 
           # Actualizar el servicio de la API
           aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME_API --force-new-deployment
