@@ -224,23 +224,17 @@ jobs:
         working-directory: Terraform
         run: terraform apply -auto-approve -var-file=env.tfvars -target=module.infrastructure -target=module.api -target=module.frontend
 
-      - name: Terraform Output
-        id: terraform_outputs
+      - name: Actualizar servicios de ECS
         working-directory: Terraform
         run: |
-          echo "cluster_name=$(terraform output -raw ecs_cluster_name)" >> "$GITHUB_OUTPUT"
-          echo "service_api=$(terraform output -raw ecs_service_name_api)" >> "$GITHUB_OUTPUT"
-          echo "service_frontend=$(terraform output -raw ecs_service_name_frontend)" >> "$GITHUB_OUTPUT"
+          CLUSTER_NAME=CLUSTER_NAME=$(terraform output -raw ecs_cluster_name 2>/dev/null || echo "")
+          SERVICE_NAME_API=$(terraform output -raw ecs_service_name_api 2>/dev/null || echo "")
+          SERVICE_NAME_FRONTEND=$(terraform output -raw ecs_service_name_frontend 2>/dev/null || echo "")
 
-      - name: Actualizar servicios ECS
-        run: |
-          aws ecs update-service --cluster "${{ steps.terraform_outputs.outputs.cluster_name }}" \
-                              --service "${{ steps.terraform_outputs.outputs.service_api }}" \
-                              --force-new-deployment
-
-          aws ecs update-service --cluster "${{ steps.terraform_outputs.outputs.cluster_name }}" \
-                              --service "${{ steps.terraform_outputs.outputs.service_frontend }}" \
-                              --force-new-deployment
+          # Actualizar el servicio de la API
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME_API --force-new-deployment
+          # Actualizar el servicio del frontend
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME_FRONTEND --force-new-deployment
 
   # ---------------------------
   # Poblar la base de datos
