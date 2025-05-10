@@ -231,6 +231,10 @@ jobs:
           SERVICE_NAME_API=$(terraform output -raw ecs_service_name_api)
           SERVICE_NAME_FRONTEND=$(terraform output -raw ecs_service_name_frontend)
 
+          echo "Cluster: $CLUSTER_NAME"
+          echo "Service API: $SERVICE_NAME_API"
+          echo "Service Frontend: $SERVICE_NAME_FRONTEND"
+
           # Actualizar el servicio de la API
           aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME_API --force-new-deployment
           # Actualizar el servicio del frontend
