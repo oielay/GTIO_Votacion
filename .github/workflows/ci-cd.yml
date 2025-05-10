@@ -224,6 +224,19 @@ jobs:
         working-directory: Terraform
         run: terraform apply -auto-approve -var-file=env.tfvars -target=module.infrastructure -target=module.api -target=module.frontend
 
+      - name: Actualizar servicios de ECS
+        working-directory: Terraform
+        shell: bash
+        run: |
+          CLUSTER_NAME=$(terraform output ecs_cluster_name)
+          SERVICE_NAME_API=$(terraform output ecs_service_name_api)
+          SERVICE_NAME_FRONTEND=$(terraform output ecs_service_name_frontend)
+
+          # Actualizar el servicio de la API
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME_API --force-new-deployment
+          # Actualizar el servicio del frontend
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME_FRONTEND --force-new-deployment
+
   # ---------------------------
   # Poblar la base de datos
   # ---------------------------
