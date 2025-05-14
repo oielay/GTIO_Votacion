@@ -54,7 +54,7 @@ resource "aws_ecs_service" "service_frontend" {
   name            = "frontend-service"
   cluster         = var.ecs_cluster_arn
   task_definition = aws_ecs_task_definition.task_frontend.arn
-  desired_count   = 1
+  desired_count   = 2
 
   launch_type = "EC2"
 
@@ -78,41 +78,15 @@ resource "aws_ecs_service" "service_frontend" {
   health_check_grace_period_seconds = 30
   force_new_deployment              = true
 
-  lifecycle {
-    replace_triggered_by = [
-      aws_ecs_task_definition.task_frontend,
-    ]
-  }
-
   depends_on = [
     aws_ecs_task_definition.task_frontend,
     var.listener_frontend_arn
   ]
 }
 
-# Instance
-resource "aws_instance" "ecs_instance_frontend" {
-  ami                    = var.ami_id
-  instance_type          = var.instance_type
-  key_name               = var.key_name
-  availability_zone      = var.availability_zones[0]
-  subnet_id              = data.aws_subnets.default.ids[0]
-  vpc_security_group_ids = [data.aws_security_group.default.id, var.rds_sg_id]
-  user_data              = var.user_data
-  iam_instance_profile   = var.iam_instance_profile
-
-  tags = {
-    Name = "instancia-frontend"
-  }
-}
-
 #################################
 # Local variables
 #################################
-
-variable "availability_zones" {
-  default = ["us-east-1b", "us-east-1b", "us-east-1c", "us-east-1a", "us-east-1e", "us-east-1f"]
-}
 
 variable "ami_id" {
   default = "ami-03b4de1e633ccdc0f"
@@ -160,6 +134,10 @@ data "aws_subnets" "default" {
     name   = "vpc-id"
     values = [data.aws_vpc.default.id]
   }
+}
+
+data "aws_subnet" "zone" {
+  id = data.aws_subnets.default.ids[0]
 }
 
 #################################

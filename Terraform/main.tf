@@ -13,7 +13,7 @@ terraform {
 
   # S3 bucket
   backend "s3" {
-    bucket       = "gtio-votacion-state"
+    bucket       = "gtio-votacion-state2"
     key          = "terraform/terraform.tfstate"
     region       = "us-east-1"
     use_lockfile = false
@@ -36,6 +36,7 @@ module "infrastructure" {
   api_image       = var.api_image
   sql_password    = var.sql_password
   frontend_image  = var.frontend_image
+  api_key         = var.api_key
 }
 
 module "frontend" {
@@ -101,7 +102,7 @@ variable "frontend_image" { # igual se puede dinamizar
   type        = string
 }
 
-# variable "db_init_image" {
-#   description = "Imagen para inicializar la base de datos"
-#   type        = string
-# }
+variable "api_key" {
+  description = "API key"
+  type        = string
+}
