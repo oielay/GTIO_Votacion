@@ -42,10 +42,7 @@ resource "aws_ecs_task_definition" "task_frontend" {
 
   lifecycle {
     create_before_destroy = true
-  }
-
-  tags = {
-    force_update = timestamp()
+    ignore_changes        = [container_definitions]
   }
 }
 
@@ -194,4 +191,13 @@ variable "target_group_frontend_arn" {
 variable "listener_frontend_arn" {
   description = "ARN del listener del frontend"
   type        = string
+}
+
+###################################
+# Outputs
+###################################
+
+output "ecs_service_name_frontend" {
+  value       = aws_ecs_service.service_frontend.name
+  description = "Nombre del servicio ECS del frontend"
 }

@@ -101,7 +101,18 @@ variable "frontend_image" { # igual se puede dinamizar
   type        = string
 }
 
-# variable "db_init_image" {
-#   description = "Imagen para inicializar la base de datos"
-#   type        = string
-# }
+################################
+# Outputs
+################################
+
+output "ecs_cluster_name" {
+  value = module.infrastructure.ecs_cluster_name
+}
+
+output "ecs_service_name_frontend" {
+  value = module.frontend.ecs_service_name_frontend
+}
+
+output "ecs_service_name_api" {
+  value = module.api.ecs_service_name_api
+}

@@ -1,0 +1,10 @@
+.card-heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.card-description {
+  font-size: 1.125rem;
+  text-align: justify;
+  padding: 0 16px;
+}

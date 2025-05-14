@@ -516,11 +516,11 @@ resource "aws_api_gateway_rest_api" "rest_api" {
     Version = "2012-10-17",
     Statement = [
       {
-        Sid = "AllowAllInvoke",
-        Effect = "Allow",
+        Sid       = "AllowAllInvoke",
+        Effect    = "Allow",
         Principal = "*",
-        Action = "execute-api:Invoke",
-        Resource = "arn:aws:execute-api:*:*:*/*"
+        Action    = "execute-api:Invoke",
+        Resource  = "arn:aws:execute-api:*:*:*/*"
       }
     ]
   })
@@ -580,7 +580,7 @@ resource "aws_api_gateway_integration" "obtener_todos_integration" {
 resource "aws_api_gateway_deployment" "prod_deployment" {
   rest_api_id = aws_api_gateway_rest_api.rest_api.id
   stage_name  = "prod"
-  depends_on  = [
+  depends_on = [
     aws_api_gateway_method.test_method,
     aws_api_gateway_method.obtener_todos_method, # Asegurando que el método se haya creado antes del deployment
     aws_api_gateway_integration.test_integration,
@@ -594,8 +594,8 @@ resource "aws_cloudwatch_log_group" "api_gw_logs" {
 }
 
 resource "aws_api_gateway_stage" "prod_stage" {
-  rest_api_id = aws_api_gateway_rest_api.rest_api.id
-  stage_name  = "prod"
+  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
+  stage_name    = "prod"
   deployment_id = aws_api_gateway_deployment.prod_deployment.id
 }
 
@@ -965,6 +965,10 @@ output "rds_sg_id" {
 
 output "ecs_cluster_arn" {
   value = aws_ecs_cluster.ecs_cluster.arn
+}
+
+output "ecs_cluster_name" {
+  value = aws_ecs_cluster.ecs_cluster.name
 }
 
 output "target_group_api_arn" {
