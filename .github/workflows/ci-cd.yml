@@ -128,10 +128,10 @@ jobs:
         run: terraform apply -auto-approve -target=module.ecr -var-file=env.tfvars
 
   # ---------------------------
-  # Build y Push de la api
+  # Build y Push
   # ---------------------------
-  build-push-api:
-    name: Build, Tag y Push imágenes a ECR de la API
+  build-push:
+    name: Build, Tag y Push imágenes a ECR
     runs-on: ubuntu-latest
     needs: terraform-ecr
     steps:
@@ -159,33 +159,33 @@ jobs:
         run: aws s3 cp s3://gtio-votacion-config/.env .env
 
       - name: Build imágenes con docker-compose
-        run: docker-compose build api
+        run: docker-compose build
 
       - name: Tag y push imágenes
         run: |
           # Definimos las imágenes locales
           API_CANDIDATOS_IMAGE=gtio_votacion-api
-          # API_AUTENTICACION_IMAGE=gtio_votacion-autenticacion
+          FRONTEND_IMAGE=gtio_votacion-frontend
 
           # Definimos las imágenes en ECR
           ECR_API_CANDIDATOS_IMAGE=gtio_votacion/api
-          # ECR_API_AUTENTICACION_IMAGE=gtio_votacion/autenticacion
+          ECR_FRONTEND_IMAGE=gtio_votacion/frontend
 
           # API CANDIDATOS
           docker tag $API_CANDIDATOS_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_API_CANDIDATOS_IMAGE:${{ env.IMAGE_TAG }}
           docker push ${{ env.ECR_REGISTRY }}/$ECR_API_CANDIDATOS_IMAGE:${{ env.IMAGE_TAG }}
 
-          # API AUTENTICACION
-        #   docker tag $API_AUTENTICACION_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_API_AUTENTICACION_IMAGE:${{ env.IMAGE_TAG }}
-        #   docker push ${{ env.ECR_REGISTRY }}/$ECR_API_AUTENTICACION_IMAGE:${{ env.IMAGE_TAG }}
+          # FRONTEND
+          docker tag $FRONTEND_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_FRONTEND_IMAGE:${{ env.IMAGE_TAG }}
+          docker push ${{ env.ECR_REGISTRY }}/$ECR_FRONTEND_IMAGE:${{ env.IMAGE_TAG }}
 
   # ---------------------------
-  # Terraform - Crear infraestructura y API
+  # Terraform - Crear infraestructura
   # ---------------------------
-  terraform-infrastructure-api:
-    name: Terraform - Crear infraestructura y API
+  terraform-infrastructure:
+    name: Terraform - Crear infraestructura
     runs-on: ubuntu-latest
-    needs: build-push-api
+    needs: build-push
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -220,7 +220,20 @@ jobs:
 
       - name: Terraform Apply
         working-directory: Terraform
-        run: terraform apply -auto-approve -var-file=env.tfvars -target=module.infrastructure -target=module.api
+        run: terraform apply -auto-approve -var-file=env.tfvars -target=module.infrastructure -target=module.api -target=module.frontend
+
+      - name: Actualizar servicios de ECS
+        working-directory: Terraform
+        shell: bash
+        run: |
+          CLUSTER_NAME=Cluster_Api_1
+          SERVICE_NAME_API=api-candidatos-service
+          SERVICE_NAME_FRONTEND=frontend-service
+
+          # Actualizar el servicio de la API
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME_API --force-new-deployment
+          # Actualizar el servicio del frontend
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME_FRONTEND --force-new-deployment
 
   # ---------------------------
   # Poblar la base de datos
@@ -228,7 +241,7 @@ jobs:
   populate-db:
     name: Poblar base de datos
     runs-on: ubuntu-latest
-    needs: terraform-infrastructure-api
+    needs: terraform-infrastructure
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -236,96 +249,31 @@ jobs:
       - name: Ejecutar script de poblamiento cuando esté disponible
         run: |
           echo "Esperando a que la API esté disponible para poblar la base de datos..."
-          until curl --silent --fail -X POST http://balanceador-candidatos-1237790035.${{ env.AWS_REGION }}.elb.amazonaws.com:8080/api/Candidates/CrearBaseDeDatos; do
+          until curl --silent --fail -X POST http://balanceador-candidatos-645434306.${{ env.AWS_REGION }}.elb.amazonaws.com:8080/api/Candidates/CrearBaseDeDatos; do
             echo "La API aún no está disponible o falló el poblamiento. Reintentando en 10 segundos..."
             sleep 10
           done
 
   # ---------------------------
-  # Build y Push del frontend
+  # Cálculo de costes con Infracost
   # ---------------------------
-  build-push-frontend:
-    name: Build, Tag y Push imágenes a ECR del frontend
+  infracost:
+    name: Infracost - Cálculo de costes
     runs-on: ubuntu-latest
-    needs: populate-db
+    needs: terraform-infrastructure
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Configurar AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: ${{ env.AWS_REGION }}
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
 
-      - name: Login a ECR
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Instalar Docker Compose
+      - name: Ejecutar Infracost en desarrollo y main
         run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.6/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose version
+          infracost breakdown --path=. \
+                    --format=json \
+                    --out-file=infracost.json
 
-      - name: Crear archivo .env
-        run: aws s3 cp s3://gtio-votacion-config/.env .env
-
-      - name: Build imágenes con docker-compose
-        run: docker-compose build frontend
-
-      - name: Tag y push imágenes
-        run: |
-          # Definimos las imágenes locales
-          FRONTEND_IMAGE=gtio_votacion-frontend
-
-          # Definimos las imágenes en ECR
-          ECR_FRONTEND_IMAGE=gtio_votacion/frontend
-
-          # WEB FRONTEND
-          docker tag $FRONTEND_IMAGE ${{ env.ECR_REGISTRY }}/$ECR_FRONTEND_IMAGE:${{ env.IMAGE_TAG }}
-          docker push ${{ env.ECR_REGISTRY }}/$ECR_FRONTEND_IMAGE:${{ env.IMAGE_TAG }}
-
-  # ---------------------------
-  # Terraform - Crear servicio frontend
-  # ---------------------------
-  terraform-frontend:
-    name: Terraform - Crear servicio frontend
-    runs-on: ubuntu-latest
-    needs: build-push-frontend
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Configurar AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Crear archivo env.tfvars
-        run: aws s3 cp s3://gtio-votacion-config/env.tfvars Terraform/env.tfvars
-
-      - name: Configurar Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: "latest"
-
-      - name: Terraform Init
-        working-directory: Terraform
-        run: echo yes | terraform init -input=false
-
-      - name: Terraform Format
-        working-directory: Terraform
-        run: terraform fmt
-
-      - name: Terraform Validate
-        working-directory: Terraform
-        run: terraform validate
-
-      - name: Terraform Apply
-        working-directory: Terraform
-        run: terraform apply -auto-approve -var-file=env.tfvars -target=module.frontend
+          infracost upload --path=infracost.json || echo "Pasar aun con errores de políticas"

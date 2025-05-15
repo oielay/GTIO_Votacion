@@ -261,11 +261,11 @@ resource "aws_api_gateway_rest_api" "rest_api" {
     Version = "2012-10-17",
     Statement = [
       {
-        Sid = "AllowAllInvoke",
-        Effect = "Allow",
+        Sid       = "AllowAllInvoke",
+        Effect    = "Allow",
         Principal = "*",
-        Action = "execute-api:Invoke",
-        Resource = "arn:aws:execute-api:*:*:*/*"
+        Action    = "execute-api:Invoke",
+        Resource  = "arn:aws:execute-api:*:*:*/*"
       }
     ]
   })
@@ -622,6 +622,10 @@ output "rds_sg_id" {
 
 output "ecs_cluster_arn" {
   value = aws_ecs_cluster.ecs_cluster.arn
+}
+
+output "ecs_cluster_name" {
+  value = aws_ecs_cluster.ecs_cluster.name
 }
 
 output "target_group_api_arn" {

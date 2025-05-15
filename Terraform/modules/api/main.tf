@@ -44,10 +44,7 @@ resource "aws_ecs_task_definition" "task_api_candidatos" {
 
   lifecycle {
     create_before_destroy = true
-  }
-
-  tags = {
-    force_update = timestamp()
+    ignore_changes        = [container_definitions]
   }
 }
 
@@ -184,4 +181,13 @@ variable "target_group_api_arn" {
 variable "listener_api_arn" {
   description = "ARN del listener de la API"
   type        = string
+}
+
+###################################
+# Outputs
+###################################
+
+output "ecs_service_name_api" {
+  value       = aws_ecs_service.service_api_candidatos.name
+  description = "Nombre del servicio ECS de la API"
 }
