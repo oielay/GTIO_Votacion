@@ -5,12 +5,10 @@ on:
     branches:
       - desarrollo
       - main
-      - frontend
   pull_request:
     branches:
       - desarrollo
       - main
-      - frontend
 
 env:
   AWS_REGION: us-east-1
@@ -255,3 +253,27 @@ jobs:
             echo "La API aún no está disponible o falló el poblamiento. Reintentando en 10 segundos..."
             sleep 10
           done
+
+  # ---------------------------
+  # Cálculo de costes con Infracost
+  # ---------------------------
+  infracost:
+    name: Infracost - Cálculo de costes
+    runs-on: ubuntu-latest
+    needs: terraform-infrastructure
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: Ejecutar Infracost en desarrollo y main
+        run: |
+          infracost breakdown --path=. \
+                    --format=json \
+                    --out-file=infracost.json
+
+          infracost upload --path=infracost.json || echo "Pasar aun con errores de políticas"
