@@ -18,6 +18,8 @@ COPY . .
 
 ARG PUBLIC_API_URL
 ENV PUBLIC_API_URL=${PUBLIC_API_URL}
+ARG PUBLIC_API_KEY
+ENV PUBLIC_API_KEY=${PUBLIC_API_KEY}
 
 # Ejecutar el build del proyecto
 RUN npm run build

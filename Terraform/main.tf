@@ -37,6 +37,7 @@ module "infrastructure" {
   sql_password    = var.sql_password
   frontend_image  = var.frontend_image
   api_key         = var.api_key
+  desired_count   = var.desired_count
 }
 
 module "frontend" {
@@ -44,10 +45,12 @@ module "frontend" {
   frontend_image = var.frontend_image
 
   lb_dns_name               = module.infrastructure.lb_dns_name
-  rds_sg_id                 = module.infrastructure.rds_sg_id
   ecs_cluster_arn           = module.infrastructure.ecs_cluster_arn
   target_group_frontend_arn = module.infrastructure.target_group_frontend_arn
   listener_frontend_arn     = module.infrastructure.listener_frontend_arn
+  frontend_sg_id            = module.infrastructure.frontend_sg_id
+  desired_count             = var.desired_count
+  public_api_key            = var.api_key
 }
 
 module "api" {
@@ -55,12 +58,14 @@ module "api" {
   task_api_secret        = var.task_api_secret
   task_api_secret_master = var.task_api_secret_master
   api_image              = var.api_image
-
-  lb_dns_name          = module.infrastructure.lb_dns_name
-  rds_sg_id            = module.infrastructure.rds_sg_id
-  ecs_cluster_arn      = module.infrastructure.ecs_cluster_arn
-  target_group_api_arn = module.infrastructure.target_group_api_arn
-  listener_api_arn     = module.infrastructure.listener_api_arn
+  lb_dns_name            = module.infrastructure.lb_dns_name
+  ecs_cluster_arn        = module.infrastructure.ecs_cluster_arn
+  target_group_api_arn   = module.infrastructure.target_group_api_arn
+  listener_api_arn       = module.infrastructure.listener_api_arn
+  api_sg_id              = module.infrastructure.api_sg_id
+  desired_count          = var.desired_count
+  public_api_key         = var.api_key
+  admin_api_key          = var.admin_api_key
 }
 
 variable "region" {
@@ -105,6 +110,17 @@ variable "frontend_image" { # igual se puede dinamizar
 variable "api_key" {
   description = "API key"
   type        = string
+}
+
+variable "admin_api_key" {
+  description = "API key"
+  type        = string
+}
+
+variable "desired_count" {
+  description = "Número deseado de instancias"
+  type        = number
+  default     = 2
 }
 
 ################################

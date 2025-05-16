@@ -27,6 +27,10 @@ resource "aws_ecs_task_definition" "task_frontend" {
         {
           name  = "PUBLIC_API_URL"
           value = "http://${var.lb_dns_name}:8080"
+        },
+        {
+          name  = "PUBLIC_API_KEY"
+          value = "${var.public_api_key}"
         }
       ]
       logConfiguration = {
@@ -51,7 +55,7 @@ resource "aws_ecs_service" "service_frontend" {
   name            = "frontend-service"
   cluster         = var.ecs_cluster_arn
   task_definition = aws_ecs_task_definition.task_frontend.arn
-  desired_count   = 2
+  desired_count   = var.desired_count
 
   launch_type = "EC2"
 
@@ -63,7 +67,7 @@ resource "aws_ecs_service" "service_frontend" {
 
   network_configuration {
     subnets         = data.aws_subnets.default.ids
-    security_groups = [data.aws_security_group.default.id, var.rds_sg_id]
+    security_groups = [data.aws_security_group.default.id, var.frontend_sg_id]
   }
 
   deployment_controller {
@@ -151,8 +155,8 @@ variable "lb_dns_name" {
   type        = string
 }
 
-variable "rds_sg_id" {
-  description = "ID del grupo de seguridad de RDS"
+variable "frontend_sg_id" {
+  description = "ID del grupo de seguridad de frontend"
   type        = string
 }
 
@@ -169,6 +173,17 @@ variable "target_group_frontend_arn" {
 variable "listener_frontend_arn" {
   description = "ARN del listener del frontend"
   type        = string
+}
+
+variable "desired_count" {
+  description = "Número deseado de instancias"
+  type        = number
+  default     = 1
+}
+
+variable "public_api_key" {
+  description = "API key pública"
+  type        = string  
 }
 
 ###################################

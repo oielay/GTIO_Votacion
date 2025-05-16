@@ -58,6 +58,8 @@ builder.Services.AddCors(options =>
 
 // Inyección de dependencias personalizada
 builder.Services.AddApplicationServices();
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 var app = builder.Build();
 

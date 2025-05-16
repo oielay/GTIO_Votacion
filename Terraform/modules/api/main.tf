@@ -27,6 +27,14 @@ resource "aws_ecs_task_definition" "task_api_candidatos" {
         {
           name  = "CORS_ORIGIN"
           value = "http://${var.lb_dns_name}:3000"
+        },
+        {
+          name  = "PUBLIC_API_KEY"
+          value = "${var.public_api_key}"
+        },
+        {
+          name  = "ADMIN_API_KEY"
+          value = "${var.admin_api_key}"
         }
       ]
       secrets = [
@@ -39,6 +47,15 @@ resource "aws_ecs_task_definition" "task_api_candidatos" {
           valueFrom = var.task_api_secret_master
         }
       ]
+      log_configuration = {
+        log_driver = "awslogs"
+
+        options = {
+            awslogs-group         = "/ecs/api"
+            awslogs-region        = "eu-west-1"
+            awslogs-stream-prefix = "ecs"
+        }
+      }
     }
   ])
 
@@ -53,7 +70,7 @@ resource "aws_ecs_service" "service_api_candidatos" {
   name            = "api-candidatos-service"
   cluster         = var.ecs_cluster_arn
   task_definition = aws_ecs_task_definition.task_api_candidatos.arn
-  desired_count   = 2
+  desired_count   = var.desired_count
 
   launch_type = "EC2"
 
@@ -65,7 +82,7 @@ resource "aws_ecs_service" "service_api_candidatos" {
 
   network_configuration {
     subnets         = data.aws_subnets.default.ids
-    security_groups = [data.aws_security_group.default.id, var.rds_sg_id]
+    security_groups = [data.aws_security_group.default.id, var.api_sg_id]
   }
 
   deployment_controller {
@@ -163,8 +180,8 @@ variable "lb_dns_name" {
   type        = string
 }
 
-variable "rds_sg_id" {
-  description = "ID del grupo de seguridad de RDS"
+variable "api_sg_id" {
+  description = "ID del grupo de seguridad de la API"
   type        = string
 }
 
@@ -180,6 +197,22 @@ variable "target_group_api_arn" {
 
 variable "listener_api_arn" {
   description = "ARN del listener de la API"
+  type        = string
+}
+
+variable "desired_count" {
+  description = "Número deseado de instancias"
+  type        = number
+  default     = 1
+}
+
+variable "public_api_key" {
+  description = "API key pública"
+  type        = string
+}
+
+variable "admin_api_key" {
+  description = "API key de administrador"
   type        = string
 }
 

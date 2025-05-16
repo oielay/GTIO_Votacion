@@ -16,6 +16,11 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 # Servicio: Api Candidatos
 #################################
 
+resource "aws_cloudwatch_log_group" "api_logs" {
+  name              = "/ecs/api"
+  retention_in_days = 30
+}
+
 # Load Balancer
 resource "aws_lb" "ElasticLoadBalancingV2LoadBalancer" {
   name               = "balanceador-candidatos"
@@ -23,8 +28,8 @@ resource "aws_lb" "ElasticLoadBalancingV2LoadBalancer" {
   load_balancer_type = "application"
   subnets            = data.aws_subnets.default.ids
   security_groups = [
-    data.aws_security_group.default.id,
-    aws_security_group.rds_sg.id
+    aws_security_group.sg_frontend.id,
+    aws_security_group.sg_backend.id
   ]
   ip_address_type = "ipv4"
   access_logs {
@@ -56,9 +61,9 @@ resource "aws_autoscaling_group" "AutoScalingAutoScalingGroup" {
     id      = aws_launch_template.EC2LaunchTemplate.id
     version = "1"
   }
-  min_size                  = var.autoscaling_min_size
-  max_size                  = var.autoscaling_max_size
-  desired_capacity          = var.autoscaling_desired_capacity
+  min_size                  = var.desired_count
+  max_size                  = var.desired_count * 4
+  desired_capacity          = var.desired_count * 2
   default_cooldown          = 300
   health_check_type         = "EC2"
   health_check_grace_period = 0
@@ -92,8 +97,7 @@ resource "aws_launch_template" "EC2LaunchTemplate" {
     delete_on_termination       = true
     device_index                = 0
     security_groups = [
-      data.aws_security_group.default.id,
-      aws_security_group.rds_sg.id
+      data.aws_security_group.default.id
     ]
   }
   image_id      = var.ami_id
@@ -193,7 +197,7 @@ resource "aws_db_instance" "RDSDBInstance" {
   db_subnet_group_name                = aws_db_subnet_group.db_subnet_gtio_votacion.name
   vpc_security_group_ids = [
     data.aws_security_group.default.id,
-    aws_security_group.rds_sg.id
+    aws_security_group.sg_db.id
   ]
   skip_final_snapshot = true
 }
@@ -249,6 +253,99 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
+resource "aws_security_group" "sg_frontend" {
+  name        = "gtio-sg-frontend"
+  description = "Allow HTTP/HTTPS traffic from the internet"
+  vpc_id      = data.aws_vpc.default.id
+
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Frontend (3000)"
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "Frontend Security Group"
+  }
+}
+
+resource "aws_security_group" "sg_backend" {
+  name        = "gtio-sg-backend"
+  description = "Allow traffic from frontend to API"
+  vpc_id      = data.aws_vpc.default.id
+
+  ingress {
+    description      = "API candidatos (8080)"
+    from_port        = 8080
+    to_port          = 8080
+    protocol         = "tcp"
+    # security_groups  = [data.aws_security_group.default.id, aws_security_group.sg_frontend.id]
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "Backend Security Group"
+  }
+}
+
+resource "aws_security_group" "sg_db" {
+  name        = "gtio-sg-db"
+  description = "Allow SQL Server access from backend only"
+  vpc_id      = data.aws_vpc.default.id
+
+  ingress {
+    description      = "SQL Server"
+    from_port        = 1433
+    to_port          = 1433
+    protocol         = "tcp"
+    # security_groups  = [data.aws_security_group.default.id, aws_security_group.sg_backend.id]
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "Database Security Group"
+  }
+}
+
 #################################
 # Api Gateway AWS
 #################################
@@ -271,14 +368,21 @@ resource "aws_api_gateway_rest_api" "rest_api" {
   })
 }
 
-# Resource: /test
-resource "aws_api_gateway_resource" "test_resource" {
+# Resource: /api
+resource "aws_api_gateway_resource" "api_base" {
   rest_api_id = aws_api_gateway_rest_api.rest_api.id
   parent_id   = aws_api_gateway_rest_api.rest_api.root_resource_id
+  path_part   = "api"
+}
+
+# Resource: /api/test
+resource "aws_api_gateway_resource" "test_resource" {
+  rest_api_id = aws_api_gateway_rest_api.rest_api.id
+  parent_id   = aws_api_gateway_resource.api_base.id
   path_part   = "test"
 }
 
-# Method: ANY on /test
+# Method: ANY on /api/test
 resource "aws_api_gateway_method" "test_method" {
   rest_api_id   = aws_api_gateway_rest_api.rest_api.id
   resource_id   = aws_api_gateway_resource.test_resource.id
@@ -296,14 +400,75 @@ resource "aws_api_gateway_integration" "test_integration" {
   uri                     = "http://${aws_lb.ElasticLoadBalancingV2LoadBalancer.dns_name}:8080/api/Candidates/Test"
 }
 
-# Resource: /obtenerTodosCandidatos
+# Method: ANY on /frontend
+resource "aws_api_gateway_method" "frontend_method" {
+  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
+  resource_id   = aws_api_gateway_rest_api.rest_api.root_resource_id
+  http_method   = "ANY"
+  authorization = "NONE"
+  api_key_required = false
+}
+
+# Integration: Forward to ALB
+resource "aws_api_gateway_integration" "frontend_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.rest_api.id
+  resource_id             = aws_api_gateway_rest_api.rest_api.root_resource_id
+  http_method             = aws_api_gateway_method.frontend_method.http_method
+  integration_http_method = "ANY"
+  type                    = "HTTP_PROXY"
+  uri                     = "http://${aws_lb.ElasticLoadBalancingV2LoadBalancer.dns_name}:3000"
+}
+
+# resource "aws_lb_listener_rule" "require_header" {
+#   listener_arn = aws_lb_listener.ElasticLoadBalancingV2Listener.arn
+#   priority     = 10
+
+#   condition {
+#     http_header {
+#       http_header_name = "x-amzn-apigateway-api-id"
+#       values           = ["*"] # acepta cualquier valor siempre que el header esté presente
+#     }
+#   }
+
+#   action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.ElasticLoadBalancingV2TargetGroup.arn
+#   }
+# }
+
+# # Regla para bloquear si NO tienen el header 'prueba'
+# resource "aws_lb_listener_rule" "block_if_missing_header" {
+#   listener_arn = aws_lb_listener.ElasticLoadBalancingV2Listener.arn
+#   priority     = 20
+
+#   condition {
+#     # Ningún valor significa que no cumple con la anterior
+#     # y cae en esta si no tenía el header
+#     # (esto funciona como fallback en ausencia del anterior)
+#     # No conditions = catch-all
+#     # But to simulate missing header:
+#     # use not having the above condition
+#   }
+
+#   action {
+#     type = "fixed-response"
+
+#     fixed_response {
+#       content_type = "text/plain"
+#       message_body = "Request blocked"
+#       status_code  = "403"
+#     }
+#   }
+# }
+
+# Resource: /api/obtenerTodosCandidatos
 resource "aws_api_gateway_resource" "obtener_todos_resource" {
   rest_api_id = aws_api_gateway_rest_api.rest_api.id
-  parent_id   = aws_api_gateway_rest_api.rest_api.root_resource_id
+  parent_id   = aws_api_gateway_resource.api_base.id
   path_part   = "obtenerTodosCandidatos"
 }
 
-# Method: ANY on /obtenerTodosCandidatos
+# Method: ANY on /api/obtenerTodosCandidatos
 resource "aws_api_gateway_method" "obtener_todos_method" {
   rest_api_id   = aws_api_gateway_rest_api.rest_api.id
   resource_id   = aws_api_gateway_resource.obtener_todos_resource.id
@@ -383,10 +548,10 @@ resource "aws_lb_listener" "http_listener_for_gateway" {
   }
 }
 
-# Resource: /obtenerCandidatoPorId/{id}
+# Resource: /api/obtenerCandidatoPorId/{id}
 resource "aws_api_gateway_resource" "obtener_por_id_base" {
   rest_api_id = aws_api_gateway_rest_api.rest_api.id
-  parent_id   = aws_api_gateway_rest_api.rest_api.root_resource_id
+  parent_id   = aws_api_gateway_resource.api_base.id
   path_part   = "obtenerCandidatoPorId"
 }
 
@@ -396,7 +561,7 @@ resource "aws_api_gateway_resource" "obtener_por_id_param" {
   path_part   = "{id}"
 }
 
-# Method: ANY on /obtenerCandidatoPorId
+# Method: ANY on /api/obtenerCandidatoPorId
 resource "aws_api_gateway_method" "obtener_por_id_method" {
   rest_api_id   = aws_api_gateway_rest_api.rest_api.id
   resource_id   = aws_api_gateway_resource.obtener_por_id_param.id
@@ -509,18 +674,6 @@ variable "launch_template_name" {
   default = "ECSLaunchTemplate_T9qfjpHq5vIs"
 }
 
-variable "autoscaling_min_size" {
-  default = 4
-}
-
-variable "autoscaling_max_size" {
-  default = 6
-}
-
-variable "autoscaling_desired_capacity" {
-  default = 4
-}
-
 variable "api_container_name" {
   default = "api-candidatos-container"
 }
@@ -608,6 +761,11 @@ variable "api_key" {
   type        = string
 }
 
+variable "desired_count" {
+  description = "Cantidad deseada de instancias"
+  type        = number  
+}
+
 #################################
 # Output variables
 #################################
@@ -617,6 +775,14 @@ output "lb_dns_name" {
 }
 
 output "rds_sg_id" {
+  value = aws_security_group.rds_sg.id
+}
+
+output "api_sg_id" {
+  value = aws_security_group.rds_sg.id
+}
+
+output "frontend_sg_id" {
   value = aws_security_group.rds_sg.id
 }
 
