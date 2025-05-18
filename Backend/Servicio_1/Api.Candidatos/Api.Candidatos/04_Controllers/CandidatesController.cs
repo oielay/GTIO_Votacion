@@ -26,14 +26,7 @@ public class CandidatesController : ControllerBase
     [HttpGet("Test")]
     public ActionResult<string> GetTest()
     {
-        Console.WriteLine("== Headers recibidos ==");
-        string response = string.Empty;
-        foreach (var header in Request.Headers)
-        {
-            Console.WriteLine($"{header.Key}: {header.Value}");
-            response += $"{header.Key}: {header.Value}\n";
-        }
-        return "Test OK: " + response;
+        return "Test OK";
     }
 
     [HttpGet("ObtenerTodosCandidatos")]
