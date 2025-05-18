@@ -16,93 +16,10 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 # Servicio: Api Candidatos
 #################################
 
-# Task Definition
-# resource "aws_ecs_task_definition" "task_api_candidatos" {
-#   family                   = "api"
-#   requires_compatibilities = ["EC2"]
-#   network_mode             = "awsvpc"
-#   cpu                      = "850"
-#   memory                   = "850"
-#   execution_role_arn       = data.aws_iam_role.lab_role.arn
-#   task_role_arn            = data.aws_iam_role.lab_role.arn
-
-#   container_definitions = jsonencode([
-#     {
-#       name  = var.api_container_name
-#       image = var.api_image
-#       portMappings = [
-#         {
-#           containerPort = 8080
-#           hostPort      = 8080
-#           protocol      = "tcp"
-#         }
-#       ]
-#       environment = [
-#         {
-#           name  = "CORS_ORIGIN"
-#           value = "http://${aws_lb.ElasticLoadBalancingV2LoadBalancer.dns_name}:3000"
-#         }
-#       ]
-#       secrets = [
-#         {
-#           name      = "ConnectionStrings__DefaultConnection"
-#           valueFrom = var.task_api_secret
-#         }
-#       ]
-#     }
-#   ])
-# }
-
-# Service
-# resource "aws_ecs_service" "service_api_candidatos" {
-#   name            = "api-candidatos-service"
-#   cluster         = aws_ecs_cluster.ecs_cluster.arn
-#   task_definition = aws_ecs_task_definition.task_api_candidatos.arn
-#   desired_count   = 1
-
-#   launch_type = "EC2"
-
-#   load_balancer {
-#     target_group_arn = aws_lb_target_group.ElasticLoadBalancingV2TargetGroup.arn
-#     container_name   = var.api_container_name
-#     container_port   = 8080
-#   }
-
-#   network_configuration {
-#     subnets         = data.aws_subnets.default.ids
-#     security_groups = [data.aws_security_group.default.id, aws_security_group.rds_sg.id]
-#   }
-
-#   deployment_controller {
-#     type = "ECS"
-#   }
-
-#   scheduling_strategy = "REPLICA"
-
-#   health_check_grace_period_seconds = 30
-#   force_new_deployment              = true
-
-#   depends_on = [
-#     aws_ecs_task_definition.task_api_candidatos,
-#     aws_lb_listener.ElasticLoadBalancingV2Listener
-#   ]
-# }
-
-# Instance
-# resource "aws_instance" "ecs_instance" {
-#   ami                    = var.ami_id
-#   instance_type          = var.instance_type
-#   key_name               = var.key_name
-#   availability_zone      = var.availability_zones[0]
-#   subnet_id              = data.aws_subnets.default.ids[0]
-#   vpc_security_group_ids = [data.aws_security_group.default.id, aws_security_group.rds_sg.id]
-#   user_data              = var.user_data
-#   iam_instance_profile   = var.iam_instance_profile
-
-#   tags = {
-#     Name = "instancia-api-candidatos"
-#   }
-# }
+resource "aws_cloudwatch_log_group" "api_logs" {
+  name              = "/ecs/api"
+  retention_in_days = 30
+}
 
 # Load Balancer
 resource "aws_lb" "ElasticLoadBalancingV2LoadBalancer" {
@@ -111,8 +28,8 @@ resource "aws_lb" "ElasticLoadBalancingV2LoadBalancer" {
   load_balancer_type = "application"
   subnets            = data.aws_subnets.default.ids
   security_groups = [
-    data.aws_security_group.default.id,
-    aws_security_group.rds_sg.id
+    aws_security_group.sg_frontend.id,
+    aws_security_group.sg_backend.id
   ]
   ip_address_type = "ipv4"
   access_logs {
@@ -144,9 +61,9 @@ resource "aws_autoscaling_group" "AutoScalingAutoScalingGroup" {
     id      = aws_launch_template.EC2LaunchTemplate.id
     version = "1"
   }
-  min_size                  = var.autoscaling_min_size
-  max_size                  = var.autoscaling_max_size
-  desired_capacity          = var.autoscaling_desired_capacity
+  min_size                  = var.desired_count
+  max_size                  = var.desired_count * 4
+  desired_capacity          = var.desired_count * 2
   default_cooldown          = 300
   health_check_type         = "EC2"
   health_check_grace_period = 0
@@ -180,8 +97,7 @@ resource "aws_launch_template" "EC2LaunchTemplate" {
     delete_on_termination       = true
     device_index                = 0
     security_groups = [
-      data.aws_security_group.default.id,
-      aws_security_group.rds_sg.id
+      data.aws_security_group.default.id
     ]
   }
   image_id      = var.ami_id
@@ -211,101 +127,11 @@ resource "aws_lb_target_group" "ElasticLoadBalancingV2TargetGroup" {
 # Servicio: Frontend
 #################################
 
-# Task Definition
-# resource "aws_ecs_task_definition" "task_frontend" {
-#   family                   = "frontend"
-#   requires_compatibilities = ["EC2"]
-#   network_mode             = "awsvpc"
-#   cpu                      = "850"
-#   memory                   = "850"
-#   execution_role_arn       = data.aws_iam_role.lab_role.arn
-#   task_role_arn            = data.aws_iam_role.lab_role.arn
-
-#   container_definitions = jsonencode([
-#     {
-#       name  = var.frontend_container_name
-#       image = var.frontend_image
-#       portMappings = [
-#         {
-#           containerPort = 3000
-#           hostPort      = 3000
-#           protocol      = "tcp"
-#         }
-#       ]
-#       environment = [
-#         {
-#           name  = "PUBLIC_API_URL"
-#           value = "http://${aws_lb.ElasticLoadBalancingV2LoadBalancer.dns_name}:8080"
-#         }
-#       ]
-#       logConfiguration = {
-#         logDriver = "awslogs",
-#         options = {
-#           awslogs-group         = "/ecs/frontend"
-#           awslogs-region        = "us-east-1"
-#           awslogs-stream-prefix = "ecs"
-#         }
-#       }
-#     }
-#   ])
-# }
-
 # Log group
 resource "aws_cloudwatch_log_group" "frontend_logs" {
   name              = "/ecs/frontend"
   retention_in_days = 7
 }
-
-# Service
-# resource "aws_ecs_service" "service_frontend" {
-#   name            = "frontend-service2"
-#   cluster         = aws_ecs_cluster.ecs_cluster.arn
-#   task_definition = aws_ecs_task_definition.task_frontend.arn
-#   desired_count   = 1
-
-#   launch_type = "EC2"
-
-#   load_balancer {
-#     target_group_arn = aws_lb_target_group.load_balancer_target_group_frontend.arn
-#     container_name   = var.frontend_container_name
-#     container_port   = 3000
-#   }
-
-#   network_configuration {
-#     subnets         = data.aws_subnets.default.ids
-#     security_groups = [data.aws_security_group.default.id, aws_security_group.rds_sg.id]
-#   }
-
-#   deployment_controller {
-#     type = "ECS"
-#   }
-
-#   scheduling_strategy = "REPLICA"
-
-#   health_check_grace_period_seconds = 30
-#   force_new_deployment              = true
-
-#   depends_on = [
-#     aws_ecs_task_definition.task_frontend,
-#     aws_lb_listener.load_balancer_listener_frontend
-#   ]
-# }
-
-# Instance
-# resource "aws_instance" "ecs_instance_frontend" {
-#   ami                    = var.ami_id
-#   instance_type          = var.instance_type
-#   key_name               = var.key_name
-#   availability_zone      = var.availability_zones[0]
-#   subnet_id              = data.aws_subnets.default.ids[0]
-#   vpc_security_group_ids = [data.aws_security_group.default.id, aws_security_group.rds_sg.id]
-#   user_data              = var.user_data
-#   iam_instance_profile   = var.iam_instance_profile
-
-#   tags = {
-#     Name = "instancia-frontend"
-#   }
-# }
 
 # Listener Frontend
 resource "aws_lb_listener" "load_balancer_listener_frontend" {
@@ -352,7 +178,7 @@ resource "aws_db_instance" "RDSDBInstance" {
   password                            = var.sql_password
   backup_window                       = "07:41-08:11"
   backup_retention_period             = 1
-  availability_zone                   = var.availability_zones[1]
+  availability_zone                   = data.aws_availability_zones.available.names[0]
   maintenance_window                  = "sat:04:41-sat:05:11"
   multi_az                            = false
   engine_version                      = "15.00.4430.1.v1"
@@ -371,7 +197,7 @@ resource "aws_db_instance" "RDSDBInstance" {
   db_subnet_group_name                = aws_db_subnet_group.db_subnet_gtio_votacion.name
   vpc_security_group_ids = [
     data.aws_security_group.default.id,
-    aws_security_group.rds_sg.id
+    aws_security_group.sg_db.id
   ]
   skip_final_snapshot = true
 }
@@ -385,83 +211,6 @@ resource "aws_db_subnet_group" "db_subnet_gtio_votacion" {
     Name = "db-subnet-gtio-votacion"
   }
 }
-
-# resource "aws_ecs_task_definition" "db_init_task" {
-#     family                   = "db-init-task"
-#     requires_compatibilities = ["FARGATE"]
-#     cpu                      = "256"
-#     memory                   = "512"
-#     network_mode             = "awsvpc"
-#     execution_role_arn       = data.aws_iam_role.lab_role.arn
-#     task_role_arn            = data.aws_iam_role.lab_role.arn
-
-#     container_definitions = jsonencode([
-#         {
-#             name      = "db-init"
-#             image     = var.db_init_image
-#             essential = true
-#             environment = [
-#                 {
-#                     name  = "DB_SERVER"
-#                     value = var.db_server
-#                 },
-#                 {
-#                     name  = "DB_USER"
-#                     value = "sa"
-#                 },
-#                 {
-#                     name  = "DB_PASSWORD"
-#                     value = var.db_password
-#                 }
-#             ]
-#             logConfiguration = {
-#                 logDriver = "awslogs",
-#                 options = {
-#                     awslogs-group         = "/ecs/db-init"
-#                     awslogs-region        = "us-east-1"
-#                     awslogs-stream-prefix = "ecs"
-#                 }
-#             }
-#         }
-#     ])
-
-#     depends_on = [
-#         aws_db_instance.RDSDBInstance
-#     ]
-# }
-
-# resource "aws_cloudwatch_log_group" "db_init_logs" {
-#     name              = "/ecs/db-init"
-#     retention_in_days = 7
-# }
-
-# resource "null_resource" "run_db_init_task" {
-#     depends_on = [aws_db_instance.RDSDBInstance]
-
-#     provisioner "local-exec" {
-#         command = "aws ecs run-task --cluster ${aws_ecs_cluster.ecs_cluster.name} --launch-type FARGATE --network-configuration awsvpcConfiguration={subnets=[${join(",", formatlist("\"%s\"", data.aws_subnets.default.ids))}],securityGroups=[\"${data.aws_security_group.default.id}\"],assignPublicIp=\"ENABLED\"} --task-definition ${aws_ecs_task_definition.db_init_task.arn}"
-#     }
-
-#     triggers = {
-#         always_run = timestamp()
-#     }
-# }
-
-# resource "aws_ecs_service" "run_db_init" {
-#     name = "db-init-service"
-#     task_definition = aws_ecs_task_definition.db_init_task.arn
-#     cluster         = aws_ecs_cluster.ecs_cluster.arn
-#     launch_type     = "FARGATE"
-
-#     network_configuration {
-#         subnets          = data.aws_subnets.default.ids
-#         security_groups  = [data.aws_security_group.default.id, aws_security_group.rds_sg.id]
-#         assign_public_ip = true
-#     }
-
-#     depends_on = [aws_db_instance.RDSDBInstance, aws_ecs_task_definition.db_init_task]
-#     desired_count   = 1
-# }
 
 resource "aws_security_group" "rds_sg" {
   name        = "rds-sql-access"
@@ -504,6 +253,99 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
+resource "aws_security_group" "sg_frontend" {
+  name        = "gtio-sg-frontend"
+  description = "Allow HTTP/HTTPS traffic from the internet"
+  vpc_id      = data.aws_vpc.default.id
+
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Frontend (3000)"
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "Frontend Security Group"
+  }
+}
+
+resource "aws_security_group" "sg_backend" {
+  name        = "gtio-sg-backend"
+  description = "Allow traffic from frontend to API"
+  vpc_id      = data.aws_vpc.default.id
+
+  ingress {
+    description      = "API candidatos (8080)"
+    from_port        = 8080
+    to_port          = 8080
+    protocol         = "tcp"
+    # security_groups  = [data.aws_security_group.default.id, aws_security_group.sg_frontend.id]
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "Backend Security Group"
+  }
+}
+
+resource "aws_security_group" "sg_db" {
+  name        = "gtio-sg-db"
+  description = "Allow SQL Server access from backend only"
+  vpc_id      = data.aws_vpc.default.id
+
+  ingress {
+    description      = "SQL Server"
+    from_port        = 1433
+    to_port          = 1433
+    protocol         = "tcp"
+    # security_groups  = [data.aws_security_group.default.id, aws_security_group.sg_backend.id]
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "Database Security Group"
+  }
+}
+
 #################################
 # Api Gateway AWS
 #################################
@@ -526,14 +368,21 @@ resource "aws_api_gateway_rest_api" "rest_api" {
   })
 }
 
-# Resource: /test
-resource "aws_api_gateway_resource" "test_resource" {
+# Resource: /api
+resource "aws_api_gateway_resource" "api_base" {
   rest_api_id = aws_api_gateway_rest_api.rest_api.id
   parent_id   = aws_api_gateway_rest_api.rest_api.root_resource_id
+  path_part   = "api"
+}
+
+# Resource: /api/test
+resource "aws_api_gateway_resource" "test_resource" {
+  rest_api_id = aws_api_gateway_rest_api.rest_api.id
+  parent_id   = aws_api_gateway_resource.api_base.id
   path_part   = "test"
 }
 
-# Method: ANY on /test
+# Method: ANY on /api/test
 resource "aws_api_gateway_method" "test_method" {
   rest_api_id   = aws_api_gateway_rest_api.rest_api.id
   resource_id   = aws_api_gateway_resource.test_resource.id
@@ -551,17 +400,79 @@ resource "aws_api_gateway_integration" "test_integration" {
   uri                     = "http://${aws_lb.ElasticLoadBalancingV2LoadBalancer.dns_name}:8080/api/Candidates/Test"
 }
 
-# Resource: /obtenerTodosCandidatos
+# Method: ANY on /frontend
+resource "aws_api_gateway_method" "frontend_method" {
+  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
+  resource_id   = aws_api_gateway_rest_api.rest_api.root_resource_id
+  http_method   = "ANY"
+  authorization = "NONE"
+  api_key_required = false
+}
+
+# Integration: Forward to ALB
+resource "aws_api_gateway_integration" "frontend_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.rest_api.id
+  resource_id             = aws_api_gateway_rest_api.rest_api.root_resource_id
+  http_method             = aws_api_gateway_method.frontend_method.http_method
+  integration_http_method = "ANY"
+  type                    = "HTTP_PROXY"
+  uri                     = "http://${aws_lb.ElasticLoadBalancingV2LoadBalancer.dns_name}:3000"
+}
+
+# resource "aws_lb_listener_rule" "require_header" {
+#   listener_arn = aws_lb_listener.ElasticLoadBalancingV2Listener.arn
+#   priority     = 10
+
+#   condition {
+#     http_header {
+#       http_header_name = "x-amzn-apigateway-api-id"
+#       values           = ["*"] # acepta cualquier valor siempre que el header esté presente
+#     }
+#   }
+
+#   action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.ElasticLoadBalancingV2TargetGroup.arn
+#   }
+# }
+
+# # Regla para bloquear si NO tienen el header 'prueba'
+# resource "aws_lb_listener_rule" "block_if_missing_header" {
+#   listener_arn = aws_lb_listener.ElasticLoadBalancingV2Listener.arn
+#   priority     = 20
+
+#   condition {
+#     # Ningún valor significa que no cumple con la anterior
+#     # y cae en esta si no tenía el header
+#     # (esto funciona como fallback en ausencia del anterior)
+#     # No conditions = catch-all
+#     # But to simulate missing header:
+#     # use not having the above condition
+#   }
+
+#   action {
+#     type = "fixed-response"
+
+#     fixed_response {
+#       content_type = "text/plain"
+#       message_body = "Request blocked"
+#       status_code  = "403"
+#     }
+#   }
+# }
+
+# Resource: /api/obtenerTodosCandidatos
 resource "aws_api_gateway_resource" "obtener_todos_resource" {
   rest_api_id = aws_api_gateway_rest_api.rest_api.id
-  parent_id   = aws_api_gateway_rest_api.rest_api.root_resource_id
+  parent_id   = aws_api_gateway_resource.api_base.id
   path_part   = "obtenerTodosCandidatos"
 }
 
-# Method: ANY on /obtenerTodosCandidatos
+# Method: ANY on /api/obtenerTodosCandidatos
 resource "aws_api_gateway_method" "obtener_todos_method" {
   rest_api_id   = aws_api_gateway_rest_api.rest_api.id
   resource_id   = aws_api_gateway_resource.obtener_todos_resource.id
+  api_key_required = true
   http_method   = "ANY"
   authorization = "NONE"
 }
@@ -579,12 +490,14 @@ resource "aws_api_gateway_integration" "obtener_todos_integration" {
 # Configuración del stage "prod" con CloudWatch Logs
 resource "aws_api_gateway_deployment" "prod_deployment" {
   rest_api_id = aws_api_gateway_rest_api.rest_api.id
-  stage_name  = "prod"
-  depends_on = [
+  depends_on  = [
     aws_api_gateway_method.test_method,
-    aws_api_gateway_method.obtener_todos_method, # Asegurando que el método se haya creado antes del deployment
+    aws_api_gateway_method.obtener_todos_method,
+    aws_api_gateway_resource.obtener_por_id_base,
+    aws_api_gateway_resource.obtener_por_id_param,
     aws_api_gateway_integration.test_integration,
-    aws_api_gateway_integration.obtener_todos_integration
+    aws_api_gateway_integration.obtener_todos_integration,
+    aws_api_gateway_integration.obtener_por_id_integration
   ]
 }
 
@@ -597,6 +510,30 @@ resource "aws_api_gateway_stage" "prod_stage" {
   rest_api_id   = aws_api_gateway_rest_api.rest_api.id
   stage_name    = "prod"
   deployment_id = aws_api_gateway_deployment.prod_deployment.id
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_gw_logs.arn
+    format = jsonencode({
+      requestId       = "$context.requestId"
+      ip              = "$context.identity.sourceIp"
+      caller          = "$context.identity.caller"
+      user            = "$context.identity.user"
+      requestTime     = "$context.requestTime"
+      httpMethod      = "$context.httpMethod"
+      resourcePath    = "$context.resourcePath"
+      status          = "$context.status"
+      protocol        = "$context.protocol"
+      responseLength  = "$context.responseLength"
+    })
+  }
+  
+  tags = {
+    Name = "gtio-votacion-prod-stage"
+  }
+
+  depends_on = [
+    aws_api_gateway_account.account_settings
+  ]
 }
 
 # Listener en ALB que redirige tráfico a la API Gateway
@@ -611,208 +548,89 @@ resource "aws_lb_listener" "http_listener_for_gateway" {
   }
 }
 
-# DynamoDB
-# resource "aws_dynamodb_table" "api_keys" {
-#   name         = "api-keys"
-#   billing_mode = "PAY_PER_REQUEST"
-#   hash_key     = "api_key"
+# Resource: /api/obtenerCandidatoPorId/{id}
+resource "aws_api_gateway_resource" "obtener_por_id_base" {
+  rest_api_id = aws_api_gateway_rest_api.rest_api.id
+  parent_id   = aws_api_gateway_resource.api_base.id
+  path_part   = "obtenerCandidatoPorId"
+}
 
-#   attribute {
-#     name = "api_key"
-#     type = "S"
-#   }
-# }
+resource "aws_api_gateway_resource" "obtener_por_id_param" {
+  rest_api_id = aws_api_gateway_rest_api.rest_api.id
+  parent_id   = aws_api_gateway_resource.obtener_por_id_base.id
+  path_part   = "{id}"
+}
 
-# # Lambda Authorizer
-# resource "aws_iam_role" "lambda_auth_role" {
-#   name = "lambda-authorizer-role"
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [{
-#       Action = "sts:AssumeRole"
-#       Principal = {
-#         Service = "lambda.amazonaws.com"
-#       }
-#       Effect = "Allow"
-#     }]
-#   })
-# }
+# Method: ANY on /api/obtenerCandidatoPorId
+resource "aws_api_gateway_method" "obtener_por_id_method" {
+  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
+  resource_id   = aws_api_gateway_resource.obtener_por_id_param.id
+  http_method   = "GET"
+  authorization = "NONE"
+  api_key_required = true
 
-# resource "aws_iam_policy_attachment" "lambda_logs" {
-#   name       = "lambda-logs"
-#   roles      = [aws_iam_role.lambda_auth_role.name]
-#   policy_arn = data.aws_iam_role.lab_role.arn
-# }
+  request_parameters = {
+    "method.request.path.id" = true
+  }
+}
 
-# resource "aws_lambda_function" "auth_lambda" {
-#   function_name = "api-key-authorizer"
-#   role          = data.aws_iam_role.lab_role.arn
-#   handler       = "index.handler"
-#   runtime       = "nodejs18.x"
-#   timeout       = 5
-#   filename      = "lambda.zip"
+# Integration: Forward to ALB
+resource "aws_api_gateway_integration" "obtener_por_id_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.rest_api.id
+  resource_id             = aws_api_gateway_resource.obtener_por_id_param.id
+  http_method             = aws_api_gateway_method.obtener_por_id_method.http_method
+  integration_http_method = "GET"
+  type                    = "HTTP_PROXY"
+  uri                     = "http://${aws_lb.ElasticLoadBalancingV2LoadBalancer.dns_name}:8080/api/Candidates/ObtenerCandidatoPorId/{id}"
 
-#   environment {
-#     variables = {
-#       TABLE_NAME = aws_dynamodb_table.api_keys.name
-#     }
-#   }
-# }
+  request_parameters = {
+    "integration.request.path.id" = "method.request.path.id"
+  }
+}
 
-#################################
-# Cloudwatch: eventos para despliegue automatico
-#################################
+# Api key
+resource "aws_api_gateway_api_key" "cliente_api_key" {
+  name        = "key"
+  description = "API Key"
+  enabled     = true
+  value       = var.api_key
+}
 
-# resource "aws_cloudwatch_event_rule" "api_image_push_rule" {
-#     name        = "api-image-push-rule"
-#     description = "Regla para activar eventos solo cuando se suba una nueva imagen al repositorio de api"
-#     event_pattern = jsonencode({
-#         "source" = [
-#             "aws.ecr"
-#         ],
-#         "detail-type" = [
-#             "ECR Image Action"
-#         ],
-#         "detail" = {
-#             "action-type" = ["PUSH"]
-#             "repository-name" = [aws_ecr_repository.api_repo.name]
-#         }
-#     })
-# }
+# Usage plan
+resource "aws_api_gateway_usage_plan" "cliente_usage_plan" {
+  name = "usage-plan"
 
-# resource "aws_cloudwatch_event_rule" "frontend_image_push_rule" {
-#     name        = "frontend-image-push-rule"
-#     description = "Regla para activar eventos solo cuando se suba una nueva imagen al repositorio de frontend"
-#     event_pattern = jsonencode({
-#         "source" = [
-#             "aws.ecr"
-#         ],
-#         "detail-type" = [
-#             "ECR Image Action"
-#         ],
-#         "detail" = {
-#             "action-type" = ["PUSH"]
-#             "repository-name" = [aws_ecr_repository.frontend_repo.name]
-#         }
-#     })
-# }
+  api_stages {
+    api_id = aws_api_gateway_rest_api.rest_api.id
+    stage  = aws_api_gateway_stage.prod_stage.stage_name
+  }
 
-# resource "aws_cloudwatch_event_target" "api_ecs_service_target" {
-#     rule = aws_cloudwatch_event_rule.api_image_push_rule.name
-#     arn  = aws_ecs_service.service_api_candidatos.id
-#     role_arn = data.aws_iam_role.lab_role.arn
+  throttle_settings {
+    burst_limit = 5
+    rate_limit  = 10
+  }
 
-#     input = jsonencode({
-#         "cluster"         = aws_ecs_cluster.ecs_cluster.name,
-#         "service"         = aws_ecs_service.service_api_candidatos.name,
-#         "desiredCount"    = 1,
-#         "forceNewDeployment" = true
-#     })
-# }
+  quota_settings {
+    limit  = 1000
+    period = "MONTH"
+  }
+}
 
-# resource "aws_cloudwatch_event_target" "frontend_ecs_service_target" {
-#     rule = aws_cloudwatch_event_rule.frontend_image_push_rule.name
-#     arn  = aws_ecs_service.service_frontend.id
-#     role_arn = data.aws_iam_role.lab_role.arn
+# Usage plan key
+resource "aws_api_gateway_usage_plan_key" "cliente_key_link" {
+  key_id        = aws_api_gateway_api_key.cliente_api_key.id
+  key_type      = "API_KEY"
+  usage_plan_id = aws_api_gateway_usage_plan.cliente_usage_plan.id
+}
 
-#     input = jsonencode({
-#         "cluster"         = aws_ecs_cluster.ecs_cluster.name,
-#         "service"         = aws_ecs_service.service_frontend.name,
-#         "desiredCount"    = 1,
-#         "forceNewDeployment" = true
-#     })
-# }
-
-# Ejecutar en local
-# resource "null_resource" "run_sql_script" {
-#     provisioner "local-exec" {
-#         command = <<-EOF
-#         sqlcmd -S ${aws_db_instance.RDSDBInstance.endpoint} -U sa -P ${var.sql_password} -d master -i "./scripts/init1.sql"
-#         EOF
-#     }
-
-#     depends_on = [aws_db_instance.RDSDBInstance]
-# }
-
-# Lambda Function ---- NO FUNCIONA ADECUADAMENTE ----
-# resource "aws_lambda_function" "db_creation_lambda" {
-#     function_name = "db_creation_lambda"
-#     role          = data.aws_iam_role.lab_role.arn
-#     handler       = "lambda_function.lambda_handler"
-#     runtime       = "python3.8"
-
-#     filename      = "lambda_function.zip"
-
-#     environment {
-#         variables = {
-#             DB_SERVER = aws_db_instance.RDSDBInstance.address
-#             DB_USER   = "sa"
-#             DB_PASSWORD = var.sql_password
-#         }
-#     }
-
-#     vpc_config {
-#         subnet_ids         = data.aws_subnets.default.ids
-#         security_group_ids = [data.aws_security_group.default.id]
-#     }
-
-#     source_code_hash = filebase64sha256("lambda_function.zip")
-# }
-
-# resource "aws_cloudwatch_event_rule" "rds_event_rule" {
-#     name        = "rds-instance-available-rule"
-#     description = "Regla para ejecutar Lambda cuando RDS esté disponible"
-#     event_pattern = jsonencode({
-#         source = ["aws.rds"],
-#         detail_type = ["RDS DB Instance Event"],
-#         detail = {
-#             "EventCategories" = ["Availability"]
-#             "SourceType"      = ["DB_INSTANCE"]
-#             "SourceIdentifier" = [aws_db_instance.RDSDBInstance.id]
-#         }
-#     })
-# }
-
-# resource "aws_cloudwatch_event_target" "lambda_target" {
-#     rule      = aws_cloudwatch_event_rule.rds_event_rule.name
-#     target_id = "lambdaTarget"
-#     arn       = aws_lambda_function.db_creation_lambda.arn
-# }
-
-# resource "aws_lambda_permission" "allow_eventbridge_to_invoke_lambda" {
-#     statement_id  = "AllowExecutionFromCloudWatch"
-#     action        = "lambda:InvokeFunction"
-#     function_name = aws_lambda_function.db_creation_lambda.function_name
-#     principal     = "events.amazonaws.com"
-#     source_arn    = aws_cloudwatch_event_rule.rds_event_rule.arn
-# }
-
-# resource "aws_ebs_volume" "EC2Volume" {
-#     availability_zone = var.availability_zones[0]
-#     encrypted = false
-#     size = 30
-#     type = "gp3"
-#     tags = {
-#         Name = "Volume1"
-#     }
-# }
-
-# resource "aws_network_interface" "EC2NetworkInterface" {
-#     description = ""
-#     subnet_id = data.aws_subnets.default.ids[0]
-#     source_dest_check = true
-#     security_groups = [
-#         data.aws_security_group.default.id
-#     ]
-# }
+# Cloudwatch role for API Gateway
+resource "aws_api_gateway_account" "account_settings" {
+  cloudwatch_role_arn = data.aws_iam_role.lab_role.arn
+}
 
 #################################
 # Local variables
 #################################
-
-variable "availability_zones" {
-  default = ["us-east-1b", "us-east-1b", "us-east-1c", "us-east-1a", "us-east-1e", "us-east-1f"]
-}
 
 variable "ami_id" {
   default = "ami-03b4de1e633ccdc0f"
@@ -854,18 +672,6 @@ variable "autoscaling_group_name" {
 
 variable "launch_template_name" {
   default = "ECSLaunchTemplate_T9qfjpHq5vIs"
-}
-
-variable "autoscaling_min_size" {
-  default = 3
-}
-
-variable "autoscaling_max_size" {
-  default = 4
-}
-
-variable "autoscaling_desired_capacity" {
-  default = 3
 }
 
 variable "api_container_name" {
@@ -916,6 +722,10 @@ data "aws_iam_instance_profile" "lab_profile" {
   name = "LabInstanceProfile"
 }
 
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 #################################
 # Tfvars variables
 #################################
@@ -946,10 +756,15 @@ variable "frontend_image" { # igual se puede dinamizar
   type        = string
 }
 
-# variable "db_init_image" {
-#   description = "Imagen para inicializar la base de datos"
-#   type        = string
-# }
+variable "api_key" {
+  description = "API Key"
+  type        = string
+}
+
+variable "desired_count" {
+  description = "Cantidad deseada de instancias"
+  type        = number  
+}
 
 #################################
 # Output variables
@@ -960,6 +775,14 @@ output "lb_dns_name" {
 }
 
 output "rds_sg_id" {
+  value = aws_security_group.rds_sg.id
+}
+
+output "api_sg_id" {
+  value = aws_security_group.rds_sg.id
+}
+
+output "frontend_sg_id" {
   value = aws_security_group.rds_sg.id
 }
 

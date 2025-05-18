@@ -1,4 +1,5 @@
 const apiUrl = import.meta.env.PUBLIC_API_URL;
+const apiKey = "Z3Rpby12b3RhY2lvbi1hcGkta2V5IGhheSBxdWUgYWxhcmdhciBwYXJhIGxsZWdhciBhIDMwIGNhcmFjdGVyZXM"; //import.meta.env.PUBLIC_API_KEY;
 
 interface Participant {
   id: number;
@@ -17,7 +18,8 @@ export async function obtenerTodosCandidatos() {
     `${apiUrl}/api/Candidates/ObtenerTodosCandidatos`,
     {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json",
+                 "x-api-key": apiKey},
     }
   );
 
@@ -38,7 +40,8 @@ export async function actualizarVotosCandidato(
     `${apiUrl}/api/Candidates/ActualizarVotosCandidato`,
     {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json",
+                 "x-api-key": apiKey},
       body: JSON.stringify({ votes: votos, id: participantId }),
     }
   );
@@ -56,7 +59,8 @@ export async function obtenerVotosCandidato(id: number) {
     `${apiUrl}/api/Candidates/ObtenerVotosCandidato/${id}`,
     {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json",
+                 "x-api-key": apiKey},
     }
   );
 
