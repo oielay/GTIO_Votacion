@@ -104,7 +104,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Obtener archivo env.tfvars
-        run: aws s3 cp s3://gtio-votacion-config/env.tfvars Terraform/env.tfvars
+        run: aws s3 cp s3://gtio-votacion-config2/env.tfvars Terraform/env.tfvars
 
       - name: Configurar Terraform
         uses: hashicorp/setup-terraform@v2
@@ -156,7 +156,7 @@ jobs:
           docker-compose version
 
       - name: Crear archivo .env
-        run: aws s3 cp s3://gtio-votacion-config/.env .env
+        run: aws s3 cp s3://gtio-votacion-config2/.env .env
 
       - name: Build imágenes con docker-compose
         run: docker-compose build
@@ -199,7 +199,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Crear archivo env.tfvars
-        run: aws s3 cp s3://gtio-votacion-config/env.tfvars Terraform/env.tfvars
+        run: aws s3 cp s3://gtio-votacion-config2/env.tfvars Terraform/env.tfvars
 
       - name: Configurar Terraform
         uses: hashicorp/setup-terraform@v2
