@@ -249,7 +249,7 @@ jobs:
       - name: Ejecutar script de poblamiento cuando esté disponible
         run: |
           echo "Esperando a que la API esté disponible para poblar la base de datos..."
-          until curl --silent --fail -H "x-api-key: ${{ secrets.ADMIN_API_KEY }}" -X GET http://balanceador-candidatos-645434306.${{ env.AWS_REGION }}.elb.amazonaws.com:8080/api/Candidates/CrearBaseDeDatos; do
+          until curl --silent --fail -H "x-api-key: ${{ secrets.ADMIN_API_KEY }}" -X GET http://balanceador-candidatos-1364946992.${{ env.AWS_REGION }}.elb.amazonaws.com:8080/api/Candidates/CrearBaseDeDatos; do
             echo "La API aún no está disponible o falló el poblamiento. Reintentando en 10 segundos..."
             sleep 10
           done
