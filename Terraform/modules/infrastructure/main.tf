@@ -41,6 +41,10 @@ resource "aws_lb" "ElasticLoadBalancingV2LoadBalancer" {
   enable_deletion_protection       = "false"
   enable_http2                     = "true"
   enable_cross_zone_load_balancing = "true"
+
+  tags = {
+    Name = "balanceador-candidatos"
+  }
 }
 
 # Listener Api
@@ -200,6 +204,10 @@ resource "aws_db_instance" "RDSDBInstance" {
     aws_security_group.sg_db.id
   ]
   skip_final_snapshot = true
+
+  tags = {
+    Name = var.db_server
+  }
 }
 
 resource "aws_db_subnet_group" "db_subnet_gtio_votacion" {
@@ -300,10 +308,10 @@ resource "aws_security_group" "sg_backend" {
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
-    description      = "API candidatos (8080)"
-    from_port        = 8080
-    to_port          = 8080
-    protocol         = "tcp"
+    description = "API candidatos (8080)"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
     # security_groups  = [data.aws_security_group.default.id, aws_security_group.sg_frontend.id]
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -326,10 +334,10 @@ resource "aws_security_group" "sg_db" {
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
-    description      = "SQL Server"
-    from_port        = 1433
-    to_port          = 1433
-    protocol         = "tcp"
+    description = "SQL Server"
+    from_port   = 1433
+    to_port     = 1433
+    protocol    = "tcp"
     # security_groups  = [data.aws_security_group.default.id, aws_security_group.sg_backend.id]
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -366,6 +374,10 @@ resource "aws_api_gateway_rest_api" "rest_api" {
       }
     ]
   })
+
+  tags = {
+    Name = "gtio-votacion-api-gateway"
+  }
 }
 
 # Resource: /api
@@ -402,10 +414,10 @@ resource "aws_api_gateway_integration" "test_integration" {
 
 # Method: ANY on /frontend
 resource "aws_api_gateway_method" "frontend_method" {
-  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
-  resource_id   = aws_api_gateway_rest_api.rest_api.root_resource_id
-  http_method   = "ANY"
-  authorization = "NONE"
+  rest_api_id      = aws_api_gateway_rest_api.rest_api.id
+  resource_id      = aws_api_gateway_rest_api.rest_api.root_resource_id
+  http_method      = "ANY"
+  authorization    = "NONE"
   api_key_required = false
 }
 
@@ -470,11 +482,11 @@ resource "aws_api_gateway_resource" "obtener_todos_resource" {
 
 # Method: ANY on /api/obtenerTodosCandidatos
 resource "aws_api_gateway_method" "obtener_todos_method" {
-  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
-  resource_id   = aws_api_gateway_resource.obtener_todos_resource.id
+  rest_api_id      = aws_api_gateway_rest_api.rest_api.id
+  resource_id      = aws_api_gateway_resource.obtener_todos_resource.id
   api_key_required = true
-  http_method   = "ANY"
-  authorization = "NONE"
+  http_method      = "ANY"
+  authorization    = "NONE"
 }
 
 # Integration: Forward to ALB
@@ -490,7 +502,7 @@ resource "aws_api_gateway_integration" "obtener_todos_integration" {
 # Configuración del stage "prod" con CloudWatch Logs
 resource "aws_api_gateway_deployment" "prod_deployment" {
   rest_api_id = aws_api_gateway_rest_api.rest_api.id
-  depends_on  = [
+  depends_on = [
     aws_api_gateway_method.test_method,
     aws_api_gateway_method.obtener_todos_method,
     aws_api_gateway_resource.obtener_por_id_base,
@@ -514,19 +526,19 @@ resource "aws_api_gateway_stage" "prod_stage" {
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api_gw_logs.arn
     format = jsonencode({
-      requestId       = "$context.requestId"
-      ip              = "$context.identity.sourceIp"
-      caller          = "$context.identity.caller"
-      user            = "$context.identity.user"
-      requestTime     = "$context.requestTime"
-      httpMethod      = "$context.httpMethod"
-      resourcePath    = "$context.resourcePath"
-      status          = "$context.status"
-      protocol        = "$context.protocol"
-      responseLength  = "$context.responseLength"
+      requestId      = "$context.requestId"
+      ip             = "$context.identity.sourceIp"
+      caller         = "$context.identity.caller"
+      user           = "$context.identity.user"
+      requestTime    = "$context.requestTime"
+      httpMethod     = "$context.httpMethod"
+      resourcePath   = "$context.resourcePath"
+      status         = "$context.status"
+      protocol       = "$context.protocol"
+      responseLength = "$context.responseLength"
     })
   }
-  
+
   tags = {
     Name = "gtio-votacion-prod-stage"
   }
@@ -563,10 +575,10 @@ resource "aws_api_gateway_resource" "obtener_por_id_param" {
 
 # Method: ANY on /api/obtenerCandidatoPorId
 resource "aws_api_gateway_method" "obtener_por_id_method" {
-  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
-  resource_id   = aws_api_gateway_resource.obtener_por_id_param.id
-  http_method   = "GET"
-  authorization = "NONE"
+  rest_api_id      = aws_api_gateway_rest_api.rest_api.id
+  resource_id      = aws_api_gateway_resource.obtener_por_id_param.id
+  http_method      = "GET"
+  authorization    = "NONE"
   api_key_required = true
 
   request_parameters = {
@@ -763,7 +775,7 @@ variable "api_key" {
 
 variable "desired_count" {
   description = "Cantidad deseada de instancias"
-  type        = number  
+  type        = number
 }
 
 #################################

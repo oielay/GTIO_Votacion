@@ -83,6 +83,10 @@ resource "aws_ecs_service" "service_frontend" {
     aws_ecs_task_definition.task_frontend,
     var.listener_frontend_arn
   ]
+
+  tags = {
+    Name = "frontend-service"
+  }
 }
 
 #################################
@@ -183,7 +187,7 @@ variable "desired_count" {
 
 variable "public_api_key" {
   description = "API key pública"
-  type        = string  
+  type        = string
 }
 
 ###################################

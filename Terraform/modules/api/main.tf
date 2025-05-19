@@ -51,9 +51,9 @@ resource "aws_ecs_task_definition" "task_api_candidatos" {
         log_driver = "awslogs"
 
         options = {
-            awslogs-group         = "/ecs/api"
-            awslogs-region        = "eu-west-1"
-            awslogs-stream-prefix = "ecs"
+          awslogs-group         = "/ecs/api"
+          awslogs-region        = "eu-west-1"
+          awslogs-stream-prefix = "ecs"
         }
       }
     }
@@ -98,6 +98,10 @@ resource "aws_ecs_service" "service_api_candidatos" {
     aws_ecs_task_definition.task_api_candidatos,
     var.listener_api_arn
   ]
+
+  tags = {
+    Name = "api-candidatos-service"
+  }
 }
 
 #################################

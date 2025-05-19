@@ -13,7 +13,7 @@ terraform {
 
   # S3 bucket
   backend "s3" {
-    bucket       = "gtio-votacion-state2"
+    bucket       = "gtio-votacion-state-dev"
     key          = "terraform/terraform.tfstate"
     region       = "us-east-1"
     use_lockfile = false
@@ -121,20 +121,4 @@ variable "desired_count" {
   description = "Número deseado de instancias"
   type        = number
   default     = 2
-}
-
-################################
-# Outputs
-################################
-
-output "ecs_cluster_name" {
-  value = module.infrastructure.ecs_cluster_name
-}
-
-output "ecs_service_name_frontend" {
-  value = module.frontend.ecs_service_name_frontend
-}
-
-output "ecs_service_name_api" {
-  value = module.api.ecs_service_name_api
 }
