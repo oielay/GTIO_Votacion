@@ -10,7 +10,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REGISTRY: 515599837804.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REGISTRY: 663497092862.dkr.ecr.us-east-1.amazonaws.com
   IMAGE_TAG: latest
 
 jobs:
