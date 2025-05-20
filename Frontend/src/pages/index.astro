@@ -1,9 +1,9 @@
 ---
 import Header from "../components/Header.astro";
 import Home from "../components/Home.astro";
-import Participants from "../components/Participants.astro";
-import Voting from "../components/Voting.astro";
-import Results from "../components/Results.astro";
+import Participants from "../components/Participants.jsx";
+import Voting from "../components/Voting.jsx";
+import Results from "../components/Results.jsx";
 ---
 
 <html lang="es">
@@ -24,13 +24,13 @@ import Results from "../components/Results.astro";
         <Home />
       </section>
       <section id="participants">
-        <Participants />
+        <Participants client:load />
       </section>
       <section id="voting">
-        <Voting />
+        <Voting client:load />
       </section>
       <section id="results">
-        <Results />
+        <Results client:load />
       </section>
     </main>
   </body>

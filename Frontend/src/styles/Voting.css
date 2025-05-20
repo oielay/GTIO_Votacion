@@ -1,0 +1,87 @@
+.vote-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+
+.candidate {
+  align-self: center;
+  display: flex;
+  flex-direction: row;
+  gap: 4rem;
+  align-items: center;
+}
+
+.participant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.image-container {
+  display: flex;
+  align-items: center;
+}
+
+.arrow {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+#current-image {
+  width: 190px;
+  height: auto;
+}
+
+.voting-button {
+  align-self: center;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.features {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.features > h2,
+.features > p {
+  margin-bottom: 0;
+}
+
+.features > h2 {
+  margin-top: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .candidate {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .features {
+    align-self: center;
+  }
+
+  .image-container {
+    justify-content: center;
+  }
+}

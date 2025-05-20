@@ -118,14 +118,14 @@ export async function renderCharts() {
 
     globalThis.pieChart = new Chart(ctxPie, {
       type: "pie",
-      data: (await chartsHelper.getBarChartData()).data,
+      data: (await chartsHelper.getPieChartData()).data,
       options: (await chartsHelper.getPieChartData()).options,
     });
 
     globalThis.barChart = new Chart(ctxBar, {
       type: "bar",
       data: (await chartsHelper.getBarChartData()).data,
-      options: (await chartsHelper.getPieChartData()).options,
+      options: (await chartsHelper.getBarChartData()).options,
     });
   }
 }

@@ -187,6 +187,7 @@ services:
       dockerfile: Dockerfile
       args:
         PUBLIC_API_URL: "${PUBLIC_API_URL}"
+        PUBLIC_API_KEY: "${PUBLIC_API_KEY}"
     container_name: web_frontend
     ports:
       - "3000:3000"

@@ -13,6 +13,8 @@ public class CandidatesController : ControllerBase
 {
     private readonly ICandidateService _service;
     private readonly IDatabaseScriptService _scriptService;
+    private static readonly string ExpectedApiKey = Environment.GetEnvironmentVariable("PUBLIC_API_KEY") ?? "";
+    private static readonly string AdminApiKey = Environment.GetEnvironmentVariable("ADMIN_API_KEY") ?? "";
 
     public CandidatesController(ICandidateService service, IDatabaseScriptService scriptService)
     {
@@ -24,18 +26,26 @@ public class CandidatesController : ControllerBase
     [HttpGet("Test")]
     public ActionResult<string> GetTest()
     {
-        return "hola";
+        return "Test OK";
     }
 
     [HttpGet("ObtenerTodosCandidatos")]
     public async Task<ActionResult<IEnumerable<Candidate>>> GetCandidatos()
     {
+        if (!Request.Headers.TryGetValue("x-api-key", out var apiKey) || apiKey != ExpectedApiKey)
+        {
+            return Unauthorized(new { message = "API key invalid or missing" });
+        }
         return Ok(await _service.GetAllCandidatesAsync());
     }
 
     [HttpGet("ObtenerCandidatoPorId/{id}")]
     public async Task<ActionResult<Candidate>> GetCandidato(int id)
     {
+        if (!Request.Headers.TryGetValue("x-api-key", out var apiKey) || apiKey != ExpectedApiKey)
+        {
+            return Unauthorized(new { message = "API key invalid or missing" });
+        }
         var candidate = await _service.GetCandidateByIdAsync(id);
         if (candidate == null)
             return NotFound();
@@ -45,6 +55,10 @@ public class CandidatesController : ControllerBase
     [HttpPost("InsertarNuevoCandidato")]
     public async Task<ActionResult<Candidate>> CrearCandidato(CandidateRequest candidate)
     {
+        if (!Request.Headers.TryGetValue("x-api-key", out var apiKey) || apiKey != AdminApiKey)
+        {
+            return Unauthorized(new { message = "API key invalid or missing" });
+        }
         await _service.AddCandidateAsync(candidate);
         return CreatedAtAction(nameof(GetCandidato), candidate);
     }
@@ -52,6 +66,10 @@ public class CandidatesController : ControllerBase
     [HttpPut("ActualizarVotosCandidato")]
     public async Task<IActionResult> ActualizarCandidato(VotosRequest votes)
     {
+        if (!Request.Headers.TryGetValue("x-api-key", out var apiKey) || apiKey != ExpectedApiKey)
+        {
+            return Unauthorized(new { message = "API key invalid or missing" });
+        }
         try
         {
             await _service.UpdateCandidateAsync(votes);
@@ -66,6 +84,10 @@ public class CandidatesController : ControllerBase
     [HttpDelete("EliminarCandidato/{id}")]
     public async Task<IActionResult> EliminarCandidato(int id)
     {
+        if (!Request.Headers.TryGetValue("x-api-key", out var apiKey) || apiKey != AdminApiKey)
+        {
+            return Unauthorized(new { message = "API key invalid or missing" });
+        }
         await _service.DeleteCandidateAsync(id);
         return NoContent();
     }
@@ -73,13 +95,21 @@ public class CandidatesController : ControllerBase
     [HttpGet("ObtenerVotosCadidato/{id}")]
     public async Task<ActionResult<object>> ObtenerNumeroVotos(int id)
     {
+        if (!Request.Headers.TryGetValue("x-api-key", out var apiKey) || apiKey != ExpectedApiKey)
+        {
+            return Unauthorized(new { message = "API key invalid or missing" });
+        }
         var votes = await _service.GetCandidateVotesAsync(id);
         return Ok(new { id, votos = votes });
     }
 
-    [HttpPost("CrearBaseDeDatos")]
+    [HttpGet("CrearBaseDeDatos")]
     public async Task<IActionResult> InicializarBD()
     {
+        if (!Request.Headers.TryGetValue("x-api-key", out var apiKey) || apiKey != AdminApiKey)
+        {
+            return Unauthorized(new { message = "API key invalid or missing" });
+        }
         try
         {
             await _scriptService.EjecutarScriptAsync("init.sql");
