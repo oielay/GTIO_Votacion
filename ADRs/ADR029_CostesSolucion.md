@@ -43,14 +43,14 @@ Esta integración refuerza nuestro compromiso con una arquitectura sostenible y 
 
 | Servicio           | Cantidad | Tipo                          | Coste estimado |
 | ------------------ | -------- | ----------------------------- | -------------- |
-| EC2                | 4        | t2.micro                      | \~42 €/mes     |
+| EC2                | 4        | t2.micro                      | \~34 €/mes     |
 | RDS                | 1        | db.t3.micro + 20GB            | \~18 €/mes     |
 | ELB                | 1        | ALB                           | \~16 €/mes     |
 | ECR                | 2        | 1 GB cada uno (estimado)      | \~0.20 €/mes   |
 | API Gateway        | 1        | Básica (\~<1M peticiones/mes) | variable (\~3.5 €/1M requests) |
 | CloudWatch         | —        | Logs, métricas                | variable (\~0.55 €/GB) |
 | Secrets Manager    | 2        | 2 secretos                    | \~0.80 €/mes   |
-| **Total estimado** | —        | —                             | **\~79 €/mes** |
+| **Total estimado** | —        | —                             | **\~69 €/mes** |
 
 
 
