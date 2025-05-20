@@ -32,30 +32,6 @@ theme: beam
 
 ---
 
-# Metodología y buenas prácticas
-
-**METODOLOGÍA DE TRABAJO**
-
-![Imagen Metodología](images/ADR024.png)
-
----
-
-# Metodología y buenas prácticas
-
-**BUENAS PRÁCTICAS EN EL BACKEND**
-
-![Imagen Buenas Prácticas Backend](images/ADR013.png)
-
----
-
-# Metodología y buenas prácticas
-
-**BUENAS PRÁCTICAS EN EL FRONTEND**
-
-![Imagen Buenas Prácticas Frontend](images/ADR014.png)
-
----
-
 # MICROSERVICIOS y FUNCIONALIDAD
 
 ![Imagen Microservicios](images/ADR015-ADR016.png)
@@ -73,22 +49,6 @@ theme: beam
 **CONTINUACIÓN DEL RFI I**
 
 ![Imagen Despliegue en Entorno Local](images/ADR019.png)
-
----
-
-# PROBAR FUNCIONALIDADES
-
-**BACKEND**
-
-![Imagen Probar Funcionalidades de Backend](images/ADR020.png)
-
----
-
-# PROBAR FUNCIONALIDADES
-
-**FRONTEND**
-
-![Imagen Probar Funcionalidades de Frontend](images/ADR021.png)
 
 ---
 
