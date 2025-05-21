@@ -13,6 +13,8 @@ La documentación del proyeto se puede encontrar en el apartado [Wiki](https://g
 - Tener instalado AWS CLI
 - Tener cuenta de AWS
 - Tener creado un bucket S3 para almacenar el estado de Terraform
+- Configurar KMS en AWS para cifrar los secretos de la base de datos
+- Tener creados dos secretos en AWS Secrets Manager para almacenar las cadena de conexión de la base de datos
 - Clonar el repositorio con `git clone https://github.com/oielay/GTIO_Votacion.git`
 
 **Pasos para el despliegue:**
