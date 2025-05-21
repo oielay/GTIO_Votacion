@@ -22,6 +22,17 @@ Se han seleccionado servicios que permiten una buena relación entre control, es
 - **Uso de Amazon API Gateway para exponer las APIs de forma segura y escalable**, considerando el plan de coste más bajo con tráfico estimado reducido.
 - **CloudWatch Logs y métricas** configurados con retención mínima para evitar costes altos de almacenamiento.
 
+## Control automático de costes (Infracost)
+
+Desde mayo de 2025, integramos la herramienta [Infracost](https://www.infracost.io/) en nuestro flujo de CI/CD, lo que nos permite:
+
+- Obtener una estimación detallada del coste mensual de los recursos definidos en Terraform.
+- Ver directamente en cada Pull Request el impacto económico de los cambios en infraestructura.
+- Detectar aumentos inesperados de coste antes de aplicar los cambios.
+- Recibir sugerencias automáticas de ahorro por parte de Infracost (por ejemplo, tipos de instancia más baratos o recursos infrautilizados).
+
+Esta integración refuerza nuestro compromiso con una arquitectura sostenible y transparente.
+
 ## Consecuencias
 
 - Se logra un **coste inicial bajo**, apto para entorno de pruebas o demostraciones.
@@ -30,25 +41,25 @@ Se han seleccionado servicios que permiten una buena relación entre control, es
 
 ## Estimación de Costes Mensuales
 
-| Servicio        | Cantidad | Tipo                   | Coste estimado        |
-|-----------------|----------|------------------------|-----------------------|
-| EC2             | 4        | t2.micro               | ~28 €/mes             |
-| RDS             | 1        | db.t2.micro + 30GB     | ~25 €/mes             |
-| ECR             | 2        | 1 GB cada uno          | ~0.60 €/mes           |
-| ELB             | 1        | ALB                    | ~16 €/mes             |
-| S3              | 2        | 10 GB cada uno + peticiones | ~0.60 €/mes      |
-| Secrets Manager | 2        | 2 secretos             | ~0.80 €/mes           |
-| API Gateway     | 1        | 1 API básica (~1M peticiones/mes) | ~3 €/mes   |
-| CloudWatch      | —        | Logs + métricas básicas| ~2 €/mes              |
-| **Total estimado** | —     | —                     | **~70-75 €/mes**      |
+| Servicio           | Cantidad | Tipo                          | Coste estimado |
+| ------------------ | -------- | ----------------------------- | -------------- |
+| EC2                | 4        | t2.micro                      | \~34 €/mes     |
+| RDS                | 1        | db.t3.micro + 20GB            | \~18 €/mes     |
+| ELB                | 1        | ALB                           | \~16 €/mes     |
+| ECR                | 2        | 1 GB cada uno (estimado)      | \~0.20 €/mes   |
+| API Gateway        | 1        | Básica (\~<1M peticiones/mes) | variable (\~3.5 €/1M requests) |
+| CloudWatch         | —        | Logs, métricas                | variable (\~0.55 €/GB) |
+| Secrets Manager    | 2        | 2 secretos                    | \~0.80 €/mes   |
+| **Total estimado** | —        | —                             | **\~69 €/mes** |
+
+
 
 > Nota: Precios estimados con tarifas estándar en la región US East (N. Virginia). Para uso intensivo o producción, los costes podrían incrementarse.
 
 ## Enlaces
 
-* Precios consultados en [AWS Pricing Calculator](https://calculator.aws/)
+* Precios consultados en [AWS Pricing Calculator](https://calculator.aws/) y estimaciones generadas automáticamente con [Infracost](https://www.infracost.io/) integradas en el flujo de CI/CD.
 
 ## Observaciones
 
 - Si la carga aumenta, se debe considerar ampliar el Auto Scaling Group o migrar a instancias más grandes o Fargate.
-- Es recomendable habilitar AWS Budgets para controlar los gastos automáticamente. (Falta de permisos)

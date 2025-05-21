@@ -1,4 +1,4 @@
-# GTIO_Votacion
+# GTIO_Votacion [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/oielay/GTIO_Votacion)
 
 ## Documentación
 
@@ -36,20 +36,24 @@ La documentación del proyeto se puede encontrar en el apartado [Wiki](https://g
    terraform apply -auto-approve -target=module.ecr -var-file=env.tfvars
    ```
 
-4. **Construir y subir imágenes de la API:**  
+4. **Construir y subir imágenes de Docker:**  
    Construir las imágenes Docker y subirlas al repositorio ECR:
 
    ```bash
-   docker-compose build api
+   docker-compose build
+
    docker tag gtio_votacion-api <Repositorio de ECR>/gtio_votacion/api:<Tag de la imagen>
    docker push <Repositorio de ECR>/gtio_votacion/api:<Tag de la imagen>
+
+   docker tag gtio_votacion-frontend <Repositorio de ECR>/gtio_votacion/frontend:<Tag de la imagen>
+   docker push <Repositorio de ECR>/gtio_votacion/frontend:<Tag de la imagen>
    ```
 
 5. **Crear infraestructura y desplegar la API con Terraform:**  
    Ejecutar los siguientes comandos para desplegar la infraestructura y la API:
 
    ```bash
-   terraform apply -auto-approve -var-file=env.tfvars -target=module.infrastructure -target=module.api
+   terraform apply -auto-approve -var-file=env.tfvars
    ```
 
 6. **Poblar la base de datos:**  
@@ -59,21 +63,6 @@ La documentación del proyeto se puede encontrar en el apartado [Wiki](https://g
    curl -X POST http://<URL del balanceador de datos>:8080/api/Candidates/CrearBaseDeDatos
    ```
 
-7. **Construir y subir imágenes del frontend:**  
-   Construir las imágenes Docker y subirlas al repositorio ECR:
-
-   ```bash
-   docker-compose build frontend
-   docker tag gtio_votacion-frontend <Repositorio de ECR>/gtio_votacion/frontend:<Tag de la imagen>
-   docker push <Repositorio de ECR>/gtio_votacion/frontend:<Tag de la imagen>
-   ```
-
-8. **Crear servicio del frontend con Terraform:**  
-   Ejecutar los siguientes comandos para desplegar el servicio del frontend:
-   ```bash
-   terraform apply -auto-approve -var-file=env.tfvars -target=module.frontend
-   ```
-
 **Ejemplo de archivo .env**
 
 ```ini
@@ -81,6 +70,8 @@ DB_NAME_API=<Base_de_datos_candidatos>
 ASPNETCORE_ENVIRONMENT=<Development>
 SQLSERVER_API_PASSWORD=<Contraseña_base_de_datos_candidatos>
 PUBLIC_API_URL=<http://<DNS del balanceador de carga>:8080>
+PUBLIC_API_KEY=<Clave_de_acceso_publica>
+admin_api_key=<Clave_de_acceso_admin>
 ```
 
 **Ejemplo de archivo env.tfvars**
@@ -92,6 +83,8 @@ task_api_secret_master = "<ARN del secreto>:ConnectionStrings__MasterConnection:
 api_image = "<Repositorio de ECR>/gtio_votacion/api:latest"
 sql_password = "<Contraseña_base_de_datos_candidatos>"
 frontend_image = "<Repositorio de ECR>/gtio_votacion/frontend:latest"
+api_key = "<Clave_de_acceso_publica>"
+admin_api_key = "<Clave_de_acceso_admin>"
 ```
 
 **Ejemplo de archivo credentials**
