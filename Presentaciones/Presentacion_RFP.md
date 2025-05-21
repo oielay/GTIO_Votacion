@@ -108,6 +108,12 @@ theme: beam
 
 ---
 
+# Metricas / logs
+
+<img src="images/Metricas.png" alt="Metricas" width="600"/>
+
+---
+
 # Infracost - Pull Request
 
 <br>
